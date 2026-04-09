@@ -49,10 +49,9 @@ const evPos = e => {
 };
 
 function haversine(a,b,c,d){var R=6371,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180;var z=Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2;return R*2*Math.atan2(Math.sqrt(z),Math.sqrt(1-z))}
-function parseGPX(xml){var doc=new DOMParser().parseFromString(xml,"text/xml"),pts=[];doc.querySelectorAll("trkpt,rtept").forEach(function(el){pts.push({lat:+el.getAttribute("lat"),lon:+el.getAttribute("lon"),ele:el.querySelector("ele")?+el.querySelector("ele").textContent:null})});if(!pts.length)doc.querySelectorAll("wpt").forEach(function(el){pts.push({lat:+el.getAttribute("lat"),lon:+el.getAttribute("lon"),ele:el.querySelector("ele")?+el.querySelector("ele").textContent:null})});if(!pts.length)return null;if(pts.length>300){var step=(pts.length-1)/299,s=[];for(var i=0;i<299;i++)s.push(pts[Math.round(i*step)]);s.push(pts[pts.length-1]);pts=s}var dist=0,gain=0;for(var i=1;i<pts.length;i++){dist+=haversine(pts[i-1].lat,pts[i-1].lon,pts[i].lat,pts[i].lon);if(pts[i].ele!=null&&pts[i-1].ele!=null&&pts[i].ele>pts[i-1].ele)gain+=pts[i].ele-pts[i-1].ele}return{pts:pts,dist:Math.round(dist*10)/10,gain:Math.round(gain)}}
+function parseGPX(xml){var doc=new DOMParser().parseFromString(xml,'text/xml'),pts=[];doc.querySelectorAll('trkpt,rtept').forEach(function(el){pts.push({lat:+el.getAttribute('lat'),lon:+el.getAttribute('lon'),ele:el.querySelector('ele')?+el.querySelector('ele').textContent:null})});if(!pts.length)doc.querySelectorAll('wpt').forEach(function(el){pts.push({lat:+el.getAttribute('lat'),lon:+el.getAttribute('lon'),ele:el.querySelector('ele')?+el.querySelector('ele').textContent:null})});if(!pts.length)return null;if(pts.length>300){var step=(pts.length-1)/299,s=[];for(var i=0;i<299;i++)s.push(pts[Math.round(i*step)]);s.push(pts[pts.length-1]);pts=s}var dist=0,gain=0;for(var i=1;i<pts.length;i++){dist+=haversine(pts[i-1].lat,pts[i-1].lon,pts[i].lat,pts[i].lon);if(pts[i].ele!=null&&pts[i-1].ele!=null&&pts[i].ele>pts[i-1].ele)gain+=pts[i].ele-pts[i-1].ele}return{pts:pts,dist:Math.round(dist*10)/10,gain:Math.round(gain)}}
 function gpxToImage(gpx,w,h){var lats=gpx.pts.map(function(p){return p.lat}),lons=gpx.pts.map(function(p){return p.lon});var a=Math.min.apply(null,lats),b=Math.max.apply(null,lats),c=Math.min.apply(null,lons),d=Math.max.apply(null,lons);var mid=(a+b)/2,cos=Math.cos(mid*Math.PI/180);var gW=(d-c)*cos||.001,gH=(b-a)||.001;var p=.12,sc=Math.min(w*(1-2*p)/gW,h*(1-2*p)/gH);var cx=w/2,cy=h/2,gcx=(c+d)/2*cos,gcy=mid;return gpx.pts.map(function(pt){return{x:cx+(pt.lon*cos-gcx)*sc,y:cy-(pt.lat-gcy)*sc}})}
 
-var I18N={zh:{upload:"\u4E0A\u50B3",route:"\u8DEF\u7DDA",marker:"\u666F\u9EDE",select:"\u9078\u53D6",cover:"\u906E\u84CB",fresh:"\u6E05\u723D",watermark:"\u6D6E\u6C34\u5370",exp:"\u532F\u51FA",save:"\u5B58\u6A94",load:"\u8F09\u5165",undo:"\u5FA9\u539F",redo:"\u91CD\u505A",busy:"\u8655\u7406\u4E2D",saving:"\u5B58\u4E2D\u2026",hintRouteStart:"\u9EDE\u64CA\u5730\u5716\u6A19\u8A18\u8DEF\u7DDA\u8D77\u9EDE",hintRouteN:function(n){return n+" \u500B\u9EDE \u2014 \u7E7C\u7E8C\u9EDE\u64CA\u6216\u6309\u300C\u5B8C\u6210\u8DEF\u7DDA\u300D"},hintMarker:"\u9EDE\u64CA\u5730\u5716\u653E\u7F6E\u666F\u9EDE\u6A19\u8A18",hintCover:"\u62D6\u66F3\u9078\u53D6\u8981\u906E\u84CB\u7684\u5340\u57DF",hintSelect:"\u9EDE\u64CA\u6A19\u8A18\u7DE8\u8F2F \u00B7 \u9577\u6309\u65B0\u589E\u666F\u9EDE \u00B7 \u62D6\u66F3\u5E73\u79FB",hintEdit:"\u9EDE\u64CA\u666F\u9EDE\u6A19\u8A18\u9032\u884C\u7DE8\u8F2F",uploadHint:"\u4E0A\u50B3\u5730\u5716\u622A\u5716\u958B\u59CB\u88FD\u4F5C",formatHint:"\u652F\u63F4 PNG / JPG",zoomReset:"\u7E2E\u653E\u91CD\u7F6E",editN:function(n){return "\u666F\u9EDE "+n+" \u7DE8\u8F2F"},iconLabel:"\u9078\u64C7\u5716\u793A",nameLabel:"\u666F\u9EDE\u540D\u7A31",namePh:"\u666F\u9EDE\u540D\u7A31\u2026",descLabel:"\u751F\u614B\u8AAA\u660E",descPh:"\u690D\u7269\u3001\u52D5\u7269\u3001\u751F\u614B\u7279\u8272\u3001\u6CE8\u610F\u4E8B\u9805\u2026",photoLabel:"\u73FE\u5834\u7167\u7247",removePhoto:"\u79FB\u9664",addPhoto:"\uD83D\uDCF7 \u4E0A\u50B3\u7167\u7247",delMarker:"\uD83D\uDDD1\uFE0F \u522A\u9664\u6B64\u666F\u9EDE",freshLabel:"\u6E05\u723D",wmLabel:"\u6D6E\u6C34\u5370",freshMode:"\uD83C\uDFA8 \u6E05\u723D\u6A21\u5F0F",coverLabel:"\u906E\u84CB\u98A8\u683C",frost:"\u78E8\u7802",soft:"\u67D4\u908A",paper:"\u7D19\u7D0B",coverUndo:"\\u21A9 \\u64A4\\u92B7",undoPoint:"\u21A9 \u64A4\u92B7",finishRoute:function(n){return "\u2713 \u5B8C\u6210\u8DEF\u7DDA\uFF08"+n+"\u9EDE\uFF09"},allMarkers:"\u6240\u6709\u666F\u9EDE",markerList:"\u666F\u9EDE\u5217\u8868",expPreview:"\uD83C\uDFA8 \u532F\u51FA\u9810\u89BD \u2014 \u53F3\u9375\u5716\u7247\u53EF\u5132\u5B58",dlPng:"\u2B07 \u4E0B\u8F09 PNG",back:"\u2190 \u8FD4\u56DE\u7DE8\u8F2F",needBg:"\u8ACB\u5148\u4E0A\u50B3\u5E95\u5716",gpxFail:"\u7121\u6CD5\u89E3\u6790 GPX",langBtn:"EN"},en:{upload:"Upload",route:"Route",marker:"Marker",select:"Select",cover:"Cover",fresh:"Filter",watermark:"WM",exp:"Export",save:"Save",load:"Load",undo:"Undo",redo:"Redo",busy:"Working",saving:"Saving",hintRouteStart:"Click map to set route start",hintRouteN:function(n){return n+' pts \u2014 click more or "Finish Route"'},hintMarker:"Click map to place a marker",hintCover:"Drag to select area to cover",hintSelect:"Click marker \u00B7 long-press to add \u00B7 drag to pan",hintEdit:"Click a marker to edit",uploadHint:"Upload a map screenshot",formatHint:"PNG / JPG",zoomReset:"Reset Zoom",editN:function(n){return "Marker "+n},iconLabel:"Icon",nameLabel:"Name",namePh:"Name\u2026",descLabel:"Description",descPh:"Plants, animals, ecology notes\u2026",photoLabel:"Photo",removePhoto:"Remove",addPhoto:"\uD83D\uDCF7 Add Photo",delMarker:"\uD83D\uDDD1\uFE0F Delete Marker",freshLabel:"Filter",wmLabel:"WM",freshMode:"\uD83C\uDFA8 Filter ON",coverLabel:"Cover Style",frost:"Frosted",soft:"Soft",paper:"Paper",coverUndo:"\u21A9 Undo",undoPoint:"\u21A9 Undo",finishRoute:function(n){return "\u2713 Finish ("+n+" pts)"},allMarkers:"All Markers",markerList:"Markers",expPreview:"\uD83C\uDFA8 Export Preview",dlPng:"\u2B07 Download PNG",back:"\u2190 Back to Edit",needBg:"Upload a map first",gpxFail:"Cannot parse GPX",langBtn:"\u4E2D"}};
 const MODE = {
   ROUTE: "route",
   MARKER: "marker",
@@ -783,8 +782,6 @@ function EcoMap() {
   const phoRef = useRef();
   const phoId = useRef(null);
   const gpxRef = useRef();
-  const [lang, setLang] = useState("zh");
-  var t = function(k){return I18N[lang][k]||k};
 
   // ── Undo / Redo ──
   const undoRef = useRef([]);
@@ -944,7 +941,7 @@ function EcoMap() {
           x: p.x,
           y: p.y,
           num: n,
-          title: (t("marker")||"景點")+" "+n,
+          title: `景點 ${n}`,
           desc: "",
           photo: null,
           icon: "pin",
@@ -1048,9 +1045,9 @@ function EcoMap() {
     rd.readAsText(f);
     e.target.value = "";
   };
-  var handleGPX = function(text){if(!bg){alert(t("needBg"));return}var gpx=parseGPX(text);if(!gpx||gpx.pts.length<2){alert(t("gpxFail"));return}var imgPts=gpxToImage(gpx,sz.w,sz.h);setRoutes(function(r){return r.concat([{id:crypto.randomUUID(),pts:imgPts,gpx:{dist:gpx.dist,gain:gpx.gain}}])})};
-  var onGpxFile = function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(ev){handleGPX(ev.target.result)};rd.readAsText(f);e.target.value=""};
-  var onDrop = function(e){e.preventDefault();var f=Array.from(e.dataTransfer.files).find(function(x){return x.name.toLowerCase().endsWith(".gpx")});if(!f)return;var rd=new FileReader();rd.onload=function(ev){handleGPX(ev.target.result)};rd.readAsText(f)};
+  var handleGPX=function(txt){if(!bg){alert("Please upload a map first");return}var g=parseGPX(txt);if(!g||g.pts.length<2){alert("Cannot parse GPX");return}setRoutes(function(r){return r.concat([{id:crypto.randomUUID(),pts:gpxToImage(g,sz.w,sz.h),gpx:{dist:g.dist,gain:g.gain}}])})};
+  var onGpxFile=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){handleGPX(ev.target.result)};r.readAsText(f);e.target.value=""};
+  var onDrop=function(e){e.preventDefault();var f=Array.from(e.dataTransfer.files).find(function(x){return x.name.toLowerCase().endsWith(".gpx")});if(!f)return;var r=new FileReader();r.onload=function(ev){handleGPX(ev.target.result)};r.readAsText(f)};
   const imgFilter = hd ? "brightness(1.08) contrast(0.88) saturate(0.75) hue-rotate(3deg)" : "none";
 
   // ── Export preview screen ──────────────────────────────────────────────
@@ -1077,7 +1074,7 @@ function EcoMap() {
       fontSize: 16,
       flex: 1
     }
-  }, t("expPreview")), /*#__PURE__*/React.createElement("a", {
+  }, "\uD83C\uDFA8 \u532F\u51FA\u9810\u89BD \u2014 \u53F3\u9375\u5716\u7247\u53EF\u5132\u5B58"), /*#__PURE__*/React.createElement("a", {
     href: expUrl,
     download: "trailpaint-map.png",
     style: {
@@ -1089,7 +1086,7 @@ function EcoMap() {
       fontSize: 14,
       textDecoration: "none"
     }
-  }, t("dlPng")), /*#__PURE__*/React.createElement("button", {
+  }, "\u2B07 \u4E0B\u8F09 PNG"), /*#__PURE__*/React.createElement("button", {
     onClick: () => { if (expUrl) URL.revokeObjectURL(expUrl); setExpUrl(null); },
     style: {
       padding: "9px 20px",
@@ -1101,7 +1098,7 @@ function EcoMap() {
       fontWeight: 700,
       fontSize: 14
     }
-  }, t("back"))), /*#__PURE__*/React.createElement("div", {
+  }, "\u2190 \u8FD4\u56DE\u7DE8\u8F2F")), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
       overflow: "auto",
@@ -1120,7 +1117,7 @@ function EcoMap() {
       boxShadow: "0 8px 48px rgba(0,0,0,0.55)"
     }
   })));
-  const hint = mode===MODE.ROUTE ? cur.length===0 ? t("hintRouteStart") : t("hintRouteN")(cur.length) : mode===MODE.MARKER ? t("hintMarker") : mode===MODE.COVER ? t("hintCover") : mode===MODE.SELECT&&!selId ? t("hintSelect") : t("hintEdit");
+  const hint = mode === MODE.ROUTE ? cur.length === 0 ? "點擊地圖標記路線起點" : `${cur.length} 個點 — 繼續點擊或按「完成路線」` : mode === MODE.MARKER ? "點擊地圖放置景點標記" : mode === MODE.COVER ? "拖曳選取要遮蓋的區域（蓋住不想要的文字或圖示）" : mode === MODE.SELECT && !selId ? "點擊標記編輯 · 長按地圖新增景點 · 拖曳平移" : "點擊景點標記進行編輯";
   return /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -1148,28 +1145,28 @@ function EcoMap() {
       fontSize: 22,
       marginBottom: 2
     }
-  }, "\uD83C\uDF3F"), /*#__PURE__*/React.createElement("button", {onClick:function(){setLang(function(l){return l==="zh"?"en":"zh"})},style:{width:isMobile?36:42,height:20,borderRadius:10,border:"1px solid rgba(253,230,138,0.3)",background:"rgba(255,255,255,0.08)",color:"#fde68a",fontSize:10,fontWeight:700,cursor:"pointer",marginBottom:2}}, t("langBtn")), /*#__PURE__*/React.createElement(D, null), /*#__PURE__*/React.createElement(TB, {
+  }, "\uD83C\uDF3F"), /*#__PURE__*/React.createElement(D, null), /*#__PURE__*/React.createElement(TB, {
     icon: "\uD83D\uDDFA\uFE0F",
-    label: t("upload"),
+    label: "\u4E0A\u50B3",
     onClick: () => fileRef.current.click()
-  }), /*#__PURE__*/React.createElement(TB, {icon:"\uD83D\uDCCC",label:"GPX",onClick:function(){gpxRef.current&&gpxRef.current.click()},disabled:!bg}), /*#__PURE__*/React.createElement(D, null), /*#__PURE__*/React.createElement(TB, {
+  }),/*#__PURE__*/React.createElement(TB,{icon:"\uD83D\uDCCC",label:"GPX",onClick:function(){gpxRef.current&&gpxRef.current.click()},disabled:!bg}), /*#__PURE__*/React.createElement(D, null), /*#__PURE__*/React.createElement(TB, {
     icon: "\u270F\uFE0F",
-    label: t("route"),
+    label: "\u8DEF\u7DDA",
     active: mode === MODE.ROUTE,
     onClick: () => setMode(MODE.ROUTE)
   }), /*#__PURE__*/React.createElement(TB, {
     icon: "\uD83D\uDCCD",
-    label: t("marker"),
+    label: "\u666F\u9EDE",
     active: mode === MODE.MARKER,
     onClick: () => setMode(MODE.MARKER)
   }), /*#__PURE__*/React.createElement(TB, {
     icon: "\u261D\uFE0F",
-    label: t("select"),
+    label: "\u9078\u53D6",
     active: mode === MODE.SELECT,
     onClick: () => setMode(MODE.SELECT)
   }), /*#__PURE__*/React.createElement(TB, {
     icon: "\uD83E\uDE79",
-    label: t("cover"),
+    label: "\u906E\u84CB",
     active: mode === MODE.COVER,
     onClick: () => setMode(MODE.COVER)
   }), /*#__PURE__*/React.createElement(D, null), /*#__PURE__*/React.createElement("button", {
@@ -1194,14 +1191,14 @@ function EcoMap() {
       fontSize: 8,
       fontWeight: 700
     }
-  }, t("freshLabel")), /*#__PURE__*/React.createElement("span", {
+  }, "\u6E05\u723D"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: hd ? "#fde68a" : "#555"
     }
   }, hd ? "ON" : "OFF")), /*#__PURE__*/React.createElement("button", {
     onClick: () => setWatermark(v => !v),
-    title: t("wmLabel"),
+    title: "\u6D6E\u6C34\u5370",
     style: {
       width: 56,
       height: 56,
@@ -1222,7 +1219,7 @@ function EcoMap() {
       fontSize: 8,
       fontWeight: 700
     }
-  }, t("wmLabel")), /*#__PURE__*/React.createElement("span", {
+  }, "\u6D6E\u6C34\u5370"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: watermark ? "#fde68a" : "#555"
@@ -1239,7 +1236,7 @@ function EcoMap() {
       fontSize: 10,
       cursor: "pointer"
     }
-  }, t("cover").charAt(0), covers.length, "\u21A9"), routes.map((r, i) => /*#__PURE__*/React.createElement("button", {
+  }, "\u84CB", covers.length, "\u21A9"), routes.map((r, i) => /*#__PURE__*/React.createElement("button", {
     key: r.id,
     onClick: () => delRoute(r.id),
     style: {
@@ -1254,11 +1251,11 @@ function EcoMap() {
     }
   }, "\u8DEF", i + 1, "\u2715")), (canUndo || canRedo) && /*#__PURE__*/React.createElement(D, null), canUndo && /*#__PURE__*/React.createElement(TB, {
     icon: "\u21A9",
-    label: t("undo"),
+    label: "\u5FA9\u539F",
     onClick: doUndo
   }), canRedo && /*#__PURE__*/React.createElement(TB, {
     icon: "\u21AA",
-    label: t("redo"),
+    label: "\u91CD\u505A",
     onClick: doRedo
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1266,7 +1263,7 @@ function EcoMap() {
     }
   }), /*#__PURE__*/React.createElement(TB, {
     icon: busy ? "⏳" : "💾",
-    label: busy ? t("busy") : t("exp"),
+    label: busy ? "處理中" : "匯出",
     onClick: doExport,
     disabled: !bg || busy
   }), /*#__PURE__*/React.createElement("div", {
@@ -1278,12 +1275,12 @@ function EcoMap() {
     }
   }), /*#__PURE__*/React.createElement(TB, {
     icon: saving ? "⏳" : "📋",
-    label: saving ? t("saving") : t("save"),
+    label: saving ? "存中…" : "存檔",
     onClick: doSave,
     disabled: !bg || saving
   }), /*#__PURE__*/React.createElement(TB, {
     icon: "\uD83D\uDCC2",
-    label: t("load"),
+    label: "\u8F09\u5165",
     onClick: () => loadRef.current && loadRef.current.click()
   }), /*#__PURE__*/React.createElement("input", {
     ref: fileRef,
@@ -1321,7 +1318,7 @@ function EcoMap() {
       });
       e.target.value = "";
     }
-  }), /*#__PURE__*/React.createElement("input", {ref:gpxRef,type:"file",accept:".gpx",onChange:onGpxFile,style:{display:"none"}})), /*#__PURE__*/React.createElement("div", {
+  }),/*#__PURE__*/React.createElement("input",{ref:gpxRef,type:"file",accept:".gpx",onChange:onGpxFile,style:{display:"none"}})),/*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
       position: "relative",
@@ -1329,8 +1326,7 @@ function EcoMap() {
       cursor: panning ? "grabbing" : mode === MODE.SELECT ? "grab" : "crosshair"
     },
     ref: mapRef,
-    onDragOver: function(e){e.preventDefault()},
-    onDrop: onDrop,
+    onDragOver:function(e){e.preventDefault()},onDrop:onDrop,
     onClick: click,
     onWheel: e => {
       if (!bg) return;
@@ -1480,7 +1476,7 @@ function EcoMap() {
                 x: pos.x,
                 y: pos.y,
                 num,
-                title: (t("marker")||"景點")+" "+num,
+                title: `景點 ${num}`,
                 desc: "",
                 photo: null,
                 icon: "pin",
@@ -1613,7 +1609,7 @@ function EcoMap() {
       fontWeight: 700,
       zIndex: 10
     }
-  }, t("freshMode")), mode === MODE.COVER && bg && /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFA8 \u6E05\u723D\u6A21\u5F0F"), mode === MODE.COVER && bg && /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
       bottom: 20,
@@ -1635,7 +1631,7 @@ function EcoMap() {
       alignSelf: "center",
       marginRight: 4
     }
-  }, t("coverLabel")), [["frost", t("frost")], ["soft", t("soft")], ["paper", t("paper")]].map(_ref3 => {
+  }, "\u906E\u84CB\u98A8\u683C"), [["frost", "磨砂"], ["soft", "柔邊"], ["paper", "紙紋"]].map(_ref3 => {
     let [v, label] = _ref3;
     return /*#__PURE__*/React.createElement("button", {
       key: v,
@@ -1664,7 +1660,7 @@ function EcoMap() {
       cursor: "pointer",
       marginLeft: 4
     }
-  }, t("coverUndo"))), marks.length > 0 && /*#__PURE__*/React.createElement("button", {
+  }, "\u21A9 \u64A4\u92B7")), marks.length > 0 && /*#__PURE__*/React.createElement("button", {
     onClick: () => setPanelOpen(v => !v),
     style: {
       position: "absolute",
@@ -1703,7 +1699,7 @@ function EcoMap() {
       padding: "6px 10px",
       zIndex: 11
     }
-  }, t("zoomReset")), !bg ? /*#__PURE__*/React.createElement("div", {
+  }, "\u7E2E\u653E\u91CD\u7F6E"), !bg ? /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -1724,12 +1720,12 @@ function EcoMap() {
       fontWeight: "bold",
       opacity: 0.8
     }
-  }, t("uploadHint")), /*#__PURE__*/React.createElement("div", {
+  }, "\u4E0A\u50B3\u5730\u5716\u622A\u5716\u958B\u59CB\u88FD\u4F5C"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       opacity: 0.42
     }
-  }, t("formatHint"))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "\u652F\u63F4 PNG / JPG")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       width: "100%",
       height: "100%",
@@ -2124,7 +2120,7 @@ function EcoMap() {
       fontSize: 14,
       color: "white"
     }
-  }, t("finishRoute")(cur.length)))), panelOpen && sel ? /*#__PURE__*/React.createElement("div", {
+  }, "\u2713 \u5B8C\u6210\u8DEF\u7DDA\uFF08", cur.length, "\u9EDE\uFF09"))), panelOpen && sel ? /*#__PURE__*/React.createElement("div", {
     style: {
       width: isMobile ? '100%' : 300,
       maxWidth: isMobile ? undefined : 300,
@@ -2155,7 +2151,7 @@ function EcoMap() {
       fontWeight: "bold",
       fontSize: 15
     }
-  }, t("editN")(sel.num)), /*#__PURE__*/React.createElement("button", {
+  }, "\u666F\u9EDE ", sel.num, " \u7DE8\u8F2F"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setSelId(null),
     style: {
       background: "none",
@@ -2181,7 +2177,7 @@ function EcoMap() {
       fontWeight: 700,
       marginBottom: 6
     }
-  }, t("iconLabel")), /*#__PURE__*/React.createElement("div", {
+  }, "\u9078\u64C7\u5716\u793A"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
@@ -2214,7 +2210,7 @@ function EcoMap() {
       display: "block",
       marginBottom: 4
     }
-  }, t("nameLabel")), /*#__PURE__*/React.createElement("input", {
+  }, "\u666F\u9EDE\u540D\u7A31"), /*#__PURE__*/React.createElement("input", {
     style: {
       width: "100%",
       border: "2px solid #fde68a",
@@ -2230,7 +2226,7 @@ function EcoMap() {
     onChange: e => upd(selId, {
       title: e.target.value
     }),
-    placeholder: t("namePh")
+    placeholder: "\u666F\u9EDE\u540D\u7A31\u2026"
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
     style: {
       fontSize: 12,
@@ -2239,7 +2235,7 @@ function EcoMap() {
       display: "block",
       marginBottom: 4
     }
-  }, t("descLabel")), /*#__PURE__*/React.createElement("textarea", {
+  }, "\u751F\u614B\u8AAA\u660E"), /*#__PURE__*/React.createElement("textarea", {
     style: {
       width: "100%",
       border: "2px solid #fde68a",
@@ -2258,7 +2254,7 @@ function EcoMap() {
     onChange: e => upd(selId, {
       desc: e.target.value
     }),
-    placeholder: t("descPh")
+    placeholder: "\u690D\u7269\u3001\u52D5\u7269\u3001\u751F\u614B\u7279\u8272\u3001\u6CE8\u610F\u4E8B\u9805\u2026"
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
     style: {
       fontSize: 12,
@@ -2267,7 +2263,7 @@ function EcoMap() {
       display: "block",
       marginBottom: 4
     }
-  }, t("photoLabel")), sel.photo ? /*#__PURE__*/React.createElement("div", {
+  }, "\u73FE\u5834\u7167\u7247"), sel.photo ? /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative"
     }
@@ -2297,7 +2293,7 @@ function EcoMap() {
       cursor: "pointer",
       fontSize: 11
     }
-  }, t("removePhoto"))) : /*#__PURE__*/React.createElement("button", {
+  }, "\u79FB\u9664")) : /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       phoId.current = selId;
       phoRef.current.click();
@@ -2312,7 +2308,7 @@ function EcoMap() {
       color: "#92400e",
       fontSize: 13
     }
-  }, t("addPhoto"))), /*#__PURE__*/React.createElement("button", {
+  }, "\uD83D\uDCF7 \u4E0A\u50B3\u7167\u7247")), /*#__PURE__*/React.createElement("button", {
     onClick: () => delMark(selId),
     style: {
       background: "#fef2f2",
@@ -2323,7 +2319,7 @@ function EcoMap() {
       cursor: "pointer",
       fontSize: 13
     }
-  }, t("delMarker"))), marks.length > 0 && /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDDD1\uFE0F \u522A\u9664\u6B64\u666F\u9EDE")), marks.length > 0 && /*#__PURE__*/React.createElement("div", {
     style: {
       borderTop: "2px solid #fde68a",
       padding: "10px 12px"
@@ -2336,7 +2332,7 @@ function EcoMap() {
       marginBottom: 5,
       letterSpacing: .8
     }
-  }, t("allMarkers")), /*#__PURE__*/React.createElement("div", {
+  }, "\u6240\u6709\u666F\u9EDE"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -2392,7 +2388,7 @@ function EcoMap() {
       fontWeight: 700,
       marginBottom: 8
     }
-  }, t("markerList")), marks.map(m => {
+  }, "\u666F\u9EDE\u5217\u8868"), marks.map(m => {
     const ic = ICONS.find(x => x.id === m.icon) || ICONS[11];
     return /*#__PURE__*/React.createElement("div", {
       key: m.id,
