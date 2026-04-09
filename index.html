@@ -520,9 +520,19 @@ async function buildExport(bgImage, imgSize, routes, markers, handdrawn) {
       blurCanvas.width = sw;
       blurCanvas.height = sh2;
       const bCtx = blurCanvas.getContext('2d');
-      bCtx.filter = 'blur(10px)';
-      bCtx.drawImage(bg, sx, sy, sw, sh2, 0, 0, sw, sh2);
-      bCtx.filter = 'none';
+      bCtx.filter = 'blur(1px)';
+      if (bCtx.filter === 'blur(1px)') {
+        bCtx.filter = 'blur(10px)';
+        bCtx.drawImage(bg, sx, sy, sw, sh2, 0, 0, sw, sh2);
+        bCtx.filter = 'none';
+      } else {
+        var tiny = document.createElement('canvas');
+        tiny.width = Math.max(1, Math.round(sw * 0.08));
+        tiny.height = Math.max(1, Math.round(sh2 * 0.08));
+        tiny.getContext('2d').drawImage(bg, sx, sy, sw, sh2, 0, 0, tiny.width, tiny.height);
+        bCtx.imageSmoothingEnabled = true;
+        bCtx.drawImage(tiny, 0, 0, tiny.width, tiny.height, 0, 0, sw, sh2);
+      }
     } catch (e) {
       blurCanvas = null;
     }
