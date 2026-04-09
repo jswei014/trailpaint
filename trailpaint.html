@@ -985,6 +985,17 @@ function EcoMap() {
     setCur([]);
   };
   const delRoute = id => setRoutes(r => r.filter(x => x.id !== id));
+  const moveMark = (id, dir) => {
+    setMarks(ms => {
+      const idx = ms.findIndex(m => m.id === id);
+      if (idx < 0) return ms;
+      const to = idx + dir;
+      if (to < 0 || to >= ms.length) return ms;
+      const arr = [...ms];
+      const tmp = arr[idx]; arr[idx] = arr[to]; arr[to] = tmp;
+      return arr.map((m, i) => ({ ...m, num: i + 1 }));
+    });
+  };
   const delMark = id => {
     setMarks(ms => ms.filter(m => m.id !== id).map((m, i) => ({
       ...m,
@@ -2390,10 +2401,16 @@ function EcoMap() {
         fontSize: 13
       }
     }, m.title), m.photo && /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 12
-      }
-    }, "\uD83D\uDCF7"));
+      style: { fontSize: 12 }
+    }, "\uD83D\uDCF7"), /*#__PURE__*/React.createElement("span", {
+      style: { display: "flex", flexDirection: "column", gap: 0, marginLeft: 4 }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: function(e) { e.stopPropagation(); moveMark(m.id, -1); },
+      style: { border: "none", background: "none", cursor: "pointer", fontSize: 8, padding: "0 2px", color: "#92400e", lineHeight: 1 }
+    }, "\u25B2"), /*#__PURE__*/React.createElement("button", {
+      onClick: function(e) { e.stopPropagation(); moveMark(m.id, 1); },
+      style: { border: "none", background: "none", cursor: "pointer", fontSize: 8, padding: "0 2px", color: "#92400e", lineHeight: 1 }
+    }, "\u25BC")));
   })))) : panelOpen && marks.length > 0 && !isMobile && /*#__PURE__*/React.createElement("div", {
     style: {
       width: 200,
