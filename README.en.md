@@ -1,5 +1,7 @@
 # TrailPaint
 
+[中文](README.md) | [日本語](README.ja.md) | 🌐 [Launch App](https://notoriouslab.github.io/trailpaint/trailpaint-en.html)
+
 > Turn any map into a beautiful educational or guided ecological map in minutes
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
