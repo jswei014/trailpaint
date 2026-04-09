@@ -48,54 +48,41 @@ const evPos = e => {
   } : e;
 };
 
-
 // ── i18n ───────────────────────────────────────────────────────────────────
 const I18N = {
   zh: {
-    upload: "上傳", route: "路線", marker: "景點", select: "選取", cover: "遮蓋",
-    fresh: "清爽", watermark: "浮水印", exp: "匯出", save: "存檔", load: "載入",
-    undo: "復原", redo: "重做", busy: "處理中", saving: "存中…",
-    hintRouteStart: "點擊地圖標記路線起點",
-    hintRouteN: n => n + " 個點 — 繼續點擊或按「完成路線」",
-    hintMarker: "點擊地圖放置景點標記",
-    hintCover: "拖曳選取要遮蓋的區域",
-    hintSelect: "點擊標記編輯 · 長按新增景點 · 拖曳平移",
-    hintEdit: "點擊景點標記進行編輯",
-    freshMode: "🎨 清爽模式",
-    uploadHint: t('uploadHint'), formatHint: t('formatHint'),
-    zoomReset: t('zoomReset'),
-    coverLabel: "遮蓋風格", frost: "磨砂", soft: "柔邊", paper: "紙紋",
-    editN: n => "景點 " + n + " 編輯",
-    iconLabel: t('iconLabel'), nameLabel: "景點名稱", namePh: "景點名稱…",
-    descLabel: "生態說明", descPh: "植物、動物、生態特色、注意事項…",
-    photoLabel: "現場照片", removePhoto: t('removePhoto'), addPhoto: t('addPhoto'),
-    delMarker: t('delMarker'),
-    allMarkers: "所有景點", markerList: "景點列表",
-    gpxFail: "無法解析 GPX 檔案", needBg: "請先上傳底圖",
-    langBtn: "EN",
+    upload:"上傳",route:"路線",marker:"景點",select:"選取",cover:"遮蓋",
+    fresh:"清爽",watermark:"浮水印",exp:"匯出",save:"存檔",load:"載入",
+    undo:"復原",redo:"重做",busy:"處理中",saving:"存中…",
+    hintRouteStart:"點擊地圖標記路線起點",
+    hintRouteN:function(n){return n+" 個點 — 繼續點擊或按「完成路線」"},
+    hintMarker:"點擊地圖放置景點標記",hintCover:"拖曳選取要遮蓋的區域",
+    hintSelect:"點擊標記編輯 · 長按新增景點 · 拖曳平移",hintEdit:"點擊景點標記進行編輯",
+    freshMode:"🎨 清爽模式",uploadHint:"上傳地圖截圖開始製作",formatHint:"支援 PNG / JPG",
+    zoomReset:"縮放重置",coverLabel:"遮蓋風格",frost:"磨砂",soft:"柔邊",paper:"紙紋",
+    editN:function(n){return "景點 "+n+" 編輯"},
+    iconLabel:"選擇圖示",nameLabel:"景點名稱",namePh:"景點名稱…",
+    descLabel:"生態說明",descPh:"植物、動物、生態特色、注意事項…",
+    photoLabel:"現場照片",removePhoto:"移除",addPhoto:"📷 上傳照片",
+    delMarker:"🗑️ 刪除此景點",allMarkers:"所有景點",markerList:"景點列表",
+    gpxFail:"無法解析 GPX 檔案",needBg:"請先上傳底圖",langBtn:"EN"
   },
   en: {
-    upload: "Upload", route: "Route", marker: "Marker", select: "Select", cover: "Cover",
-    fresh: "Filter", watermark: "WM", exp: "Export", save: "Save", load: "Load",
-    undo: "Undo", redo: "Redo", busy: "Working", saving: "Saving",
-    hintRouteStart: "Click map to set route start",
-    hintRouteN: n => n + ' pts — click more or "Finish Route"',
-    hintMarker: "Click map to place a marker",
-    hintCover: "Drag to select area to cover",
-    hintSelect: "Click marker · long-press to add · drag to pan",
-    hintEdit: "Click a marker to edit",
-    freshMode: "🎨 Filter ON",
-    uploadHint: "Upload a map screenshot", formatHint: "PNG / JPG",
-    zoomReset: "Reset Zoom",
-    coverLabel: "Cover Style", frost: "Frosted", soft: "Soft", paper: "Paper",
-    editN: n => "Marker " + n,
-    iconLabel: "Icon", nameLabel: "Name", namePh: "Name…",
-    descLabel: "Description", descPh: "Plants, animals, ecology notes…",
-    photoLabel: "Photo", removePhoto: "Remove", addPhoto: "📷 Add Photo",
-    delMarker: "🗑️ Delete Marker",
-    allMarkers: "All Markers", markerList: "Markers",
-    gpxFail: "Cannot parse GPX", needBg: "Upload a map first",
-    langBtn: "中",
+    upload:"Upload",route:"Route",marker:"Marker",select:"Select",cover:"Cover",
+    fresh:"Filter",watermark:"WM",exp:"Export",save:"Save",load:"Load",
+    undo:"Undo",redo:"Redo",busy:"Working",saving:"Saving",
+    hintRouteStart:"Click map to set route start",
+    hintRouteN:function(n){return n+' pts — click more or "Finish Route"'},
+    hintMarker:"Click map to place a marker",hintCover:"Drag to select area to cover",
+    hintSelect:"Click marker · long-press to add · drag to pan",hintEdit:"Click a marker to edit",
+    freshMode:"🎨 Filter ON",uploadHint:"Upload a map screenshot",formatHint:"PNG / JPG",
+    zoomReset:"Reset Zoom",coverLabel:"Cover Style",frost:"Frosted",soft:"Soft",paper:"Paper",
+    editN:function(n){return "Marker "+n},
+    iconLabel:"Icon",nameLabel:"Name",namePh:"Name…",
+    descLabel:"Description",descPh:"Plants, animals, ecology notes…",
+    photoLabel:"Photo",removePhoto:"Remove",addPhoto:"📷 Add Photo",
+    delMarker:"🗑️ Delete Marker",allMarkers:"All Markers",markerList:"Markers",
+    gpxFail:"Cannot parse GPX",needBg:"Upload a map first",langBtn:"中"
   }
 };
 const MODE = {
@@ -1159,7 +1146,7 @@ function EcoMap() {
       boxShadow: "0 8px 48px rgba(0,0,0,0.55)"
     }
   })));
-  const hint = mode === MODE.ROUTE ? cur.length === 0 ? t("hintRouteStart") : t("hintRouteN")(cur.length) : mode === MODE.MARKER ? t("hintMarker") : mode === MODE.COVER ? t("hintCover") : mode === MODE.SELECT && !selId ? t("hintSelect") : t("hintEdit");
+  const hint = mode===MODE.ROUTE ? cur.length===0 ? t("hintRouteStart") : t("hintRouteN")(cur.length) : mode===MODE.MARKER ? t("hintMarker") : mode===MODE.COVER ? t("hintCover") : mode===MODE.SELECT&&!selId ? t("hintSelect") : t("hintEdit");
   return /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -1188,8 +1175,8 @@ function EcoMap() {
       marginBottom: 2
     }
   }, "\uD83C\uDF3F"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setLang(l => l === "zh" ? "en" : "zh"),
-    style: { width: isMobile ? 36 : 42, height: 20, borderRadius: 10, border: "1px solid rgba(253,230,138,0.3)", background: "rgba(255,255,255,0.08)", color: "#fde68a", fontSize: 10, fontWeight: 700, cursor: "pointer", marginBottom: 2 }
+    onClick: function(){setLang(function(l){return l==="zh"?"en":"zh"})},
+    style: {width:isMobile?36:42,height:20,borderRadius:10,border:"1px solid rgba(253,230,138,0.3)",background:"rgba(255,255,255,0.08)",color:"#fde68a",fontSize:10,fontWeight:700,cursor:"pointer",marginBottom:2}
   }, t("langBtn")), /*#__PURE__*/React.createElement(D, null), /*#__PURE__*/React.createElement(TB, {
     icon: "\uD83D\uDDFA\uFE0F",
     label: "\u4E0A\u50B3",
