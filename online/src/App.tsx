@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import MapView from './map/MapView';
 import ImageMapView from './map/ImageMapView';
 import Sidebar from './core/components/Sidebar';
+import ModeToolbar from './core/components/ModeToolbar';
 import { exportPng, saveProject, loadProject, importGpxFile } from './map/ExportButton';
 import { flyTo } from './map/useMapRef';
 import { useUndoRedoKeys } from './core/hooks/useUndoRedo';
@@ -28,6 +29,7 @@ function loadImageFile(file: File) {
 export default function App() {
   useUndoRedoKeys();
   const baseMode = useProjectStore((s) => s.baseMode);
+  const sidebarOpen = useProjectStore((s) => s.sidebarOpen);
   const [dragOver, setDragOver] = useState(false);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -74,6 +76,12 @@ export default function App() {
       />
       <div className="map-container">
         {baseMode === 'map' ? <MapView /> : <ImageMapView />}
+        {/* Floating ModeToolbar for mobile when sidebar is closed */}
+        {!sidebarOpen && (
+          <div className="floating-mode-toolbar">
+            <ModeToolbar />
+          </div>
+        )}
       </div>
     </div>
   );

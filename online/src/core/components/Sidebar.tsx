@@ -87,14 +87,21 @@ export default function Sidebar({ onFlyTo, onExport, onSave, onLoad, onImportGpx
             <button className="sidebar__tool-btn" onClick={() => onExport(2)}>{t('app.export')}</button>
             <select
               className="sidebar__export-format"
-              onChange={(e) => { if (e.target.value) { onExport(2, e.target.value as ExportFormat); e.target.value = ''; } }}
+              onChange={(e) => {
+                if (!e.target.value) return;
+                const [fmt, dpi] = e.target.value.split('|');
+                onExport(Number(dpi) || 2, (fmt || 'full') as ExportFormat);
+                e.target.value = '';
+              }}
               defaultValue=""
             >
               <option value="" disabled>▼</option>
-              <option value="full">原始比例</option>
-              <option value="1:1">1:1 (IG)</option>
-              <option value="9:16">9:16 (Story)</option>
-              <option value="4:3">4:3</option>
+              <option value="full|2">2x 原始比例</option>
+              <option value="1:1|2">2x 1:1 (IG)</option>
+              <option value="9:16|2">2x 9:16 (Story)</option>
+              <option value="4:3|2">2x 4:3</option>
+              <option value="full|1">1x 標準</option>
+              <option value="full|3">3x 超清</option>
             </select>
           </div>
           <button className="sidebar__tool-btn" onClick={onSave}>{t('app.save')}</button>

@@ -39,3 +39,23 @@
   font-size: 10px !important;
   opacity: 0.6;
 }
+
+/* Floating ModeToolbar for mobile — hidden on desktop */
+.floating-mode-toolbar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .floating-mode-toolbar {
+    display: block;
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 800;
+    background: #fdf8ef;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    padding: 4px;
+  }
+}

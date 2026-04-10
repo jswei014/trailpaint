@@ -6,12 +6,7 @@ import type { Route } from '../models/routes';
 import { ROUTE_COLORS } from '../models/routes';
 import { t } from '../../i18n';
 
-import type { GpxTrackPoint } from '../utils/gpxParser';
-
-export interface GpxData {
-  tracks: GpxTrackPoint[][];
-  waypoints: { latlng: [number, number]; name: string }[];
-}
+import type { GpxData } from '../utils/gpxParser';
 
 export type BaseMode = 'map' | 'image';
 
@@ -117,7 +112,7 @@ export const useProjectStore = create<ProjectState>()(
   project: createEmptyProject(),
   selectedSpotId: null,
   selectedRouteId: null,
-  sidebarOpen: true,
+  sidebarOpen: window.innerWidth > 768,
   mode: 'select' as Mode,
   currentDrawing: [] as [number, number][],
   pendingFlyTo: null as { center: [number, number]; zoom: number } | null,
