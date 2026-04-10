@@ -4,11 +4,11 @@
   "center": [23.200, 120.998],
   "zoom": 13,
   "spots": [
-    { "id": "s1", "latlng": [23.1875, 121.0120], "num": 1, "title": "向陽登山口", "desc": "海拔 2,327m，南橫公路 154K", "photo": null, "iconId": "pin", "cardOffset": { "x": 0, "y": -60 } },
-    { "id": "s2", "latlng": [23.1942, 121.0048], "num": 2, "title": "向陽山屋", "desc": "可住 70 人，有水源，海拔 2,850m", "photo": null, "iconId": "rest", "cardOffset": { "x": 0, "y": -60 } },
-    { "id": "s3", "latlng": [23.1968, 121.0025], "num": 3, "title": "向陽名樹", "desc": "玉山圓柏，步道知名地標", "photo": null, "iconId": "tree", "cardOffset": { "x": 0, "y": -60 } },
-    { "id": "s4", "latlng": [23.2038, 120.9962], "num": 4, "title": "向陽山", "desc": "台灣百岳，海拔 3,603m", "photo": null, "iconId": "rock", "cardOffset": { "x": 0, "y": -60 } },
-    { "id": "s5", "latlng": [23.2100, 120.9895], "num": 5, "title": "嘉明湖", "desc": "天使的眼淚，海拔 3,310m，台灣第二高高山湖泊", "photo": null, "iconId": "water", "cardOffset": { "x": 0, "y": -60 } }
+    { "id": "s1", "latlng": [23.1875, 121.0120], "num": 1, "title": "向陽登山口", "desc": "海拔 2,327m，南橫公路 154K", "photo": null, "iconId": "pin", "cardOffset": { "x": 90, "y": -50 } },
+    { "id": "s2", "latlng": [23.1942, 121.0048], "num": 2, "title": "向陽山屋", "desc": "可住 70 人，有水源，海拔 2,850m", "photo": null, "iconId": "rest", "cardOffset": { "x": -110, "y": -60 } },
+    { "id": "s3", "latlng": [23.1968, 121.0025], "num": 3, "title": "向陽名樹", "desc": "玉山圓柏，步道知名地標", "photo": null, "iconId": "tree", "cardOffset": { "x": 80, "y": -80 } },
+    { "id": "s4", "latlng": [23.2038, 120.9962], "num": 4, "title": "向陽山", "desc": "台灣百岳，海拔 3,603m", "photo": null, "iconId": "rock", "cardOffset": { "x": -100, "y": -45 } },
+    { "id": "s5", "latlng": [23.2100, 120.9895], "num": 5, "title": "嘉明湖", "desc": "天使的眼淚，海拔 3,310m，台灣第二高高山湖泊", "photo": null, "iconId": "water", "cardOffset": { "x": 70, "y": -70 } }
   ],
   "routes": [
     {
