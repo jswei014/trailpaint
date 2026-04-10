@@ -11,7 +11,13 @@ import { useProjectStore } from './core/store/useProjectStore';
 import './core/components/Sidebar.css';
 import './App.css';
 
+const MAX_BG_SIZE = 10 * 1024 * 1024; // 10MB (background can be larger than spot photos)
+
 function loadImageFile(file: File) {
+  if (file.size > MAX_BG_SIZE) {
+    alert(`底圖檔案太大（${Math.round(file.size / 1024 / 1024)}MB），上限 30MB`);
+    return;
+  }
   const state = useProjectStore.getState();
   const hasData = state.project.spots.length > 0 || state.project.routes.length > 0;
   if (hasData && !confirm('切換底圖會清除現有景點和路線，確定嗎？')) return;

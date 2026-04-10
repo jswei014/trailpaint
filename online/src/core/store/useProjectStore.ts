@@ -107,8 +107,12 @@ function migrateProject(data: Record<string, unknown>): Project {
   if (!p.routes || !Array.isArray(p.routes)) {
     return { ...p, version: 2, routes: [] };
   }
-  // Ensure all routes have name field
-  const routes = p.routes.map((r: Route) => r.name !== undefined ? r : { ...r, name: '' });
+  const validColorIds = ROUTE_COLORS.map((c) => c.id);
+  const routes = p.routes.map((r: Route) => ({
+    ...r,
+    name: r.name ?? '',
+    color: validColorIds.includes(r.color) ? r.color : ROUTE_COLORS[0].id,
+  }));
   return { ...p, version: 2, routes };
 }
 

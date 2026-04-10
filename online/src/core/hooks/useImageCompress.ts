@@ -1,7 +1,11 @@
 const MAX_SIDE = 800;
 const QUALITY = 0.7;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 export function compressImage(file: File): Promise<string> {
+  if (file.size > MAX_FILE_SIZE) {
+    return Promise.reject(new Error(`檔案太大（${Math.round(file.size / 1024 / 1024)}MB），上限 20MB`));
+  }
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -16,14 +20,15 @@ export function compressImage(file: File): Promise<string> {
         const canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
-        const ctx = canvas.getContext('2d')!;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('Canvas context unavailable')); return; }
         ctx.drawImage(img, 0, 0, width, height);
         resolve(canvas.toDataURL('image/jpeg', QUALITY));
       };
-      img.onerror = reject;
+      img.onerror = () => reject(new Error('Image decode failed'));
       img.src = reader.result as string;
     };
-    reader.onerror = reject;
+    reader.onerror = () => reject(new Error('File read failed'));
     reader.readAsDataURL(file);
   });
 }

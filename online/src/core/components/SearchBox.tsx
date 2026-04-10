@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { t } from '../../i18n';
 
 interface SearchResult {
@@ -59,6 +59,14 @@ export default function SearchBox({ onSelect }: SearchBoxProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
   const abortRef = useRef<AbortController | null>(null);
 
+  // Cleanup timer and abort on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (abortRef.current) abortRef.current.abort();
+    };
+  }, []);
+
   const search = useCallback((q: string) => {
     if (q.trim().length < 2) {
       setResults([]);
@@ -74,7 +82,7 @@ export default function SearchBox({ onSelect }: SearchBoxProps) {
     setSearched(true);
     fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5&addressdetails=0`,
-      { headers: { 'Accept-Language': 'zh-TW,en' }, signal: controller.signal }
+      { headers: { 'Accept-Language': 'zh-TW,en', 'User-Agent': 'TrailPaint/1.0' }, signal: controller.signal }
     )
       .then((r) => r.json())
       .then((data: unknown) => {

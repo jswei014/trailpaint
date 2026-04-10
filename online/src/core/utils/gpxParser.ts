@@ -57,7 +57,18 @@ export function parseGpx(xmlString: string): GpxData {
   return { tracks, waypoints };
 }
 
-// Douglas-Peucker simplification preserving elevation
+// Safe min/max for large arrays (no spread operator stack overflow)
+function arrayMin(arr: number[]): number {
+  let min = arr[0];
+  for (let i = 1; i < arr.length; i++) if (arr[i] < min) min = arr[i];
+  return min;
+}
+function arrayMax(arr: number[]): number {
+  let max = arr[0];
+  for (let i = 1; i < arr.length; i++) if (arr[i] > max) max = arr[i];
+  return max;
+}
+
 function simplifyTrackIfNeeded(pts: GpxTrackPoint[], maxPoints: number): GpxTrackPoint[] {
   if (pts.length <= maxPoints) return pts;
 
@@ -65,16 +76,16 @@ function simplifyTrackIfNeeded(pts: GpxTrackPoint[], maxPoints: number): GpxTrac
   const lats = coords.map((c) => c[0]);
   const lngs = coords.map((c) => c[1]);
   const diagonal = Math.sqrt(
-    Math.pow(Math.max(...lats) - Math.min(...lats), 2) +
-    Math.pow(Math.max(...lngs) - Math.min(...lngs), 2)
+    Math.pow(arrayMax(lats) - arrayMin(lats), 2) +
+    Math.pow(arrayMax(lngs) - arrayMin(lngs), 2)
   );
 
   let tolerance = diagonal / 10000;
-  let indices = dpIndices(coords, tolerance);
+  let indices = dpIndicesIterative(coords, tolerance);
   let iterations = 0;
   while (indices.length > maxPoints && iterations < 20) {
     tolerance *= 2;
-    indices = dpIndices(coords, tolerance);
+    indices = dpIndicesIterative(coords, tolerance);
     iterations++;
   }
   if (indices.length > maxPoints) {
@@ -83,29 +94,41 @@ function simplifyTrackIfNeeded(pts: GpxTrackPoint[], maxPoints: number): GpxTrac
   return indices.map((i) => pts[i]);
 }
 
-function dpIndices(pts: [number, number][], tolerance: number): number[] {
+// Iterative Douglas-Peucker (no recursion, safe for large arrays)
+function dpIndicesIterative(pts: [number, number][], tolerance: number): number[] {
   if (pts.length <= 2) return pts.map((_, i) => i);
 
-  let maxDist = 0;
-  let maxIdx = 0;
-  const start = pts[0];
-  const end = pts[pts.length - 1];
+  const keep = new Uint8Array(pts.length);
+  keep[0] = 1;
+  keep[pts.length - 1] = 1;
 
-  for (let i = 1; i < pts.length - 1; i++) {
-    const dist = perpendicularDistance(pts[i], start, end);
-    if (dist > maxDist) {
-      maxDist = dist;
-      maxIdx = i;
+  const stack: [number, number][] = [[0, pts.length - 1]];
+
+  while (stack.length > 0) {
+    const [start, end] = stack.pop()!;
+    let maxDist = 0;
+    let maxIdx = start;
+
+    for (let i = start + 1; i < end; i++) {
+      const dist = perpendicularDistance(pts[i], pts[start], pts[end]);
+      if (dist > maxDist) {
+        maxDist = dist;
+        maxIdx = i;
+      }
+    }
+
+    if (maxDist > tolerance) {
+      keep[maxIdx] = 1;
+      if (maxIdx - start > 1) stack.push([start, maxIdx]);
+      if (end - maxIdx > 1) stack.push([maxIdx, end]);
     }
   }
 
-  if (maxDist > tolerance) {
-    const left = dpIndices(pts.slice(0, maxIdx + 1), tolerance);
-    const right = dpIndices(pts.slice(maxIdx), tolerance).map((i) => i + maxIdx);
-    return [...left.slice(0, -1), ...right];
+  const result: number[] = [];
+  for (let i = 0; i < pts.length; i++) {
+    if (keep[i]) result.push(i);
   }
-
-  return [0, pts.length - 1];
+  return result;
 }
 
 function perpendicularDistance(

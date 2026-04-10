@@ -4,6 +4,10 @@ import { parseGpx } from '../core/utils/gpxParser';
 import { polylineDistance, formatDistance, elevationStats, estimateTime } from '../core/utils/geo';
 import { t } from '../i18n';
 
+function sanitizeFilename(name: string): string {
+  return name.replace(/[\/\\:*?"<>|]/g, '_').slice(0, 100) || 'Untitled';
+}
+
 export type ExportBorderStyle = 'classic' | 'paper' | 'minimal';
 
 function drawExportBorder(ctx: CanvasRenderingContext2D, w: number, h: number, style: ExportBorderStyle = 'classic') {
@@ -228,7 +232,7 @@ export function exportPng(pixelRatio = 2, format: ExportFormat = 'full', borderS
 
       const img = new Image();
       img.src = dataUrl;
-      await new Promise<void>((resolve) => { img.onload = () => resolve(); });
+      await new Promise<void>((resolve, reject) => { img.onload = () => resolve(); img.onerror = () => reject(new Error('Image load failed')); });
 
       // Calculate crop for format
       let cropX = 0, cropY = 0, cropW = img.width, cropH = img.height;
@@ -261,7 +265,7 @@ export function exportPng(pixelRatio = 2, format: ExportFormat = 'full', borderS
       const link = document.createElement('a');
       const date = new Date().toISOString().slice(0, 10);
       const suffix = format === 'full' ? '' : `-${format.replace(':', 'x')}`;
-      link.download = `trailpaint-${projectName}-${date}${suffix}.png`;
+      link.download = `trailpaint-${sanitizeFilename(projectName)}-${date}${suffix}.png`;
       link.href = finalUrl;
       link.click();
     } catch (err) {
@@ -277,7 +281,7 @@ export function saveProject() {
   const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  link.download = `${projectName}.trailpaint.json`;
+  link.download = `${sanitizeFilename(projectName)}.trailpaint.json`;
   link.href = url;
   link.click();
   URL.revokeObjectURL(url);

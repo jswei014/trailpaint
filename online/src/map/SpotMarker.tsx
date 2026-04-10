@@ -6,6 +6,10 @@ import SpotCard from '../core/components/SpotCard';
 import '../core/components/SpotCard.css';
 import type { Spot } from '../core/models/types';
 import { getIcon } from '../core/icons';
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 import { useProjectStore } from '../core/store/useProjectStore';
 
 export default function SpotMarker({ spot }: { spot: Spot }) {
@@ -20,7 +24,7 @@ export default function SpotMarker({ spot }: { spot: Spot }) {
 
   const pinIcon = L.divIcon({
     className: 'spot-pin',
-    html: `<div class="spot-pin__circle"><span>${icon.emoji}</span></div>`,
+    html: `<div class="spot-pin__circle"><span>${escapeHtml(icon.emoji)}</span></div>`,
     iconSize: [50, 50],
     iconAnchor: [25, 25],
   });
