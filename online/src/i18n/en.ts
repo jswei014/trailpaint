@@ -39,6 +39,7 @@ export default {
   'route.points': 'nodes',
   'route.color': 'Route Color',
   'route.editHint': 'Drag nodes to adjust · Double-click to delete',
+  'route.listTitle': 'Routes',
   'route.delete': 'Delete Route',
   'route.deleteConfirm': 'Delete this route?',
 
@@ -50,6 +51,13 @@ export default {
   'export.failed': 'PNG export failed. Possible CORS restriction on tiles.',
   'export.3xWarn': '3x export requires more memory and may fail on large maps. Continue?',
   'import.failed': 'Load failed: invalid file format',
+
+  // Basemap
+  'basemap.switch': 'Switch basemap',
+  'basemap.voyager': 'Standard',
+  'basemap.satellite': 'Satellite',
+  'basemap.topo': 'Topographic',
+  'basemap.dark': 'Dark',
 
   // Undo/Redo
   'undo': 'Undo',

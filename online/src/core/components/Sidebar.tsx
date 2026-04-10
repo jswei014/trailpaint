@@ -6,6 +6,8 @@ import RouteEditor from './RouteEditor';
 import ModeToolbar from './ModeToolbar';
 import SearchBox from './SearchBox';
 import SettingsPanel from './SettingsPanel';
+import { polylineDistance, formatDistance } from '../utils/geo';
+import { getRouteColor } from '../models/routes';
 import { t } from '../../i18n';
 
 interface SidebarProps {
@@ -29,6 +31,8 @@ export default function Sidebar({ onFlyTo, onExport, onSave, onLoad, onImportGpx
   const removeSpot = useProjectStore((s) => s.removeSpot);
   const swapSpots = useProjectStore((s) => s.swapSpots);
 
+  const projectName = useProjectStore((s) => s.project.name);
+  const setProjectName = useProjectStore((s) => s.setProjectName);
   const [showSettings, setShowSettings] = useState(false);
 
   const selectedSpot = spots.find((s) => s.id === selectedSpotId) ?? null;
@@ -63,7 +67,12 @@ export default function Sidebar({ onFlyTo, onExport, onSave, onLoad, onImportGpx
       <div className={`sidebar${sidebarOpen ? '' : ' sidebar--closed'}`}>
         <div className="sidebar__header">
           <span className="sidebar__logo">🌿</span>
-          <h1 className="sidebar__title">TrailPaint</h1>
+          <input
+            className="sidebar__project-name"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+            placeholder="Untitled"
+          />
         </div>
 
         {/* Toolbar row 1: actions */}
@@ -108,12 +117,32 @@ export default function Sidebar({ onFlyTo, onExport, onSave, onLoad, onImportGpx
             onClose={() => setSelectedRoute(null)}
           />
         ) : (
-          <SpotList
-            spots={spots}
-            selectedSpotId={selectedSpotId}
-            onSelect={handleSelect}
-            onSwap={swapSpots}
-          />
+          <>
+            <SpotList
+              spots={spots}
+              selectedSpotId={selectedSpotId}
+              onSelect={handleSelect}
+              onSwap={swapSpots}
+            />
+            {routes.length > 0 && (
+              <div className="route-summary">
+                <div className="route-summary__title">{t('route.listTitle')}</div>
+                {routes.map((r) => {
+                  const color = getRouteColor(r.color);
+                  return (
+                    <div
+                      key={r.id}
+                      className="route-summary__item"
+                      onClick={() => setSelectedRoute(r.id)}
+                    >
+                      <span className="route-summary__color" style={{ background: color.stroke }} />
+                      <span className="route-summary__dist">{formatDistance(polylineDistance(r.pts))}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
       </div>
     </>

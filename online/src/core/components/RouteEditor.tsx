@@ -1,6 +1,7 @@
 import type { Route } from '../models/routes';
 import { ROUTE_COLORS } from '../models/routes';
 import { useProjectStore } from '../store/useProjectStore';
+import { polylineDistance, formatDistance } from '../utils/geo';
 import { t } from '../../i18n';
 
 interface RouteEditorProps {
@@ -20,7 +21,7 @@ export default function RouteEditor({ route, onClose }: RouteEditorProps) {
       </div>
 
       <div className="route-editor__info">
-        {route.pts.length} {t('route.points')}
+        {formatDistance(polylineDistance(route.pts))} · {route.pts.length} {t('route.points')}
       </div>
 
       <div className="spot-editor__label">{t('route.color')}</div>

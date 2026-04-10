@@ -63,6 +63,30 @@
   margin: 0;
 }
 
+.sidebar__project-name {
+  flex: 1;
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #78350f;
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-radius: 4px;
+  padding: 2px 6px;
+  outline: none;
+  transition: border-color 0.15s;
+  min-width: 0;
+}
+
+.sidebar__project-name:hover {
+  border-color: #e5d5c0;
+}
+
+.sidebar__project-name:focus {
+  border-color: #b45309;
+  background: #fff;
+}
+
 /* ── Sidebar Toolbar ── */
 
 .sidebar__toolbar {
@@ -652,6 +676,47 @@
 
 .spot-editor__btn--danger:hover {
   background: #fef2f2;
+}
+
+/* ── Route Summary ── */
+
+.route-summary {
+  padding: 12px 16px;
+  border-top: 1px solid #e5d5c0;
+}
+
+.route-summary__title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #8b6a40;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.route-summary__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 13px;
+  color: #3b1a06;
+}
+
+.route-summary__item:hover {
+  color: #b45309;
+}
+
+.route-summary__color {
+  width: 16px;
+  height: 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.route-summary__dist {
+  font-family: Georgia, serif;
 }
 
 /* ── Mobile: overlay mode ── */

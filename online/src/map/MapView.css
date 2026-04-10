@@ -85,6 +85,67 @@
   margin-left: 4px;
 }
 
+/* ── Basemap Switcher ── */
+
+.basemap-switcher {
+  position: absolute;
+  bottom: 90px;
+  right: 10px;
+  z-index: 700;
+}
+
+.basemap-switcher__toggle {
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  border: 2px solid rgba(0,0,0,0.2);
+  background: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.15);
+}
+
+.basemap-switcher__menu {
+  position: absolute;
+  bottom: 40px;
+  right: 0;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  overflow: hidden;
+  min-width: 120px;
+}
+
+.basemap-switcher__option {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  color: #3b1a06;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-bottom: 1px solid #f0e6d6;
+}
+
+.basemap-switcher__option:last-child {
+  border-bottom: none;
+}
+
+.basemap-switcher__option:hover {
+  background: #fef3d8;
+}
+
+.basemap-switcher__option--active {
+  background: #fde68a;
+  font-weight: bold;
+}
+
 /* Connector SVG — sized to overflow so line can reach pin */
 .spot-connector {
   position: absolute;

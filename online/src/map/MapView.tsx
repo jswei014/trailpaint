@@ -5,6 +5,7 @@ import SpotMarker from './SpotMarker';
 import RouteLayer from './RouteLayer';
 import DrawingPreview from './DrawingPreview';
 import HandDrawnFilter from './HandDrawnFilter';
+import BasemapSwitcher from './BasemapSwitcher';
 import Watermark from './Watermark';
 import { setMapInstance } from './useMapRef';
 import 'leaflet/dist/leaflet.css';
@@ -97,6 +98,7 @@ export default function MapView() {
       <RouteLayer />
       <DrawingPreview />
       <SpotMarkers />
+      <BasemapSwitcher />
       <Watermark />
     </MapContainer>
   );

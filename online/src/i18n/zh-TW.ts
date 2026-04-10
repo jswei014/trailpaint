@@ -39,6 +39,7 @@ export default {
   'route.points': '個節點',
   'route.color': '路線顏色',
   'route.editHint': '拖曳節點調整路線 · 雙擊節點刪除',
+  'route.listTitle': '路線',
   'route.delete': '刪除路線',
   'route.deleteConfirm': '確定刪除此路線？',
 
@@ -50,6 +51,13 @@ export default {
   'export.failed': 'PNG 匯出失敗，可能是圖磚 CORS 限制。',
   'export.3xWarn': '3x 匯出需要較多記憶體，大地圖可能會失敗。繼續？',
   'import.failed': '載入失敗：檔案格式不正確',
+
+  // Basemap
+  'basemap.switch': '切換底圖',
+  'basemap.voyager': '標準地圖',
+  'basemap.satellite': '衛星圖',
+  'basemap.topo': '等高線',
+  'basemap.dark': '暗色地圖',
 
   // Undo/Redo
   'undo': '復原',

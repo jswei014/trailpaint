@@ -59,6 +59,7 @@ function RoutePolyline({ route, selected }: { route: Route; selected: boolean })
           opacity: 0.9,
           lineCap: 'round',
           lineJoin: 'round',
+          dashArray: '18 9',
           className: filterClass,
         }}
         eventHandlers={{ click: handleClick }}
