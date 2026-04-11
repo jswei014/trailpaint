@@ -90,6 +90,11 @@ function migrateProject(data: Record<string, unknown>): Project {
   if (!data || typeof data !== 'object') throw new Error('Invalid project data');
   if (!Array.isArray(data.spots)) throw new Error('Missing or invalid spots');
   if (!Array.isArray(data.center) || data.center.length !== 2) throw new Error('Missing or invalid center');
+  // Clamp center to valid lat/lng range
+  data.center = [
+    Math.max(-90, Math.min(90, Number(data.center[0]) || 0)),
+    Math.max(-180, Math.min(180, Number(data.center[1]) || 0)),
+  ];
   if (typeof data.zoom !== 'number' || isNaN(data.zoom)) throw new Error('Missing or invalid zoom');
   if (typeof data.name !== 'string') data.name = 'Untitled';
 
@@ -107,6 +112,7 @@ function migrateProject(data: Record<string, unknown>): Project {
       || !isFinite(s.latlng[0] as number) || !isFinite(s.latlng[1] as number)) continue;
     spots.push({
       ...(s as unknown as Spot),
+      num: typeof s.num === 'number' && s.num > 0 ? Math.round(s.num) : spots.length + 1,
       cardOffset: s.cardOffset && typeof (s.cardOffset as Record<string, unknown>).x === 'number'
         && typeof (s.cardOffset as Record<string, unknown>).y === 'number'
         ? (s.cardOffset as Spot['cardOffset'])
