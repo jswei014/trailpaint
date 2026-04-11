@@ -1,29 +1,98 @@
 import type { Project } from '../models/types';
 
 /**
- * Encode a project (without photo base64) into a compressed URL hash.
- * Uses native CompressionStream (deflate) → base64.
+ * Compact a project for sharing: strip photos, shorten keys, omit defaults.
+ */
+function compactProject(project: Project): Record<string, unknown> {
+  return {
+    v: project.version,
+    n: project.name,
+    c: project.center,
+    z: project.zoom,
+    s: project.spots.map((s) => {
+      const o: Record<string, unknown> = {
+        i: s.id, l: s.latlng, u: s.num, t: s.title, k: s.iconId,
+      };
+      if (s.desc) o.d = s.desc;
+      if (s.cardOffset.x !== 0 || s.cardOffset.y !== 0) o.o = [s.cardOffset.x, s.cardOffset.y];
+      return o;
+    }),
+    r: project.routes.map((r) => {
+      const o: Record<string, unknown> = {
+        i: r.id, p: r.pts, c: r.color,
+      };
+      if (r.name) o.n = r.name;
+      if (r.elevations) o.e = r.elevations;
+      return o;
+    }),
+  };
+}
+
+/**
+ * Expand a compact project back to full Project structure.
+ */
+function expandProject(c: Record<string, unknown>): Project {
+  const spots = (c.s as Record<string, unknown>[])?.map((s) => ({
+    id: s.i as string,
+    latlng: s.l as [number, number],
+    num: s.u as number,
+    title: s.t as string,
+    desc: (s.d as string) ?? '',
+    photo: null,
+    iconId: s.k as string,
+    cardOffset: s.o ? { x: (s.o as number[])[0], y: (s.o as number[])[1] } : { x: 0, y: -60 },
+  })) ?? [];
+  const routes = (c.r as Record<string, unknown>[])?.map((r) => ({
+    id: r.i as string,
+    name: (r.n as string) ?? '',
+    pts: r.p as [number, number][],
+    color: r.c as string,
+    elevations: (r.e as number[] | null) ?? null,
+  })) ?? [];
+  return {
+    version: (c.v as 1 | 2) ?? 2,
+    name: c.n as string,
+    center: c.c as [number, number],
+    zoom: c.z as number,
+    spots,
+    routes,
+  };
+}
+
+/**
+ * Encode a project into a compressed URL hash, then try to shorten via is.gd.
  */
 export async function encodeShareLink(project: Project): Promise<string> {
-  // Strip photo data to keep URL manageable
-  const stripped: Project = {
-    ...project,
-    spots: project.spots.map((s) => ({ ...s, photo: null })),
-  };
-  const json = JSON.stringify(stripped);
+  const compact = compactProject(project);
+  const json = JSON.stringify(compact);
 
+  let longUrl: string;
   try {
     const blob = new Blob([new TextEncoder().encode(json)]);
     const cs = new CompressionStream('deflate');
     const compressed = blob.stream().pipeThrough(cs);
     const buffer = await new Response(compressed).arrayBuffer();
     const base64 = uint8ToBase64(new Uint8Array(buffer));
-    return `${window.location.origin}${window.location.pathname}#share=${base64}`;
+    longUrl = `${window.location.origin}${window.location.pathname}#share=${base64}`;
   } catch {
-    // Fallback: plain base64 (older browsers without CompressionStream)
     const base64 = uint8ToBase64(new TextEncoder().encode(json));
-    return `${window.location.origin}${window.location.pathname}#share=raw.${base64}`;
+    longUrl = `${window.location.origin}${window.location.pathname}#share=raw.${base64}`;
   }
+
+  // Try to shorten via is.gd (free, no API key)
+  try {
+    const res = await fetch(
+      `https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`,
+      { signal: AbortSignal.timeout(5000) },
+    );
+    if (res.ok) {
+      const shortUrl = (await res.text()).trim();
+      if (shortUrl.startsWith('http')) return shortUrl;
+    }
+  } catch {
+    // Shortener unavailable — use long URL
+  }
+  return longUrl;
 }
 
 /**
@@ -52,7 +121,7 @@ export async function decodeShareLink(hash: string): Promise<Project | null> {
     try {
       const json = new TextDecoder().decode(base64ToUint8(payload.slice(4)));
       if (json.length > MAX_DECOMPRESSED_LEN) return null;
-      const project = JSON.parse(json) as Project;
+      const project = parseSharePayload(json);
       return validateProjectLimits(project) ? project : null;
     } catch {
       return null;
@@ -67,11 +136,22 @@ export async function decodeShareLink(hash: string): Promise<Project | null> {
     const decompressed = blob.stream().pipeThrough(ds);
     const text = await new Response(decompressed).text();
     if (text.length > MAX_DECOMPRESSED_LEN) return null;
-    const project = JSON.parse(text) as Project;
+    const project = parseSharePayload(text);
     return validateProjectLimits(project) ? project : null;
   } catch {
     return null;
   }
+}
+
+/** Parse JSON payload: detect compact format (has 'v' key) vs legacy (has 'version' key). */
+function parseSharePayload(json: string): Project {
+  const data = JSON.parse(json);
+  // Compact format uses short keys: v, n, c, z, s, r
+  if ('v' in data && !('version' in data)) {
+    return expandProject(data);
+  }
+  // Legacy format: full Project structure
+  return data as Project;
 }
 
 /** Reject projects with absurd data volumes that would freeze the UI. */

@@ -45,13 +45,24 @@ function drawTilesToCanvas(
  *    (no cross-origin images in foreignObject → works on iOS WebKit)
  * 3. Composite: tiles at bottom, overlays on top
  */
+// iOS Safari canvas size limit (~16M pixels). Exceeding it causes silent blank output.
+const MAX_CANVAS_PIXELS = 16_000_000;
+
 export async function captureMap(pixelRatio = 2): Promise<HTMLImageElement> {
   const mapEl = document.querySelector('.leaflet-container') as HTMLElement;
   if (!mapEl) throw new Error('Map element not found');
 
+  // Wait for any pending image loads to settle (fixes x1 re-capture timing on iOS)
+  await new Promise((r) => setTimeout(r, 200));
+
   const containerRect = mapEl.getBoundingClientRect();
-  const w = Math.round(containerRect.width * pixelRatio);
-  const h = Math.round(containerRect.height * pixelRatio);
+  // Auto-downgrade if canvas would exceed iOS limit
+  let dpi = pixelRatio;
+  while (dpi > 1 && containerRect.width * dpi * containerRect.height * dpi > MAX_CANVAS_PIXELS) {
+    dpi--;
+  }
+  const w = Math.round(containerRect.width * dpi);
+  const h = Math.round(containerRect.height * dpi);
 
   // Step 1: Draw tiles directly to canvas
   const canvas = document.createElement('canvas');
@@ -75,7 +86,7 @@ export async function captureMap(pixelRatio = 2): Promise<HTMLImageElement> {
   try {
     const overlayDataUrl = await toPng(mapEl, {
       cacheBust: true,
-      pixelRatio,
+      pixelRatio: dpi,
       filter: (node) => {
         const el = node as HTMLElement;
         if (el.classList?.contains('leaflet-control-container')) return false;
