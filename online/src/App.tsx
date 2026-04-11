@@ -5,8 +5,9 @@ import Sidebar from './core/components/Sidebar';
 import ModeToolbar from './core/components/ModeToolbar';
 import OnboardingOverlay from './core/components/OnboardingOverlay';
 import ExportPreview from './core/components/ExportPreview';
+import ImportWizard from './core/components/ImportWizard';
 import FloatingActions from './core/components/FloatingActions';
-import { captureMap, saveProject, loadProject, importGpxFile } from './map/ExportButton';
+import { captureMap, saveProject } from './map/ExportButton';
 import { decodeShareLink } from './core/utils/shareLink';
 import { flyTo } from './map/useMapRef';
 import { useUndoRedoKeys } from './core/hooks/useUndoRedo';
@@ -15,7 +16,7 @@ import { t } from './i18n';
 import './core/components/Sidebar.css';
 import './App.css';
 
-const MAX_BG_SIZE = 10 * 1024 * 1024; // 10MB (background can be larger than spot photos)
+const MAX_BG_SIZE = 10 * 1024 * 1024;
 
 function loadImageFile(file: File) {
   if (file.size > MAX_BG_SIZE) {
@@ -47,6 +48,7 @@ export default function App() {
   const sidebarOpen = useProjectStore((s) => s.sidebarOpen);
   const [dragOver, setDragOver] = useState(false);
   const [exportPreviewImage, setExportPreviewImage] = useState<HTMLImageElement | null>(null);
+  const [importWizardOpen, setImportWizardOpen] = useState(false);
 
   // Handle share link on load
   useEffect(() => {
@@ -70,6 +72,10 @@ export default function App() {
       console.error('Capture failed:', err);
       alert(t('export.failed'));
     }
+  }, []);
+
+  const handleOpenImportWizard = useCallback(() => {
+    setImportWizardOpen(true);
   }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -101,30 +107,17 @@ export default function App() {
         onFlyTo={flyTo}
         onOpenExportPreview={handleOpenExportPreview}
         onSave={saveProject}
-        onLoad={loadProject}
-        onImportGpx={importGpxFile}
-        onUploadBg={() => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.accept = 'image/*';
-          input.onchange = () => {
-            const file = input.files?.[0];
-            if (file) loadImageFile(file);
-          };
-          input.click();
-        }}
+        onOpenImportWizard={handleOpenImportWizard}
       />
       <div className="map-container">
         {baseMode === 'map' ? <MapView /> : <ImageMapView />}
-        {/* Floating ModeToolbar for mobile when sidebar is closed */}
         {!sidebarOpen && (
           <div className="floating-mode-toolbar">
             <ModeToolbar />
             <FloatingActions
               onExport={handleOpenExportPreview}
               onSave={saveProject}
-              onLoad={loadProject}
-              onImportGpx={importGpxFile}
+              onImport={handleOpenImportWizard}
               onToggleSettings={() => useProjectStore.getState().setSidebarOpen(true)}
             />
           </div>
@@ -136,6 +129,12 @@ export default function App() {
           baseImage={exportPreviewImage}
           onClose={() => setExportPreviewImage(null)}
           onRecapture={captureMap}
+        />
+      )}
+      {importWizardOpen && (
+        <ImportWizard
+          onClose={() => setImportWizardOpen(false)}
+          onLoadImage={loadImageFile}
         />
       )}
     </div>

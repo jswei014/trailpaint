@@ -5,12 +5,11 @@ import './FloatingActions.css';
 interface FloatingActionsProps {
   onExport: () => void;
   onSave: () => void;
-  onLoad: () => void;
-  onImportGpx: () => void;
+  onImport: () => void;
   onToggleSettings: () => void;
 }
 
-export default function FloatingActions({ onExport, onSave, onLoad, onImportGpx, onToggleSettings }: FloatingActionsProps) {
+export default function FloatingActions({ onExport, onSave, onImport, onToggleSettings }: FloatingActionsProps) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -56,8 +55,7 @@ export default function FloatingActions({ onExport, onSave, onLoad, onImportGpx,
         <div className="floating-actions__menu">
           <button className="floating-actions__item" onClick={() => doAction(onExport)}>{t('app.export')}</button>
           <button className="floating-actions__item" onClick={() => doAction(onSave)}>{t('app.save')}</button>
-          <button className="floating-actions__item" onClick={() => doAction(onLoad)}>{t('app.load')}</button>
-          <button className="floating-actions__item" onClick={() => doAction(onImportGpx)}>{t('gpx.import')}</button>
+          <button className="floating-actions__item" onClick={() => doAction(onImport)}>{t('app.import')}</button>
           <button className="floating-actions__item" onClick={() => doAction(onToggleSettings)}>⚙️ {t('settings.title')}</button>
         </div>
       )}

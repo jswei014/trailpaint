@@ -14,12 +14,10 @@ interface SidebarProps {
   onFlyTo: (latlng: [number, number], zoom?: number) => void;
   onOpenExportPreview: () => void;
   onSave: () => void;
-  onLoad: () => void;
-  onImportGpx: () => void;
-  onUploadBg: () => void;
+  onOpenImportWizard: () => void;
 }
 
-export default function Sidebar({ onFlyTo, onOpenExportPreview, onSave, onLoad, onImportGpx, onUploadBg }: SidebarProps) {
+export default function Sidebar({ onFlyTo, onOpenExportPreview, onSave, onOpenImportWizard }: SidebarProps) {
   const spots = useProjectStore((s) => s.project.spots);
   const routes = useProjectStore((s) => s.project.routes);
   const selectedSpotId = useProjectStore((s) => s.selectedSpotId);
@@ -83,19 +81,13 @@ export default function Sidebar({ onFlyTo, onOpenExportPreview, onSave, onLoad, 
         <div className="sidebar__toolbar">
           <button className="sidebar__tool-btn" onClick={onOpenExportPreview}>{t('app.export')}</button>
           <button className="sidebar__tool-btn" onClick={onSave}>{t('app.save')}</button>
-          <button className="sidebar__tool-btn" onClick={onLoad}>{t('app.load')}</button>
-          {!isImageMode && (
-            <button className="sidebar__tool-btn" onClick={onImportGpx}>{t('gpx.import')}</button>
-          )}
+          <button className="sidebar__tool-btn" onClick={onOpenImportWizard}>{t('app.import')}</button>
         </div>
 
         {/* Toolbar row 2 */}
         <div className="sidebar__toolbar sidebar__toolbar--secondary">
           <button className="sidebar__tool-btn" onClick={handleUndo} title={t('undo')}>↩</button>
           <button className="sidebar__tool-btn" onClick={handleRedo} title={t('redo')}>↪</button>
-          <button className="sidebar__tool-btn" onClick={onUploadBg} title={t('bg.upload')}>
-            {isImageMode ? '🗺️' : '📷'}
-          </button>
           {isImageMode && (
             <button className="sidebar__tool-btn" onClick={() => {
               const hasData = spots.length > 0 || routes.length > 0;

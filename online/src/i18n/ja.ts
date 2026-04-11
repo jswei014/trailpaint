@@ -84,7 +84,21 @@ export default {
   'export.filter.comic': 'コミック',
 
   // Import
+  'app.import': '📥 インポート',
   'import.tooLarge': 'ファイルが大きすぎます（上限 20MB）',
+  'import.title': 'ルートマップをインポート',
+  'import.uploadBg': '背景画像をアップロード',
+  'import.uploadBgDesc': 'スクリーンショットや旅行マップを背景に',
+  'import.loadJson': 'プロジェクトを読み込む',
+  'import.loadJsonDesc': '.trailpaint.json ファイルを開く',
+  'import.importGpx': 'GPX をインポート',
+  'import.importGpxDesc': 'GPS トラックファイルをインポート',
+  'import.ai.title': '🤖 AI でルート JSON を作成',
+  'import.ai.desc': '旅程の説明を ChatGPT や Claude に貼り付けると、インポート可能な JSON ファイルを生成します。',
+  'import.ai.copyPrompt': 'プロンプトテンプレートをコピー',
+  'import.ai.promptCopied': 'コピーしました！',
+  'import.ai.schemaTitle': 'JSON フォーマット説明',
+  'import.dragHint': '💡 または画像を地図にドラッグして背景を設定',
 
   // Background
   'bg.upload': '背景画像をアップロード',

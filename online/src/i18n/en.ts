@@ -84,7 +84,21 @@ export default {
   'export.filter.comic': 'Comic',
 
   // Import
+  'app.import': '📥 Import',
   'import.tooLarge': 'File too large (max 20MB)',
+  'import.title': 'Import your trail map',
+  'import.uploadBg': 'Upload basemap',
+  'import.uploadBgDesc': 'Choose a screenshot or travel map as basemap',
+  'import.loadJson': 'Load project',
+  'import.loadJsonDesc': 'Open a .trailpaint.json file',
+  'import.importGpx': 'Import GPX',
+  'import.importGpxDesc': 'Import GPS track file',
+  'import.ai.title': '🤖 Create trail JSON with AI',
+  'import.ai.desc': 'Paste your trip description to ChatGPT or Claude, it will generate an importable JSON file.',
+  'import.ai.copyPrompt': 'Copy prompt template',
+  'import.ai.promptCopied': 'Copied!',
+  'import.ai.schemaTitle': 'JSON format reference',
+  'import.dragHint': '💡 Or drag an image onto the map to set basemap',
 
   // Background
   'bg.upload': 'Upload image',

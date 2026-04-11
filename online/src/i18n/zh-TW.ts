@@ -84,7 +84,21 @@ export default {
   'export.filter.comic': '漫畫',
 
   // Import
+  'app.import': '📥 匯入',
   'import.tooLarge': '檔案太大（上限 20MB）',
+  'import.title': '匯入你的路線地圖',
+  'import.uploadBg': '上傳底圖',
+  'import.uploadBgDesc': '選擇截圖或旅遊地圖作為底圖',
+  'import.loadJson': '載入專案',
+  'import.loadJsonDesc': '開啟 .trailpaint.json 檔案',
+  'import.importGpx': '匯入 GPX',
+  'import.importGpxDesc': '匯入 GPS 軌跡檔',
+  'import.ai.title': '🤖 用 AI 製作路線 JSON',
+  'import.ai.desc': '把行程描述貼給 ChatGPT 或 Claude，它會幫你生成可匯入的 JSON 檔案。',
+  'import.ai.copyPrompt': '複製提示詞模板',
+  'import.ai.promptCopied': '已複製！',
+  'import.ai.schemaTitle': 'JSON 格式說明',
+  'import.dragHint': '💡 也可以直接拖曳圖片到地圖換底圖',
 
   // Background
   'bg.upload': '上傳底圖',
