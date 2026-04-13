@@ -37,6 +37,58 @@ function drawTilesToCanvas(
 }
 
 /**
+ * Draw spot-card photos directly to canvas, bypassing html-to-image's
+ * foreignObject which silently fails on iOS Safari at pixelRatio ≥ 3.
+ *
+ * Each photo <img> lives inside .spot-card__photo-wrap. We read its
+ * bounding rect and apply the same border-radius clip as the CSS.
+ */
+function drawPhotosToCanvas(
+  ctx: CanvasRenderingContext2D,
+  mapEl: HTMLElement,
+  containerRect: DOMRect,
+  pixelRatio: number,
+) {
+  const photos = mapEl.querySelectorAll<HTMLImageElement>('.spot-card__photo');
+  for (const img of photos) {
+    if (!img.complete || !img.naturalWidth) continue;
+
+    const r = img.getBoundingClientRect();
+    const dx = (r.left - containerRect.left) * pixelRatio;
+    const dy = (r.top - containerRect.top) * pixelRatio;
+    const dw = r.width * pixelRatio;
+    const dh = r.height * pixelRatio;
+
+    // Replicate object-fit: cover — compute source crop rect
+    const imgRatio = img.naturalWidth / img.naturalHeight;
+    const boxRatio = r.width / r.height;
+    let sx: number, sy: number, sw: number, sh: number;
+    if (imgRatio > boxRatio) {
+      // Image wider than box → crop sides
+      sh = img.naturalHeight;
+      sw = sh * boxRatio;
+      sx = (img.naturalWidth - sw) / 2;
+      sy = 0;
+    } else {
+      // Image taller than box → crop top/bottom
+      sw = img.naturalWidth;
+      sh = sw / boxRatio;
+      sx = 0;
+      sy = (img.naturalHeight - sh) / 2;
+    }
+
+    // Clip to match CSS border-radius: 4px
+    const radius = 4 * pixelRatio;
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(dx, dy, dw, dh, radius);
+    ctx.clip();
+    ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+    ctx.restore();
+  }
+}
+
+/**
  * Capture the map as an HTMLImageElement at the given pixelRatio.
  *
  * Hybrid approach for iOS Safari compatibility:
@@ -93,6 +145,9 @@ export async function captureMap(pixelRatio = 2): Promise<HTMLImageElement> {
         if (el.classList?.contains('watermark')) return false;
         if (el.classList?.contains('locate-button')) return false;
         if (el.classList?.contains('basemap-switcher')) return false;
+        // Exclude card photos — they are drawn directly to canvas below
+        // to avoid iOS Safari foreignObject decode failures at high pixelRatio.
+        if (el.tagName === 'IMG' && el.closest('.spot-card__photo-wrap')) return false;
         return true;
       },
     });
@@ -106,6 +161,11 @@ export async function captureMap(pixelRatio = 2): Promise<HTMLImageElement> {
 
     // Composite: html-to-image result on top of canvas tiles
     ctx.drawImage(overlayImg, 0, 0);
+
+    // Draw card photos directly via canvas.drawImage (bypasses foreignObject).
+    // This runs AFTER the overlay composite so photos render on top of the
+    // card background/border that html-to-image already drew.
+    drawPhotosToCanvas(ctx, mapEl, containerRect, dpi);
   } finally {
     mapEl.style.background = origBg;
     shadowStyle.remove();
