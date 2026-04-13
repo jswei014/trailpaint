@@ -15,3 +15,14 @@ export function flyTo(latlng: [number, number], zoom?: number) {
     }
   }
 }
+
+/** Shift the map view by pixel offset without animation. */
+export function panBy(dx: number, dy: number) {
+  if (mapInstance) {
+    try {
+      mapInstance.panBy([dx, dy], { animate: false });
+    } catch {
+      // Map may have been destroyed
+    }
+  }
+}

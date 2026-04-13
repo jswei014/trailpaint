@@ -9,7 +9,7 @@ import ImportWizard from './core/components/ImportWizard';
 import FloatingActions from './core/components/FloatingActions';
 import { captureMap, saveProject } from './map/ExportButton';
 import { decodeShareLink } from './core/utils/shareLink';
-import { flyTo } from './map/useMapRef';
+import { flyTo, panBy } from './map/useMapRef';
 import { useUndoRedoKeys } from './core/hooks/useUndoRedo';
 import { useProjectStore } from './core/store/useProjectStore';
 import { t } from './i18n';
@@ -66,11 +66,15 @@ export default function App() {
 
   const handleOpenExportPreview = useCallback(async () => {
     try {
-      // Collapse sidebar so the map expands to full width before capture
+      // Collapse sidebar so the map expands to full width before capture.
+      // Pan the map left by half the sidebar width so the original composition
+      // center stays in the middle of the now-wider map.
       if (useProjectStore.getState().sidebarOpen) {
         useProjectStore.getState().setSidebarOpen(false);
         // Wait for sidebar slide animation (250ms) + Leaflet resize settle
         await new Promise((r) => setTimeout(r, 350));
+        panBy(-150, 0); // sidebar is 300px → shift left by half
+        await new Promise((r) => setTimeout(r, 100));
       }
       const img = await captureMap(2);
       setExportPreviewImage(img);
