@@ -72,7 +72,7 @@ export default {
   'export.preview.downloading': '書き出し中...',
   'export.preview.shareLink': '共有リンクをコピー',
   'export.preview.shareCopied': '共有リンクをコピーしました！',
-  'export.preview.shortenTip': 'リンクを短縮（is.gd 経由）',
+  'export.preview.shortenTip': 'リンクを短縮（TinyURL 経由）',
   'export.preview.shortCopied': '短縮リンクをコピーしました！',
   'export.preview.shortFailed': '短縮に失敗しました。元のリンクをご利用ください',
   'export.preview.aiPrompt': 'AIプロンプトをコピー',

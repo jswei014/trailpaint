@@ -80,13 +80,13 @@ export async function encodeShareLink(project: Project): Promise<string> {
 }
 
 /**
- * Shorten a URL via is.gd. Sends the full URL to a third-party service.
+ * Shorten a URL via TinyURL. Sends the full URL to a third-party service.
  * Returns short URL on success, null on failure.
  */
 export async function shortenUrl(longUrl: string): Promise<string | null> {
   try {
     const res = await fetch(
-      `https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`,
+      `https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`,
       { signal: AbortSignal.timeout(5000) },
     );
     if (res.ok) {

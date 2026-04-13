@@ -72,7 +72,7 @@ export default {
   'export.preview.downloading': '匯出中...',
   'export.preview.shareLink': '複製分享連結',
   'export.preview.shareCopied': '已複製分享連結！',
-  'export.preview.shortenTip': '縮短連結（透過 is.gd）',
+  'export.preview.shortenTip': '縮短連結（透過 TinyURL）',
   'export.preview.shortCopied': '已複製短網址！',
   'export.preview.shortFailed': '縮短連結失敗，請使用原始連結',
   'export.preview.aiPrompt': '複製 AI 提示詞',

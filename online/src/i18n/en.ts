@@ -72,7 +72,7 @@ export default {
   'export.preview.downloading': 'Exporting...',
   'export.preview.shareLink': 'Copy Share Link',
   'export.preview.shareCopied': 'Share link copied!',
-  'export.preview.shortenTip': 'Shorten link (via is.gd)',
+  'export.preview.shortenTip': 'Shorten link (via TinyURL)',
   'export.preview.shortCopied': 'Short link copied!',
   'export.preview.shortFailed': 'Shortening failed, use original link',
   'export.preview.aiPrompt': 'Copy AI Prompt',
