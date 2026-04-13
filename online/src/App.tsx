@@ -66,6 +66,12 @@ export default function App() {
 
   const handleOpenExportPreview = useCallback(async () => {
     try {
+      // Collapse sidebar so the map expands to full width before capture
+      if (useProjectStore.getState().sidebarOpen) {
+        useProjectStore.getState().setSidebarOpen(false);
+        // Wait for sidebar slide animation (250ms) + Leaflet resize settle
+        await new Promise((r) => setTimeout(r, 350));
+      }
       const img = await captureMap(2);
       setExportPreviewImage(img);
     } catch (err) {
