@@ -6,7 +6,7 @@
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 
-**[今すぐ使う →](https://notoriouslab.github.io/trailpaint/app/)**
+**[今すぐ使う →](https://trailpaint.org/app/)**
 
 ---
 
