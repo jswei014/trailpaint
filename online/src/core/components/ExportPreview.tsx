@@ -321,7 +321,7 @@ export default function ExportPreview({ baseImage, onClose, onRecapture, onAdjus
                 {RESOLUTIONS.map((r) => (
                   <button
                     key={r}
-                    className={`export-preview__chip${pixelRatio === r ? ' export-preview__chip--active' : ''}`}
+                    className={`export-preview__chip${pixelRatio === r ? ' export-preview__chip--active' : ''}${r === 3 ? ' export-preview__chip--3x' : ''}`}
                     onClick={() => setPixelRatio(r)}
                   >
                     {r}x{r === 3 ? ' ⚠️' : ''}

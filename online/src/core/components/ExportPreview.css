@@ -335,4 +335,8 @@
     margin-top: 4px;
     padding-top: 8px;
   }
+
+  .export-preview__chip--3x {
+    display: none;
+  }
 }

@@ -151,8 +151,12 @@ export async function captureMap(pixelRatio = 2): Promise<HTMLImageElement> {
   mapEl.style.background = 'transparent';
 
   // Suppress pin/card shadows for cleaner export
+  // On mobile, also suppress drop-shadow filters to keep file size down
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
   const shadowStyle = document.createElement('style');
-  shadowStyle.textContent = '.spot-pin__circle, .spot-card { box-shadow: none !important; }';
+  shadowStyle.textContent = isMobile
+    ? '.spot-pin__circle, .spot-card { box-shadow: none !important; filter: none !important; }'
+    : '.spot-pin__circle, .spot-card { box-shadow: none !important; }';
   document.head.appendChild(shadowStyle);
 
   try {
