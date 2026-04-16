@@ -4,7 +4,7 @@
 
 > 最漂亮的路線圖產出工具 — 匯出即插畫，簡單好用不複雜
 
-[![Version](https://img.shields.io/badge/version-1.0.1-orange.svg)](https://trailpaint.org/app/)
+[![Version](https://img.shields.io/badge/version-1.2.0-orange.svg)](https://trailpaint.org/app/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6.svg)](https://www.typescriptlang.org/)
 [![PWA Ready](https://img.shields.io/badge/PWA-ready-5a0fc8.svg)](https://trailpaint.org/app/)
