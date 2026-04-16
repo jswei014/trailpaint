@@ -19,6 +19,24 @@
       "data": "mackay.trailpaint.json",
       "thumbnail": "mackay-thumb.svg",
       "color": "#b45309"
+    },
+    {
+      "id": "barclay",
+      "title": "巴克禮牧師 Thomas Barclay",
+      "subtitle": "台語白話字之父 1875-1935",
+      "description": "來自蘇格蘭的長老教會宣教師。1875 年抵達打狗（今高雄），以台南為據點深耕南台灣六十年。創辦台南神學院、翻譯台語聖經、創刊台灣教會公報（台灣歷史最悠久的報紙）。1895 年日軍攻台時，巴克禮代表台南市民開城門迎接乃木希典，保全五萬市民免於戰火。",
+      "data": "barclay.trailpaint.json",
+      "thumbnail": "mackay-thumb.svg",
+      "color": "#1e40af"
+    },
+    {
+      "id": "landsborough",
+      "title": "蘭大衛醫師 David Landsborough",
+      "subtitle": "切膚之愛 1895-1936",
+      "description": "來自蘇格蘭的醫療宣教師。1895 年抵達台灣，在彰化行醫四十年，創辦彰化基督教醫院。其妻連瑪玉 1928 年割下自己的皮膚移植給病人周金耀，「切膚之愛」的故事傳為佳話。蘭大衛搭台車深入原住民部落巡迴醫療，被譽為「彰化的乃木大將」。",
+      "data": "landsborough.trailpaint.json",
+      "thumbnail": "mackay-thumb.svg",
+      "color": "#047857"
     }
   ],
   "footer": {
