@@ -1,7 +1,7 @@
 {
   "id": "taiwan-missionaries",
   "title": "台灣宣教士腳蹤",
-  "subtitle": "1865-1923 西方宣教士在台灣的故事",
+  "subtitle": "1865-2024 西方宣教士在台灣的故事",
   "description": "十九世紀下半葉，一群來自歐美的宣教士踏上台灣這片土地。他們建立教會、設立醫院與學校、翻譯聖經、創造白話字，深刻影響了台灣的現代化進程。這張互動地圖帶你沿著他們的足跡，走過淡水、台南、彰化，看見那個年代的故事。",
   "locale": "zh-TW",
   "cover": "cover.svg",
@@ -37,6 +37,24 @@
       "data": "landsborough.trailpaint.json",
       "thumbnail": "mackay-thumb.svg",
       "color": "#047857"
+    },
+    {
+      "id": "maxwell",
+      "title": "馬雅各醫師 James Laidlaw Maxwell",
+      "subtitle": "台灣醫療宣教先驅 1865-1871",
+      "description": "來自蘇格蘭的長老教會醫療宣教師，1865年抵台，是台灣第一位基督教宣教師。在台南創設看西街醫館——台灣第一間西式醫院，遭民眾暴動驅逐後退至旗後（高雄旗津）繼續行醫傳道。深入內門、左鎮等地向平埔族宣教，建立木柵、拔馬等教會。重返台南後設立二老口醫館，為新樓醫院前身。今太平境馬雅各紀念教會即以他命名。",
+      "data": "maxwell.trailpaint.json",
+      "thumbnail": "mackay-thumb.svg",
+      "color": "#9333ea"
+    },
+    {
+      "id": "brougham",
+      "title": "彭蒙惠宣教師 Doris Brougham",
+      "subtitle": "台灣英語教育之母 1951-2024",
+      "description": "來自美國西雅圖的宣教師與教育家。1948年前往中國上海宣教，1951年轉赴台灣花蓮，深入原住民部落服事。1960年在台北創辦救世傳播協會，1962年開播空中英語教室，以創新的對話式教學法教導數百萬台灣人學英文。1963年創立天韻合唱團，製作台灣第一個福音電視節目。2023年歸化中華民國國籍，2024年安息主懷，享壽98歲。",
+      "data": "brougham.trailpaint.json",
+      "thumbnail": "mackay-thumb.svg",
+      "color": "#e11d48"
     }
   ],
   "footer": {

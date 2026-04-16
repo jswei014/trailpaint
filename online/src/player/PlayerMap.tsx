@@ -158,17 +158,17 @@ export default function PlayerMap() {
           active={activeIndex === i}
           onClick={() => { setPlaying(false); setActiveSpot(i); }}
         >
-          <Popup maxWidth={280} maxHeight={300}>
+          <Popup maxWidth={280}>
             <div style={{ fontFamily: 'Georgia, serif' }}>
-              <strong>{spot.title}</strong>
-              {spot.desc && <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#555' }}>{spot.desc}</p>}
+              <strong style={{ fontSize: '15px', display: 'block', marginBottom: 2 }}>{spot.title}</strong>
               {spot.photo && (
                 <img
                   src={spot.photo}
                   alt={spot.title}
-                  style={{ width: '100%', borderRadius: 4, marginTop: 8 }}
+                  style={{ width: '100%', maxHeight: 200, objectFit: 'contain', borderRadius: 4, marginTop: 8 }}
                 />
               )}
+              {spot.desc && <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#555', lineHeight: 1.5 }}>{spot.desc}</p>}
             </div>
           </Popup>
         </ActiveMarker>
