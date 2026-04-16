@@ -1,9 +1,12 @@
-import { MapContainer, TileLayer, Marker, Popup, Polyline, ZoomControl, useMap } from 'react-leaflet';
+import { MapContainer, Marker, Popup, Polyline, ZoomControl, useMap } from 'react-leaflet';
 import { usePlayerStore } from './usePlayerStore';
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
-import PlayerOverlay from './PlayerOverlay';
+import PlayerBasemapSwitcher from './PlayerBasemapSwitcher';
+import PlayerFitAll from './PlayerFitAll';
+import LocateButton from '../map/LocateButton';
 import 'leaflet/dist/leaflet.css';
+import '../map/MapView.css';
 
 /** Fit map to all spots + route points on load */
 function FitBounds() {
@@ -126,13 +129,11 @@ export default function PlayerMap() {
       zoomControl={false}
     >
       <ZoomControl position="bottomright" />
-      <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
-      />
       <FitBounds />
       <FlyToActive />
-      <PlayerOverlay />
+      <PlayerBasemapSwitcher />
+      <PlayerFitAll />
+      <LocateButton />
 
       {/* Routes */}
       {project.routes.map((r) => (

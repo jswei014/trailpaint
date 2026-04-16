@@ -87,5 +87,7 @@ export function migrateProject(data: Record<string, unknown>): Project {
       overlay = { id: ov.id, opacity: ov.opacity };
     }
   }
-  return { ...p, version: 2, routes, ...(overlay ? { overlay } : {}) };
+  // Validate optional basemapId (capped at 50 chars to prevent memory waste)
+  const basemapId = typeof data.basemapId === 'string' ? data.basemapId.slice(0, 50) : undefined;
+  return { ...p, version: 2, routes, ...(overlay ? { overlay } : {}), ...(basemapId ? { basemapId } : {}) };
 }

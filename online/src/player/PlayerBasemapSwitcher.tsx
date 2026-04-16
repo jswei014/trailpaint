@@ -2,21 +2,29 @@ import { useState, useEffect, useRef } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { t } from '../i18n';
-import { useProjectStore } from '../core/store/useProjectStore';
-import { OVERLAYS } from './overlays';
-import { BASEMAPS, DEFAULT_BASEMAP_ID } from './basemaps';
-import type { BasemapDef } from './basemaps';
-import { createBasemapLayer, resolveBasemapId } from './basemapLayer';
+import { usePlayerStore } from './usePlayerStore';
+import { OVERLAYS } from '../map/overlays';
+import { BASEMAPS, DEFAULT_BASEMAP_ID } from '../map/basemaps';
+import type { BasemapDef } from '../map/basemaps';
+import { createBasemapLayer } from '../map/basemapLayer';
 
-export default function BasemapSwitcher() {
+/** Full basemap + overlay switcher for the Player (mirrors Editor's BasemapSwitcher) */
+export default function PlayerBasemapSwitcher() {
   const map = useMap();
-  const projectBasemapId = useProjectStore((s) => s.project.basemapId);
-  const setBasemapId = useProjectStore((s) => s.setBasemapId);
-  const resolvedId = resolveBasemapId(projectBasemapId);
-  const [current, setCurrent] = useState(resolvedId);
+  const project = usePlayerStore((s) => s.project);
+
+  // Initialize from project settings (resolve against available basemaps)
+  const rawBasemapId = project?.basemapId ?? DEFAULT_BASEMAP_ID;
+  const initBasemapId = BASEMAPS.some((b) => b.id === rawBasemapId) ? rawBasemapId : DEFAULT_BASEMAP_ID;
+  const initOverlayId = project?.overlay?.id ?? null;
+  const initOverlayOpacity = project?.overlay?.opacity ?? 0.5;
+
+  const [current, setCurrent] = useState(initBasemapId);
   const [open, setOpen] = useState(false);
+  const [overlayId, setOverlayId] = useState<string | null>(initOverlayId);
+  const [overlayOpacity, setOverlayOpacity] = useState(initOverlayOpacity);
   const layerRef = useRef<L.Layer | null>(null);
-  const appliedRef = useRef(resolvedId); // tracks what Leaflet actually shows
+  const overlayRef = useRef<L.TileLayer | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Prevent map drag/scroll when interacting with this control
@@ -28,14 +36,6 @@ export default function BasemapSwitcher() {
     }
   }, []);
 
-  // Overlay state (persisted in project store)
-  const overlay = useProjectStore((s) => s.project.overlay);
-  const setOverlay = useProjectStore((s) => s.setOverlay);
-  const overlayId = overlay?.id ?? null;
-  const overlayOpacity = overlay?.opacity ?? 0.5;
-  const overlayRef = useRef<L.TileLayer | null>(null);
-
-  // Apply a basemap to the Leaflet map (imperative, no store write)
   const applyBasemap = (bm: BasemapDef) => {
     if (layerRef.current) map.removeLayer(layerRef.current);
     const layer = createBasemapLayer(bm);
@@ -44,28 +44,17 @@ export default function BasemapSwitcher() {
       (layer as L.TileLayer).setZIndex(0);
     }
     layerRef.current = layer;
-    appliedRef.current = bm.id;
   };
 
-  // Initialize tile layer on mount
+  // Initialize basemap tile layer on mount
   useEffect(() => {
-    const bm = BASEMAPS.find((b) => b.id === resolvedId) ?? BASEMAPS[0];
+    const bm = BASEMAPS.find((b) => b.id === initBasemapId) ?? BASEMAPS[0];
     applyBasemap(bm);
     return () => { if (layerRef.current) map.removeLayer(layerRef.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map]);
 
-  // Sync Leaflet layer when store basemapId changes externally (undo/redo/import)
-  useEffect(() => {
-    const targetId = resolveBasemapId(projectBasemapId);
-    if (targetId === appliedRef.current) return;
-    const bm = BASEMAPS.find((b) => b.id === targetId) ?? BASEMAPS[0];
-    applyBasemap(bm);
-    setCurrent(bm.id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectBasemapId]);
-
-  // Create / destroy overlay layer when selection changes
+  // Create / destroy overlay layer
   useEffect(() => {
     if (!overlayId) {
       overlayRef.current = null;
@@ -85,7 +74,7 @@ export default function BasemapSwitcher() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [overlayId, map]);
 
-  // Update overlay opacity without recreating layer
+  // Update overlay opacity
   useEffect(() => {
     overlayRef.current?.setOpacity(overlayOpacity);
   }, [overlayOpacity]);
@@ -93,7 +82,6 @@ export default function BasemapSwitcher() {
   const switchTo = (bm: BasemapDef) => {
     applyBasemap(bm);
     setCurrent(bm.id);
-    setBasemapId(bm.id);
     setOpen(false);
   };
 
@@ -126,7 +114,7 @@ export default function BasemapSwitcher() {
           <div className="basemap-switcher__separator">{t('overlay.title')}</div>
           <button
             className={`basemap-switcher__option${!overlayId ? ' basemap-switcher__option--active' : ''}`}
-            onClick={() => setOverlay(null)}
+            onClick={() => setOverlayId(null)}
           >
             {t('overlay.none')}
           </button>
@@ -134,7 +122,7 @@ export default function BasemapSwitcher() {
             <button
               key={ov.id}
               className={`basemap-switcher__option${overlayId === ov.id ? ' basemap-switcher__option--active' : ''}`}
-              onClick={() => setOverlay({ id: ov.id, opacity: overlayOpacity })}
+              onClick={() => setOverlayId(ov.id)}
             >
               {t(ov.labelKey)}
             </button>
@@ -147,7 +135,7 @@ export default function BasemapSwitcher() {
                 min="0"
                 max="100"
                 value={Math.round(overlayOpacity * 100)}
-                onChange={(e) => setOverlay({ id: overlayId!, opacity: Number(e.target.value) / 100 })}
+                onChange={(e) => setOverlayOpacity(Number(e.target.value) / 100)}
                 className="basemap-switcher__slider"
               />
               <span className="basemap-switcher__slider-value">

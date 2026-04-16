@@ -60,7 +60,8 @@ interface ProjectState {
   setBackgroundImage: (dataUrl: string, width: number, height: number) => void;
   clearBackgroundImage: () => void;
 
-  // Overlay
+  // Basemap & Overlay
+  setBasemapId: (id: string) => void;
   setOverlay: (overlay: OverlaySetting | null) => void;
 
   // Settings
@@ -421,7 +422,10 @@ export const useProjectStore = create<ProjectState>()(
       project: { ...s.project, spots: [], routes: [] },
     })),
 
-  // ── Overlay ──
+  // ── Basemap & Overlay ──
+
+  setBasemapId: (id) =>
+    set((s) => ({ project: { ...s.project, basemapId: id } })),
 
   setOverlay: (overlay) =>
     set((s) => ({ project: { ...s.project, overlay: overlay ?? undefined } })),

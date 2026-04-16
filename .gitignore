@@ -7,3 +7,4 @@ node_modules/
 openspec/
 .env.local
 dist/
+stories/**/photos/

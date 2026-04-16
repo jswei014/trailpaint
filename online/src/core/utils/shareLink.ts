@@ -1,4 +1,6 @@
 import type { Project } from '../models/types';
+import { DEFAULT_CARD_OFFSET } from '../models/types';
+import { migrateProject } from './migrateProject';
 
 /**
  * Compact a project for sharing: strip photos, shorten keys, omit defaults.
@@ -29,6 +31,9 @@ function compactProject(project: Project): Record<string, unknown> {
   if (project.overlay) {
     out.ov = { i: project.overlay.id, o: project.overlay.opacity };
   }
+  if (project.basemapId) {
+    out.bm = project.basemapId;
+  }
   return out;
 }
 
@@ -44,7 +49,7 @@ function expandProject(c: Record<string, unknown>): Project {
     desc: (s.d as string) ?? '',
     photo: null,
     iconId: s.k as string,
-    cardOffset: s.o ? { x: (s.o as number[])[0], y: (s.o as number[])[1] } : { x: 0, y: -60 },
+    cardOffset: s.o ? { x: (s.o as number[])[0], y: (s.o as number[])[1] } : { ...DEFAULT_CARD_OFFSET },
   })) ?? [];
   const routes = (c.r as Record<string, unknown>[])?.map((r) => ({
     id: r.i as string,
@@ -66,6 +71,9 @@ function expandProject(c: Record<string, unknown>): Project {
     if (typeof ov.i === 'string' && typeof ov.o === 'number') {
       project.overlay = { id: ov.i, opacity: ov.o };
     }
+  }
+  if (typeof c.bm === 'string') {
+    project.basemapId = c.bm;
   }
   return project;
 }
@@ -168,8 +176,8 @@ function parseSharePayload(json: string): Project {
   if ('v' in data && !('version' in data)) {
     return expandProject(data);
   }
-  // Legacy format: full Project structure
-  return data as Project;
+  // Legacy format: full Project structure — run through migrateProject for validation
+  return migrateProject(data);
 }
 
 /** Reject projects with absurd data volumes that would freeze the UI. */

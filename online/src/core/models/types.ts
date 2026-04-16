@@ -21,6 +21,7 @@ export interface Project {
   name: string;
   center: [number, number]; // [lat, lng]
   zoom: number;
+  basemapId?: string;
   spots: Spot[];
   routes: Route[];
   overlay?: OverlaySetting;
