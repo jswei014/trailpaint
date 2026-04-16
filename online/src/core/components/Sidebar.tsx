@@ -82,8 +82,10 @@ export default function Sidebar({ onFlyTo, onOpenExportPreview, onSave, onOpenIm
           <button className="sidebar__tool-btn" onClick={onOpenExportPreview}>{t('app.export')}</button>
           <button className="sidebar__tool-btn" onClick={onSave}>{t('app.save')}</button>
           <button className="sidebar__tool-btn" onClick={onOpenImportWizard}>{t('app.import')}</button>
-          {spots.length > 0 && (
-            <button className="sidebar__tool-btn" onClick={() => {
+        </div>
+        {spots.length > 0 && (
+          <div className="sidebar__toolbar">
+            <button className="sidebar__tool-btn sidebar__tool-btn--story" onClick={() => {
               const project = useProjectStore.getState().project;
               try {
                 localStorage.setItem('trailpaint-player-project', JSON.stringify(project));
@@ -92,8 +94,8 @@ export default function Sidebar({ onFlyTo, onOpenExportPreview, onSave, onOpenIm
                 window.open('/app/player/', '_blank');
               }
             }}>{t('app.storyMode')}</button>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Toolbar row 2 */}
         <div className="sidebar__toolbar sidebar__toolbar--secondary">

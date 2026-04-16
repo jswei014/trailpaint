@@ -335,9 +335,9 @@ html, body {
 
 .player-overlay-ctrl {
   position: absolute;
-  bottom: calc(50px + env(safe-area-inset-bottom, 0px));
+  top: 10px;
   right: 10px;
-  z-index: 700;
+  z-index: 1100;
 }
 
 .player-overlay-ctrl__toggle {
@@ -361,7 +361,7 @@ html, body {
 
 .player-overlay-ctrl__menu {
   position: absolute;
-  bottom: 40px;
+  top: 40px;
   right: 0;
   background: #fff;
   border-radius: 6px;

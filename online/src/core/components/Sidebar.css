@@ -42,6 +42,17 @@
   left: 268px;
 }
 
+.sidebar__tool-btn--story {
+  flex: 1;
+  background: #b45309;
+  color: #fff;
+  border-color: #92400e;
+}
+
+.sidebar__tool-btn--story:hover {
+  background: #92400e;
+}
+
 /* Header */
 .sidebar__header {
   display: flex;
