@@ -4,7 +4,12 @@
 
 > 最漂亮的路線圖產出工具 — 匯出即插畫，簡單好用不複雜
 
+[![Version](https://img.shields.io/badge/version-1.0.1-orange.svg)](https://trailpaint.org/app/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6.svg)](https://www.typescriptlang.org/)
+[![PWA Ready](https://img.shields.io/badge/PWA-ready-5a0fc8.svg)](https://trailpaint.org/app/)
+[![i18n](https://img.shields.io/badge/i18n-中文%20%7C%20EN%20%7C%20日本語-green.svg)](https://trailpaint.org/app/)
+[![Deploy](https://img.shields.io/badge/deploy-GitHub%20Pages-222.svg)](https://trailpaint.org/app/)
 
 **[立即使用 →](https://trailpaint.org/app/)**
 
