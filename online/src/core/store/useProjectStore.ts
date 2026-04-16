@@ -29,6 +29,7 @@ interface ProjectState {
   updateSpot: (id: string, patch: Partial<Spot>) => void;
   removeSpot: (id: string) => void;
   swapSpots: (index: number, direction: 'up' | 'down') => void;
+  reorderSpots: (fromIndex: number, toIndex: number) => void;
   setSelectedSpot: (id: string | null) => void;
 
   // Route actions
@@ -218,6 +219,14 @@ export const useProjectStore = create<ProjectState>()(
       const target = direction === 'up' ? index - 1 : index + 1;
       if (target < 0 || target >= spots.length) return s;
       [spots[index], spots[target]] = [spots[target], spots[index]];
+      return { project: { ...s.project, spots: renumber(spots) } };
+    }),
+
+  reorderSpots: (fromIndex, toIndex) =>
+    set((s) => {
+      const spots = [...s.project.spots];
+      const [moved] = spots.splice(fromIndex, 1);
+      spots.splice(toIndex, 0, moved);
       return { project: { ...s.project, spots: renumber(spots) } };
     }),
 

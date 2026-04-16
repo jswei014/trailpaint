@@ -13,6 +13,25 @@ interface SpotListProps {
 
 export default function SpotList({ spots, selectedSpotId, onSelect, onSwap }: SpotListProps) {
   const importJSON = useProjectStore((s) => s.importJSON);
+  const reorderSpots = useProjectStore((s) => s.reorderSpots);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData('text/plain', index.toString());
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    const sourceIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+    if (!isNaN(sourceIndex) && sourceIndex !== targetIndex) {
+      reorderSpots(sourceIndex, targetIndex);
+    }
+  };
 
   if (spots.length === 0) {
     return (
@@ -50,8 +69,12 @@ export default function SpotList({ spots, selectedSpotId, onSelect, onSwap }: Sp
             key={spot.id}
             className={`spot-list__item${active ? ' spot-list__item--active' : ''}`}
             onClick={() => onSelect(spot.id)}
+            draggable
+            onDragStart={(e) => handleDragStart(e, i)}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, i)}
           >
-            <span className="spot-list__num">{spot.num}</span>
+            <span className="spot-list__num" style={{ cursor: 'grab' }}>{spot.num}</span>
             <span className="spot-list__emoji">{icon.emoji}</span>
             <span className="spot-list__title">{spot.title}</span>
             <span className="spot-list__arrows">

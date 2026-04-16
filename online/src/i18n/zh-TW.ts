@@ -110,7 +110,8 @@ export default {
   'import.ai.copyPrompt': '複製提示詞模板',
   'import.ai.promptCopied': '已複製！',
   'import.ai.schemaTitle': 'JSON 格式說明',
-  'import.dragHint': '💡 也可以直接拖曳圖片到地圖換底圖',
+  'import.dragHint': '💡 也可以直接拖曳檔案到此視窗匯入',
+  'map.fitAll': '縮放至全域',
 
   // Background
   'bg.upload': '上傳底圖',
@@ -186,6 +187,10 @@ export default {
   'icon.bus': '站牌',
   'icon.rest': '休憩',
   'icon.food': '餐廳',
+  'icon.beer': '酒吧',
+  'icon.hotspring': '溫泉',
+  'icon.mall': '商城',
+  'icon.cinema': '電影院',
   'icon.bike': '腳踏車',
   'icon.parking': '停車',
   'icon.firstaid': '急救',

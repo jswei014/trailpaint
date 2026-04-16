@@ -31,7 +31,7 @@ JSON 格式要求：
   ]
 }
 
-iconId 選項：leaf(植物), flower(花), tree(樹), bird(鳥), water(水), rock(岩石), toilet(廁所), bus(站牌), rest(休憩), food(餐廳), bike(腳踏車), parking(停車), sun(觀景), camera(拍照), warning(注意), info(說明), pin(標記)
+iconId 選項：leaf(植物), flower(花), tree(樹), bird(鳥), water(水), rock(岩石), toilet(廁所), bus(站牌), rest(休憩), food(餐廳), beer(酒吧), hotspring(溫泉), mall(商城), cinema(電影院), bike(腳踏車), parking(停車), sun(觀景), camera(拍照), warning(注意), info(說明), pin(標記)
 color 選項：orange, blue, green, red, purple
 座標請用真實 GPS 座標（可用 Google Maps 查）。每個景點的 cardOffset 請設不同的 x 值（如 80, -100, 90, -80）避免卡片重疊。`;
 
@@ -148,9 +148,44 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
     if (ok) showToast(t('import.ai.promptCopied'));
   }, [showToast]);
 
+  const [dragOver, setDragOver] = useState(false);
+
+  const handleWizardDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    if (file.type.startsWith('image/')) {
+      if (file.size > MAX_BG_SIZE) { alert(t('bg.tooLarge')); return; }
+      onLoadImage(file);
+      onClose();
+    } else if (file.name.endsWith('.json')) {
+      if (file.size > MAX_PROJECT_SIZE) { alert(t('import.tooLarge')); return; }
+      file.text().then((text) => { importJSON(text); onClose(); }).catch(() => alert(t('import.failed')));
+    } else if (file.name.endsWith('.gpx')) {
+      if (file.size > MAX_PROJECT_SIZE) { alert(t('import.tooLarge')); return; }
+      file.text().then((text) => { importGpx(parseGpx(text)); onClose(); }).catch((err) => alert(`${t('gpx.importFailed')}: ${err instanceof Error ? err.message : String(err)}`));
+    }
+  }, [importGpx, importJSON, onClose, onLoadImage]);
+
+  const handleWizardDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(true);
+  }, []);
+
+  const handleWizardDragLeave = useCallback(() => {
+    setDragOver(false);
+  }, []);
+
   return (
     <div className="import-wizard__backdrop" onClick={onClose}>
-      <div className="import-wizard" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`import-wizard${dragOver ? ' import-wizard--drag-over' : ''}`}
+        onClick={(e) => e.stopPropagation()}
+        onDrop={handleWizardDrop}
+        onDragOver={handleWizardDragOver}
+        onDragLeave={handleWizardDragLeave}
+      >
         {/* Header */}
         <div className="import-wizard__header">
           <h2>{t('import.title')}</h2>
@@ -221,7 +256,7 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
 }`}</pre>
                 <div className="import-wizard__schema-icons">
                   <strong>iconId：</strong>
-                  🌿leaf 🌸flower 🌳tree 🐦bird 💧water 🪨rock 🚻toilet 🚌bus 🪑rest 🍽️food 🚲bike 🅿️parking 🌅sun 📸camera ⚠️warning ℹ️info 📍pin
+                  🌿leaf 🌸flower 🌳tree 🐦bird 💧water 🪨rock 🚻toilet 🚌bus 🪑rest 🍽️food 🍺beer ♨️hotspring 🏢mall 🎬cinema 🚲bike 🅿️parking 🌅sun 📸camera ⚠️warning ℹ️info 📍pin
                 </div>
                 <div className="import-wizard__schema-colors">
                   <strong>color：</strong>

@@ -25,6 +25,12 @@
   position: relative;
 }
 
+.import-wizard--drag-over {
+  outline: 3px dashed #b45309;
+  outline-offset: -3px;
+  background: #fef3d8;
+}
+
 /* Header */
 .import-wizard__header {
   display: flex;

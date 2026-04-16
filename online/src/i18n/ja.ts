@@ -110,7 +110,8 @@ export default {
   'import.ai.copyPrompt': 'プロンプトテンプレートをコピー',
   'import.ai.promptCopied': 'コピーしました！',
   'import.ai.schemaTitle': 'JSON フォーマット説明',
-  'import.dragHint': '💡 または画像を地図にドラッグして背景を設定',
+  'import.dragHint': '💡 またはファイルをこのウィンドウにドラッグしてインポート',
+  'map.fitAll': '全要素にフィット',
 
   // Background
   'bg.upload': '背景画像をアップロード',
@@ -186,6 +187,10 @@ export default {
   'icon.bus': 'バス停',
   'icon.rest': '休憩所',
   'icon.food': 'レストラン',
+  'icon.beer': 'バー',
+  'icon.hotspring': '温泉',
+  'icon.mall': 'ショッピングモール',
+  'icon.cinema': '映画館',
   'icon.bike': '自転車',
   'icon.parking': '駐車場',
   'icon.firstaid': '救急',

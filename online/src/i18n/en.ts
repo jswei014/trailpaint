@@ -110,7 +110,8 @@ export default {
   'import.ai.copyPrompt': 'Copy prompt template',
   'import.ai.promptCopied': 'Copied!',
   'import.ai.schemaTitle': 'JSON format reference',
-  'import.dragHint': '💡 Or drag an image onto the map to set basemap',
+  'import.dragHint': '💡 Or drag files directly into this window to import',
+  'map.fitAll': 'Fit all elements',
 
   // Background
   'bg.upload': 'Upload image',
@@ -186,6 +187,10 @@ export default {
   'icon.bus': 'Bus Stop',
   'icon.rest': 'Rest Area',
   'icon.food': 'Restaurant',
+  'icon.beer': 'Bar / Pub',
+  'icon.hotspring': 'Hot Spring',
+  'icon.mall': 'Shopping Mall',
+  'icon.cinema': 'Cinema',
   'icon.bike': 'Bicycle',
   'icon.parking': 'Parking',
   'icon.firstaid': 'First Aid',
