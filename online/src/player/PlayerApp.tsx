@@ -81,6 +81,8 @@ export default function PlayerApp() {
         } catch { /* invalid data, ignore */ }
       };
       window.addEventListener('message', handler);
+      // Tell parent we're ready to receive data
+      window.parent.postMessage({ type: 'trailpaint-ready' }, '*');
       return () => window.removeEventListener('message', handler);
     }
   }, [params, loadProject, setError, isEmbed]);

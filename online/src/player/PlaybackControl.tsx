@@ -196,7 +196,7 @@ export default function PlaybackControl() {
               } else {
                 // Loaded from localStorage or share — use postMessage with full data
                 const json = JSON.stringify(project);
-                html = `<div id="tp-embed"></div>\n<script>\n(function(){\n  var f=document.createElement('iframe');\n  f.src='${origin}/app/player/?embed=1';\n  f.style.cssText='width:100%;height:500px;border:none;border-radius:8px';\n  f.allowFullscreen=true;\n  document.getElementById('tp-embed').appendChild(f);\n  f.onload=function(){f.contentWindow.postMessage({type:'trailpaint-project',data:${json}},'${origin}');};\n})();\n<\/script>`;
+                html = `<div id="tp-embed"></div>\n<script>\n(function(){\n  var d=${json};\n  var f=document.createElement('iframe');\n  f.src='${origin}/app/player/?embed=1';\n  f.style.cssText='width:100%;height:500px;border:none;border-radius:8px';\n  f.allowFullscreen=true;\n  document.getElementById('tp-embed').appendChild(f);\n  window.addEventListener('message',function h(e){if(e.data&&e.data.type==='trailpaint-ready'){f.contentWindow.postMessage({type:'trailpaint-project',data:d},'${origin}');window.removeEventListener('message',h);}});\n})();\n<\/script>`;
               }
               await navigator.clipboard.writeText(html);
               setEmbedCopied(true);
