@@ -21,6 +21,9 @@ export default {
   'spot.defaultTitle': '景點',
   'spot.loadSample': '載入範例步道 ▼',
 
+  // Popup
+  'popup.scripture': '📖 經文：',
+
   // SpotEditor
   'editor.name': '名稱',
   'editor.desc': '描述',

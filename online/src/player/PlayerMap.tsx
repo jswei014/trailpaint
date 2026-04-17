@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import PlayerBasemapSwitcher from './PlayerBasemapSwitcher';
 import PlayerFitAll from './PlayerFitAll';
+import ScriptureRefs from './ScriptureRefs';
 import LocateButton from '../map/LocateButton';
 import 'leaflet/dist/leaflet.css';
 import '../map/MapView.css';
@@ -170,6 +171,7 @@ export default function PlayerMap() {
                 />
               )}
               {spot.desc && <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#555', lineHeight: 1.5 }}>{spot.desc}</p>}
+              <ScriptureRefs refs={spot.scripture_refs} />
             </div>
           </Popup>
         </ActiveMarker>

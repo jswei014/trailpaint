@@ -106,6 +106,35 @@ a:hover { text-decoration: underline; }
   padding: 24px;
 }
 
+/* Nested grid inside a collection group — no outer flex/padding, those live on the group */
+.catalog-grid--nested {
+  padding: 0;
+  flex: none;
+}
+
+/* Grouped catalog: block layout so sections stack vertically */
+.catalog-groups {
+  flex: 1;
+  display: block;
+}
+
+.catalog-group {
+  padding: 24px 24px 8px;
+}
+
+.catalog-group + .catalog-group {
+  border-top: 1px solid #e5dcc8;
+  margin-top: 8px;
+}
+
+.catalog-group__title {
+  font-size: 16px;
+  color: #92400e;
+  margin: 0 0 16px;
+  font-weight: normal;
+  letter-spacing: 0.02em;
+}
+
 .catalog-card {
   display: block;
   background: #fff;
@@ -269,6 +298,10 @@ a:hover { text-decoration: underline; }
     grid-template-columns: 1fr;
     padding: 16px;
   }
+
+  .catalog-grid--nested { padding: 0; }
+
+  .catalog-group { padding: 16px 16px 8px; }
 
   .story-tabs { padding: 8px 16px; }
   .story-desc { padding: 8px 16px; }

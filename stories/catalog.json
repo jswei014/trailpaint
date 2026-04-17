@@ -1,13 +1,28 @@
 {
+  "collections": [
+    { "id": "missions", "title": "宣教史", "order": 1 },
+    { "id": "bible", "title": "聖經地圖", "order": 2 }
+  ],
   "stories": [
     {
       "id": "taiwan-missionaries",
+      "collection": "missions",
       "title": "台灣宣教士腳蹤",
       "subtitle": "1865-1923",
       "description": "探索十九世紀宣教士在台灣的足跡",
       "thumbnail": "taiwan-missionaries/cover.jpg",
       "path": "taiwan-missionaries/",
       "count": 5
+    },
+    {
+      "id": "passion-week",
+      "collection": "bible",
+      "title": "耶穌受難週",
+      "subtitle": "從榮耀進城到復活顯現",
+      "description": "七天敘事：進城、受難、復活——耶路撒冷的互動地圖",
+      "thumbnail": "passion-week/cover.jpg",
+      "path": "passion-week/",
+      "count": 3
     }
   ]
 }

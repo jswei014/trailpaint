@@ -9,6 +9,7 @@ export interface Spot {
   photo: string | null; // base64 data URL (compressed)
   iconId: string;       // key into ICONS
   cardOffset: { x: number; y: number }; // pixel offset from pin (screen coords)
+  scripture_refs?: string[]; // v3+, optional (see 009 D3)
 }
 
 export interface OverlaySetting {
@@ -22,7 +23,7 @@ export interface MusicSetting {
 }
 
 export interface Project {
-  version: 1 | 2;
+  version: 1 | 2 | 3;
   name: string;
   center: [number, number]; // [lat, lng]
   zoom: number;

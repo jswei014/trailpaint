@@ -24,6 +24,13 @@ export function migrateProject(data: Record<string, unknown>): Project {
   if (data.spots.length > 200) throw new Error('Too many spots (max 200)');
 
   // Validate each spot — skip invalid ones instead of rejecting entire import
+  // Photo safety: raster image MIME whitelist (no SVG, no unknown formats).
+  // Editor always outputs data:image/jpeg; these five cover all legitimate encoders.
+  const SAFE_PHOTO_RE = /^data:image\/(jpeg|jpg|png|webp|gif);base64,/i;
+  const SINGLE_PHOTO_LIMIT = 1 * 1024 * 1024; // 1 MB per photo (Editor outputs ~300KB)
+  const TOTAL_PHOTO_LIMIT = 50 * 1024 * 1024; // 50 MB aggregate cap (DoS defense)
+  let totalPhotoBytes = 0;
+
   const spots: Spot[] = [];
   for (const raw of data.spots as unknown[]) {
     if (!raw || typeof raw !== 'object') continue;
@@ -32,16 +39,36 @@ export function migrateProject(data: Record<string, unknown>): Project {
     if (!Array.isArray(s.latlng) || s.latlng.length !== 2) continue;
     if (typeof s.latlng[0] !== 'number' || typeof s.latlng[1] !== 'number'
       || !isFinite(s.latlng[0] as number) || !isFinite(s.latlng[1] as number)) continue;
-    // Only allow null or data:image/ base64 photos (block external URLs / tracking pixels)
+    // Only allow whitelisted raster data URLs (blocks SVG scripts, external URLs, tracking pixels)
     const rawPhoto = (s as Record<string, unknown>).photo;
-    const safePhoto = typeof rawPhoto === 'string' && rawPhoto.startsWith('data:image/') ? rawPhoto : null;
+    const safePhoto = typeof rawPhoto === 'string' && SAFE_PHOTO_RE.test(rawPhoto) ? rawPhoto : null;
 
     // Clamp string lengths to prevent data bombs
     const title = typeof s.title === 'string' ? s.title.slice(0, 200) : '';
     const desc = typeof s.desc === 'string' ? s.desc.slice(0, 2000) : '';
-    const clampedPhoto = safePhoto && safePhoto.length > 2 * 1024 * 1024 ? null : safePhoto;
 
-    spots.push({
+    // Per-photo size cap + aggregate cap (prevent 200 × 2MB memory bomb)
+    let clampedPhoto: string | null = safePhoto && safePhoto.length <= SINGLE_PHOTO_LIMIT ? safePhoto : null;
+    if (clampedPhoto) {
+      if (totalPhotoBytes + clampedPhoto.length > TOTAL_PHOTO_LIMIT) {
+        clampedPhoto = null; // Remaining spots in a huge import lose photos (data preserved otherwise)
+      } else {
+        totalPhotoBytes += clampedPhoto.length;
+      }
+    }
+
+    // scripture_refs (v3+): filter non-string elements, cap array len + string len
+    // Content (e.g. "javascript:alert(1)") kept as-is; bibleUrl layer whitelists book codes
+    let scriptureRefs: string[] | undefined;
+    if (Array.isArray(s.scripture_refs)) {
+      scriptureRefs = (s.scripture_refs as unknown[])
+        .filter((el): el is string => typeof el === 'string')
+        .slice(0, 10)
+        .map((str) => str.slice(0, 50));
+      if (scriptureRefs.length === 0) scriptureRefs = undefined;
+    }
+
+    const spot: Spot = {
       ...(s as unknown as Spot),
       title,
       desc,
@@ -51,12 +78,18 @@ export function migrateProject(data: Record<string, unknown>): Project {
         && typeof (s.cardOffset as Record<string, unknown>).y === 'number'
         ? (s.cardOffset as Spot['cardOffset'])
         : { ...DEFAULT_CARD_OFFSET },
-    });
+    };
+    if (scriptureRefs) {
+      spot.scripture_refs = scriptureRefs;
+    } else {
+      delete spot.scripture_refs;
+    }
+    spots.push(spot);
   }
 
   const p = { ...(data as unknown as Project), spots };
   if (!p.routes || !Array.isArray(p.routes)) {
-    return { ...p, version: 2, routes: [] };
+    return { ...p, version: 3, routes: [] };
   }
   if (p.routes.length > 50) throw new Error('Too many routes (max 50)');
   const validColorIds = ROUTE_COLORS.map((c) => c.id);
@@ -97,5 +130,5 @@ export function migrateProject(data: Record<string, unknown>): Project {
       music = { url: m.url, autoplay: !!m.autoplay };
     }
   }
-  return { ...p, version: 2, routes, ...(overlay ? { overlay } : {}), ...(basemapId ? { basemapId } : {}), ...(music ? { music } : {}) };
+  return { ...p, version: 3, routes, ...(overlay ? { overlay } : {}), ...(basemapId ? { basemapId } : {}), ...(music ? { music } : {}) };
 }

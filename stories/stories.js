@@ -3,6 +3,22 @@
  * Handles catalog rendering (Level 0) and story page rendering (Level 1).
  */
 
+/* ── Security helpers ── */
+
+function escapeHtml(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeAttr(str) {
+  // Attribute values: escape same chars + block javascript: scheme on href/src callers
+  return escapeHtml(str);
+}
+
 /* ── Level 0: Catalog page ── */
 
 async function renderCatalog(containerId) {
@@ -14,20 +30,59 @@ async function renderCatalog(containerId) {
     if (!res.ok) throw new Error('Failed to load catalog');
     var catalog = await res.json();
 
-    container.innerHTML = catalog.stories.map(function (s) {
-      return '<a class="catalog-card" href="' + s.path + '">' +
-        '<img class="catalog-card__img" src="' + s.thumbnail + '" alt="' + s.title + '" />' +
-        '<div class="catalog-card__body">' +
-          '<h2 class="catalog-card__title">' + s.title + '</h2>' +
-          '<p class="catalog-card__subtitle">' + s.subtitle + '</p>' +
-          '<p class="catalog-card__desc">' + s.description + '</p>' +
-          '<span class="catalog-card__count">' + s.count + ' 條路線</span>' +
-        '</div>' +
-      '</a>';
+    var stories = catalog.stories || [];
+    var collections = Array.isArray(catalog.collections) ? catalog.collections.slice() : [];
+    collections.sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
+
+    // Group stories by collection id (keeps only non-empty groups)
+    var grouped = collections
+      .map(function (c) {
+        return { id: c.id, title: c.title, items: stories.filter(function (s) { return s.collection === c.id; }) };
+      })
+      .filter(function (g) { return g.items.length > 0; });
+
+    // Uncategorized (stories without a collection, or collection not defined in collections[])
+    var definedIds = collections.map(function (c) { return c.id; });
+    var uncategorized = stories.filter(function (s) {
+      return !s.collection || definedIds.indexOf(s.collection) === -1;
+    });
+    if (uncategorized.length > 0) {
+      grouped.push({ id: '_uncategorized', title: '其他', items: uncategorized });
+    }
+
+    // Fallback: ≤ 1 effective group → flat layout (matches 008 behaviour)
+    if (grouped.length <= 1) {
+      container.className = 'catalog-grid';
+      container.innerHTML = renderCards(stories);
+      return;
+    }
+
+    // Grouped layout: swap container to block (stack sections vertically),
+    // nested grids hold cards inside each group
+    container.className = 'catalog-groups';
+    container.innerHTML = grouped.map(function (g) {
+      return '<section class="catalog-group">' +
+        '<h2 class="catalog-group__title">' + escapeHtml(g.title) + '</h2>' +
+        '<div class="catalog-grid catalog-grid--nested">' + renderCards(g.items) + '</div>' +
+      '</section>';
     }).join('');
   } catch (e) {
     container.innerHTML = '<p class="stories-loading">無法載入故事列表</p>';
   }
+}
+
+function renderCards(items) {
+  return items.map(function (s) {
+    return '<a class="catalog-card" href="' + escapeAttr(s.path) + '">' +
+      '<img class="catalog-card__img" src="' + escapeAttr(s.thumbnail) + '" alt="' + escapeAttr(s.title) + '" />' +
+      '<div class="catalog-card__body">' +
+        '<h2 class="catalog-card__title">' + escapeHtml(s.title) + '</h2>' +
+        '<p class="catalog-card__subtitle">' + escapeHtml(s.subtitle) + '</p>' +
+        '<p class="catalog-card__desc">' + escapeHtml(s.description) + '</p>' +
+        '<span class="catalog-card__count">' + escapeHtml(s.count) + ' 條路線</span>' +
+      '</div>' +
+    '</a>';
+  }).join('');
 }
 
 /* ── Level 1: Story page ── */
@@ -87,8 +142,8 @@ async function renderStoryPage(opts) {
     if (tabsEl) {
       tabsEl.innerHTML = stories.map(function (s, i) {
         return '<button class="story-tab' + (i === 0 ? ' story-tab--active' : '') + '" data-index="' + i + '">' +
-          '<img class="story-tab__thumb" src="' + s.thumbnail + '" alt="" />' +
-          '<span>' + s.title + '</span>' +
+          '<img class="story-tab__thumb" src="' + escapeAttr(s.thumbnail) + '" alt="" />' +
+          '<span>' + escapeHtml(s.title) + '</span>' +
         '</button>';
       }).join('');
 

@@ -21,6 +21,9 @@ export default {
   'spot.defaultTitle': 'Spot',
   'spot.loadSample': 'Load sample trail ▼',
 
+  // Popup
+  'popup.scripture': '📖 Scripture: ',
+
   // SpotEditor
   'editor.name': 'Name',
   'editor.desc': 'Description',

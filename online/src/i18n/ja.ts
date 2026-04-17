@@ -21,6 +21,9 @@ export default {
   'spot.defaultTitle': 'スポット',
   'spot.loadSample': 'サンプルルートを読込 ▼',
 
+  // Popup
+  'popup.scripture': '📖 聖書：',
+
   // SpotEditor
   'editor.name': '名前',
   'editor.desc': '説明',

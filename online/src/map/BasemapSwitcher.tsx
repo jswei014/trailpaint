@@ -4,7 +4,7 @@ import L from 'leaflet';
 import { t } from '../i18n';
 import { useProjectStore } from '../core/store/useProjectStore';
 import { OVERLAYS } from './overlays';
-import { BASEMAPS, DEFAULT_BASEMAP_ID } from './basemaps';
+import { BASEMAPS } from './basemaps';
 import type { BasemapDef } from './basemaps';
 import { createBasemapLayer, resolveBasemapId } from './basemapLayer';
 

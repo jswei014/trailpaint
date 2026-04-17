@@ -43,7 +43,6 @@ export default function PlaybackControl() {
   const [musicAutoplay, setMusicAutoplay] = useState(project.music?.autoplay ?? false);
 
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
-  const isEmbed = params.get('embed') === '1';
   // Priority: ?music= param > project.music.url > default
   const effectiveMusicUrl = params.get('music') || project.music?.url || DEFAULT_MUSIC;
   const effectiveAutoplay = params.get('music') ? true : project.music?.autoplay ?? false;
@@ -275,7 +274,7 @@ export default function PlaybackControl() {
             const origin = window.location.origin;
             let html: string;
             if (src) {
-              const musicParam = musicUrl ? `&music=${encodeURIComponent(musicUrl)}` : '';
+              const musicParam = effectiveMusicUrl ? `&music=${encodeURIComponent(effectiveMusicUrl)}` : '';
               html = `<iframe src="${origin}/app/player/?embed=1&src=${encodeURIComponent(src)}${musicParam}" width="100%" height="500" style="border:none;border-radius:8px" allowfullscreen></iframe>`;
             } else {
               const json = JSON.stringify(project);

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>耶穌受難週 — TrailPaint Stories</title>
+  <meta name="description" content="互動地圖：耶穌從榮耀進城、最後晚餐、受審受難到復活顯現的耶路撒冷足跡。" />
+  <meta property="og:title" content="耶穌受難週 — TrailPaint Stories" />
+  <meta property="og:description" content="互動地圖：從榮耀進城、最後晚餐、受審受難到復活顯現的耶路撒冷足跡" />
+  <meta property="og:image" content="https://trailpaint.org/stories/passion-week/og.jpg" />
+  <meta property="og:url" content="https://trailpaint.org/stories/passion-week/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="zh_TW" />
+  <meta property="og:site_name" content="TrailPaint 路小繪" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="耶穌受難週 — TrailPaint Stories" />
+  <meta name="twitter:description" content="互動地圖：從榮耀進城、最後晚餐、受審受難到復活顯現的耶路撒冷足跡" />
+  <meta name="twitter:image" content="https://trailpaint.org/stories/passion-week/og.jpg" />
+  <link rel="icon" type="image/svg+xml" href="/app/favicon.svg" />
+  <link rel="canonical" href="https://trailpaint.org/stories/passion-week/" />
+  <link rel="stylesheet" href="../stories.css" />
+</head>
+<body>
+  <div class="stories-page stories-page--fixed">
+    <header class="stories-header stories-header--compact">
+      <a class="stories-header__back" href="../">← 返回</a>
+      <h1 class="stories-header__title">耶穌受難週</h1>
+      <p class="stories-header__subtitle">從榮耀進城到復活顯現</p>
+    </header>
+
+    <!-- Horizontal tabs (desktop + mobile) -->
+    <div id="tabs" class="story-tabs"></div>
+
+    <!-- Active segment description -->
+    <div id="desc" class="story-desc"></div>
+
+    <!-- Player iframe -->
+    <div class="story-content">
+      <iframe id="player" class="story-iframe" title="TrailPaint Story Player"></iframe>
+    </div>
+
+  </div>
+
+  <script src="../stories.js"></script>
+  <script>
+    renderStoryPage({
+      tabsId: 'tabs',
+      iframeId: 'player',
+      descId: 'desc',
+      playerBase: '/app/player/',
+      storyBase: '/stories/passion-week/',
+      autoplay: true
+    });
+  </script>
+</body>
+</html>
