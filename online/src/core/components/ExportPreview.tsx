@@ -361,9 +361,12 @@ export default function ExportPreview({ baseImage, onClose, onAdjust }: ExportPr
               </div>
               <button
                 className="export-preview__btn"
-                onClick={() => {
-                  const embedHtml = `<iframe src="${window.location.origin}/app/player/?embed=1" width="100%" height="500" style="border:none;border-radius:8px" allowfullscreen></iframe>`;
-                  navigator.clipboard.writeText(embedHtml).then(() => showToast(t('export.preview.embedCopied')));
+                onClick={async () => {
+                  const project = useProjectStore.getState().project;
+                  const shareUrl = await encodeShareLink(project, '/app/player/');
+                  const embedHtml = `<iframe src="${shareUrl}" width="100%" height="500" style="border:none;border-radius:8px" allowfullscreen></iframe>`;
+                  await navigator.clipboard.writeText(embedHtml);
+                  showToast(t('export.preview.embedCopied'));
                 }}
               >
                 📋 {t('export.preview.embedCode')}

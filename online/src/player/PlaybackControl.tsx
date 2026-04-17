@@ -185,14 +185,25 @@ export default function PlaybackControl() {
         {!isEmbed && (
           <button
             className={`playback__gear${embedCopied ? ' playback__gear--active' : ''}`}
-            onClick={() => {
-              const src = window.location.pathname + '?embed=1&src=' + (new URLSearchParams(window.location.search).get('src') || '');
-              const url = window.location.origin + src;
-              const html = `<iframe src="${url}" width="100%" height="500" style="border:none;border-radius:8px" allowfullscreen></iframe>`;
-              navigator.clipboard.writeText(html).then(() => {
-                setEmbedCopied(true);
-                setTimeout(() => setEmbedCopied(false), 2000);
-              });
+            onClick={async () => {
+              const params = new URLSearchParams(window.location.search);
+              const src = params.get('src');
+              let embedUrl: string;
+              if (src) {
+                // Loaded via ?src= (story JSON) — use same src in embed
+                embedUrl = `${window.location.origin}/app/player/?embed=1&src=${encodeURIComponent(src)}`;
+              } else if (window.location.hash.startsWith('#share=')) {
+                // Loaded via share link — reuse hash
+                embedUrl = `${window.location.origin}/app/player/${window.location.hash}`;
+              } else {
+                // Loaded from localStorage — encode current project as share link
+                const { encodeShareLink } = await import('../core/utils/shareLink');
+                embedUrl = await encodeShareLink(project, '/app/player/');
+              }
+              const html = `<iframe src="${embedUrl}" width="100%" height="500" style="border:none;border-radius:8px" allowfullscreen></iframe>`;
+              await navigator.clipboard.writeText(html);
+              setEmbedCopied(true);
+              setTimeout(() => setEmbedCopied(false), 2000);
             }}
             title={t('player.embed.copy')}
           >
