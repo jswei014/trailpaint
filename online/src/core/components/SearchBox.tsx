@@ -32,6 +32,7 @@ const TYPE_ICONS: Record<string, string> = {
   viewpoint: '🔭',
   camp_site: '⛺',
   shelter: '🛖',
+  coordinate: '📌',
 };
 
 function getTypeIcon(type: string, cls: string): string {
@@ -47,11 +48,25 @@ function splitName(displayName: string): { name: string; address: string } {
   };
 }
 
-interface SearchBoxProps {
-  onSelect: (latlng: [number, number], name: string) => void;
+/** Detect coordinate input like "25.0330, 121.5654" or "25.0330 121.5654" */
+const COORD_RE = /^\s*(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)\s*$/;
+
+function parseCoords(input: string): [number, number] | null {
+  const m = input.match(COORD_RE);
+  if (!m) return null;
+  const lat = parseFloat(m[1]);
+  const lng = parseFloat(m[2]);
+  if (!isFinite(lat) || !isFinite(lng)) return null;
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+  return [lat, lng];
 }
 
-export default function SearchBox({ onSelect }: SearchBoxProps) {
+interface SearchBoxProps {
+  onSelect: (latlng: [number, number], name: string) => void;
+  onAddSpot?: (latlng: [number, number]) => void;
+}
+
+export default function SearchBox({ onSelect, onAddSpot }: SearchBoxProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -73,6 +88,22 @@ export default function SearchBox({ onSelect }: SearchBoxProps) {
       setSearched(false);
       return;
     }
+
+    // Check for coordinate input (e.g. "25.0330, 121.5654")
+    const coords = parseCoords(q);
+    if (coords) {
+      setResults([{
+        display_name: `${coords[0].toFixed(4)}, ${coords[1].toFixed(4)}`,
+        lat: String(coords[0]),
+        lon: String(coords[1]),
+        type: 'coordinate',
+        class: 'coordinate',
+      }]);
+      setSearched(true);
+      setLoading(false);
+      return;
+    }
+
     // Abort previous request to prevent race condition
     if (abortRef.current) abortRef.current.abort();
     const controller = new AbortController();
@@ -82,7 +113,7 @@ export default function SearchBox({ onSelect }: SearchBoxProps) {
     setSearched(true);
     fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5&addressdetails=0`,
-      { headers: { 'Accept-Language': 'zh-TW,en', 'User-Agent': 'TrailPaint/1.0' }, signal: controller.signal }
+      { headers: { 'Accept-Language': 'zh-TW,en' }, signal: controller.signal }
     )
       .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
       .then((data: unknown) => {
@@ -90,8 +121,9 @@ export default function SearchBox({ onSelect }: SearchBoxProps) {
         setLoading(false);
       })
       .catch((err) => {
-        setLoading(false);
         if (err instanceof DOMException && err.name === 'AbortError') return;
+        setResults([]);
+        setLoading(false);
       });
   }, []);
 
@@ -111,6 +143,10 @@ export default function SearchBox({ onSelect }: SearchBoxProps) {
     const lon = parseFloat(r.lon);
     if (!isFinite(lat) || !isFinite(lon)) return;
     onSelect([lat, lon], r.display_name);
+    // Coordinate input: also create a spot at that location
+    if (r.type === 'coordinate' && onAddSpot) {
+      onAddSpot([lat, lon]);
+    }
     setQuery('');
     setResults([]);
     setSearched(false);
