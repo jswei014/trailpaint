@@ -206,6 +206,8 @@ export default {
   'player.embed.empty': 'No story loaded',
   'player.music.on': 'BGMを再生',
   'player.music.off': 'BGMを停止',
+  'player.music.url': 'BGM URL',
+  'player.music.autoplay': 'BGM自動再生',
   'player.embed.copy': 'Player埋め込みコードをコピー',
 
   // Icons

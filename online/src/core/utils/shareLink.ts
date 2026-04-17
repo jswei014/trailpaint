@@ -34,6 +34,9 @@ function compactProject(project: Project): Record<string, unknown> {
   if (project.basemapId) {
     out.bm = project.basemapId;
   }
+  if (project.music) {
+    out.mu = { u: project.music.url, a: project.music.autoplay ? 1 : 0 };
+  }
   return out;
 }
 
@@ -74,6 +77,12 @@ function expandProject(c: Record<string, unknown>): Project {
   }
   if (typeof c.bm === 'string') {
     project.basemapId = c.bm;
+  }
+  if (c.mu && typeof c.mu === 'object') {
+    const mu = c.mu as Record<string, unknown>;
+    if (typeof mu.u === 'string') {
+      project.music = { url: mu.u, autoplay: !!mu.a };
+    }
   }
   return project;
 }

@@ -336,6 +336,32 @@ html, body {
   font-weight: bold;
 }
 
+.playback__setting-group--music {
+  flex: 1;
+  min-width: 0;
+}
+
+.playback__setting-input {
+  flex: 1;
+  min-width: 0;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid #8b5e3c;
+  background: rgba(255,255,255,0.1);
+  color: #fef9e7;
+  font-family: Georgia, serif;
+  font-size: 11px;
+  outline: none;
+}
+
+.playback__setting-input:focus {
+  border-color: #fde68a;
+}
+
+.playback__setting-input::placeholder {
+  color: #8b5e3c;
+}
+
 /* ── Mobile ── */
 
 @media (max-width: 768px) {

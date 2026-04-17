@@ -206,6 +206,8 @@ export default {
   'player.embed.empty': 'No story loaded',
   'player.music.on': 'Play background music',
   'player.music.off': 'Stop background music',
+  'player.music.url': 'Music URL',
+  'player.music.autoplay': 'Autoplay music',
   'player.embed.copy': 'Copy Player embed code',
 
   // Icons

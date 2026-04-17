@@ -38,20 +38,30 @@ export default function PlaybackControl() {
   const [musicPlaying, setMusicPlaying] = useState(false);
   const canFullscreen = useMemo(() => !!document.documentElement.requestFullscreen, []);
 
+  const [musicUrlInput, setMusicUrlInput] = useState(project.music?.url ?? '');
+  const [musicAutoplay, setMusicAutoplay] = useState(project.music?.autoplay ?? false);
+
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
   const isEmbed = params.get('embed') === '1';
-  const musicUrl = params.get('music');
+  // Priority: ?music= param > project.music.url
+  const effectiveMusicUrl = params.get('music') || project.music?.url || '';
+  const effectiveAutoplay = params.get('music') ? true : project.music?.autoplay ?? false;
 
   // Initialize audio element for background music
   useEffect(() => {
-    if (!musicUrl) return;
-    const audio = new Audio(musicUrl);
+    if (!effectiveMusicUrl) return;
+    const audio = new Audio(effectiveMusicUrl);
     audio.loop = true;
     audio.volume = 0.3;
     audio.preload = 'none';
     audioRef.current = audio;
-    return () => { audio.pause(); audio.src = ''; };
-  }, [musicUrl]);
+    if (effectiveAutoplay) {
+      audio.play().catch(() => {});
+      setMusicPlaying(true);
+    }
+    return () => { audio.pause(); audio.src = ''; audioRef.current = null; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [effectiveMusicUrl]);
 
   const spots = project.spots;
   const total = spots.length;
@@ -166,6 +176,42 @@ export default function PlaybackControl() {
               </button>
             ))}
           </div>
+          <div className="playback__setting-group playback__setting-group--music">
+            <span className="playback__setting-label">{t('player.music.url')}</span>
+            <input
+              className="playback__setting-input"
+              type="url"
+              placeholder="https://..."
+              value={musicUrlInput}
+              onChange={(e) => setMusicUrlInput(e.target.value)}
+              onBlur={() => {
+                const url = musicUrlInput.trim();
+                if (url !== (project.music?.url ?? '')) {
+                  // Update audio
+                  if (audioRef.current) { audioRef.current.pause(); audioRef.current.src = ''; }
+                  if (url) {
+                    const audio = new Audio(url);
+                    audio.loop = true;
+                    audio.volume = 0.3;
+                    audioRef.current = audio;
+                  } else {
+                    audioRef.current = null;
+                    setMusicPlaying(false);
+                  }
+                }
+              }}
+            />
+          </div>
+          <div className="playback__setting-group">
+            <label className="playback__setting-label" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <input
+                type="checkbox"
+                checked={musicAutoplay}
+                onChange={(e) => setMusicAutoplay(e.target.checked)}
+              />
+              {t('player.music.autoplay')}
+            </label>
+          </div>
         </div>
       )}
       <div className="playback">
@@ -198,23 +244,21 @@ export default function PlaybackControl() {
         <span className="playback__counter">
           {activeIndex !== null && activeIndex >= 0 ? activeIndex + 1 : 0}/{total}
         </span>
-        {musicUrl && (
-          <button
-            className="playback__btn"
-            onClick={() => {
-              if (!audioRef.current) return;
-              if (musicPlaying) {
-                audioRef.current.pause();
-              } else {
-                audioRef.current.play().catch(() => {});
-              }
-              setMusicPlaying(!musicPlaying);
-            }}
-            title={musicPlaying ? t('player.music.off') : t('player.music.on')}
-          >
-            {musicPlaying ? '🔇' : '🎵'}
-          </button>
-        )}
+        <button
+          className={`playback__btn${musicPlaying ? ' playback__btn--active' : ''}`}
+          onClick={() => {
+            if (!audioRef.current) return;
+            if (musicPlaying) {
+              audioRef.current.pause();
+            } else {
+              audioRef.current.play().catch(() => {});
+            }
+            setMusicPlaying(!musicPlaying);
+          }}
+          title={musicPlaying ? t('player.music.off') : t('player.music.on')}
+        >
+          {musicPlaying ? '🔇' : '🎵'}
+        </button>
         <button
           className={`playback__btn${showSettings ? ' playback__btn--active' : ''}`}
           onClick={() => setShowSettings(!showSettings)}

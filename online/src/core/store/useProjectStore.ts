@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { temporal } from 'zundo';
-import type { Project, Spot, Mode, OverlaySetting } from '../models/types';
+import type { Project, Spot, Mode, OverlaySetting, MusicSetting } from '../models/types';
 import { DEFAULT_CARD_OFFSET, DEFAULT_CENTER, DEFAULT_ZOOM } from '../models/types';
 import { migrateProject } from '../utils/migrateProject';
 import type { Route } from '../models/routes';
@@ -60,9 +60,10 @@ interface ProjectState {
   setBackgroundImage: (dataUrl: string, width: number, height: number) => void;
   clearBackgroundImage: () => void;
 
-  // Basemap & Overlay
+  // Basemap, Overlay & Music
   setBasemapId: (id: string) => void;
   setOverlay: (overlay: OverlaySetting | null) => void;
+  setMusic: (music: MusicSetting | null) => void;
 
   // Settings
   handDrawn: boolean;
@@ -429,6 +430,9 @@ export const useProjectStore = create<ProjectState>()(
 
   setOverlay: (overlay) =>
     set((s) => ({ project: { ...s.project, overlay: overlay ?? undefined } })),
+
+  setMusic: (music) =>
+    set((s) => ({ project: { ...s.project, music: music ?? undefined } })),
 
   // ── Settings ──
 

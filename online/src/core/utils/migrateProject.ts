@@ -1,4 +1,4 @@
-import type { Project, Spot, OverlaySetting } from '../models/types';
+import type { Project, Spot, OverlaySetting, MusicSetting } from '../models/types';
 import { DEFAULT_CARD_OFFSET } from '../models/types';
 import type { Route } from '../models/routes';
 import { ROUTE_COLORS } from '../models/routes';
@@ -89,5 +89,13 @@ export function migrateProject(data: Record<string, unknown>): Project {
   }
   // Validate optional basemapId (capped at 50 chars to prevent memory waste)
   const basemapId = typeof data.basemapId === 'string' ? data.basemapId.slice(0, 50) : undefined;
-  return { ...p, version: 2, routes, ...(overlay ? { overlay } : {}), ...(basemapId ? { basemapId } : {}) };
+  // Validate optional music setting
+  let music: MusicSetting | undefined;
+  if (data.music && typeof data.music === 'object') {
+    const m = data.music as Record<string, unknown>;
+    if (typeof m.url === 'string' && m.url.length > 0 && m.url.length <= 2000) {
+      music = { url: m.url, autoplay: !!m.autoplay };
+    }
+  }
+  return { ...p, version: 2, routes, ...(overlay ? { overlay } : {}), ...(basemapId ? { basemapId } : {}), ...(music ? { music } : {}) };
 }

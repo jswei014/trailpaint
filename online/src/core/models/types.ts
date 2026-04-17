@@ -16,12 +16,18 @@ export interface OverlaySetting {
   opacity: number;
 }
 
+export interface MusicSetting {
+  url: string;
+  autoplay: boolean;
+}
+
 export interface Project {
   version: 1 | 2;
   name: string;
   center: [number, number]; // [lat, lng]
   zoom: number;
   basemapId?: string;
+  music?: MusicSetting;
   spots: Spot[];
   routes: Route[];
   overlay?: OverlaySetting;
