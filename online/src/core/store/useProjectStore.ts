@@ -86,6 +86,7 @@ function createEmptyProject(): Project {
     name: 'Untitled',
     center: DEFAULT_CENTER,
     zoom: DEFAULT_ZOOM,
+    music: { url: 'https://trailpaint.org/stories/music/redeemed.mp3', autoplay: false },
     spots: [],
     routes: [],
   };
