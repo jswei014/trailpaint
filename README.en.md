@@ -25,14 +25,9 @@ TrailPaint is a **hand-drawn style trail map maker**. Take a trip, come back, an
 - **Auto-detects 3 languages**: Chinese / English / Japanese
 - **Open source GPL-3.0**: free to use, modify, and remix
 
-### Gallery
+### Sample map
 
-<table>
-<tr>
-<td width="50%"><img src="./examples/trailpaint-map.jpg" alt="Sample map 1" /></td>
-<td width="50%"><img src="./examples/trailpaint-map-01.jpg" alt="Sample map 2" /></td>
-</tr>
-</table>
+![TrailPaint sample](./examples/trailpaint-map.jpg)
 
 ---
 
