@@ -3,7 +3,9 @@ import { t } from '../../i18n';
 
 const MAX_SIDE = 800;
 const QUALITY = 0.7;
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+// 10MB aligns with exifToGeojson.MAX_PHOTO_BYTES; iPhone 15 Pro HDR HEIC
+// can exceed 5MB even when Finder reports 3-4MB (depth maps + motion photo).
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 export async function compressImage(file: File): Promise<string> {
   if (file.size > MAX_FILE_SIZE) {

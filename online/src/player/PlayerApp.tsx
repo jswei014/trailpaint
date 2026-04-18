@@ -91,25 +91,50 @@ export default function PlayerApp() {
       return () => window.removeEventListener('message', handler);
     }
 
-    // 5. window.opener postMessage — Safari cross-tab localStorage isolation
-    //    fallback: the Editor's "Story Mode" opens us in a new tab and waits
-    //    for our ready ping, then posts the project data back.
-    if (window.opener) {
+    // 5. Story-mode cross-tab — three transports Editor may use.
+    //    BroadcastChannel is primary for iOS Safari, where `window.opener` can
+    //    be null and localStorage has cross-tab ITP isolation. The opener path
+    //    stays as legacy fallback for older browsers.
+    if (!isEmbed) {
       const expectedOrigin = window.location.origin;
-      const openerHandler = (e: MessageEvent) => {
-        if (e.origin !== expectedOrigin) return;
-        if (e.source !== window.opener) return;
-        if (e.data?.type !== 'trailpaint-project' || !e.data?.data) return;
+      const cleanups: Array<() => void> = [];
+
+      // 5a. BroadcastChannel: Player broadcasts 'player-ready', Editor posts back
+      if (typeof BroadcastChannel === 'function') {
+        const channel = new BroadcastChannel('trailpaint-player');
+        const onChannel = (ev: MessageEvent) => {
+          if (ev.data?.type !== 'project' || !ev.data?.data) return;
+          try {
+            const data = migrateProject(ev.data.data);
+            loadProject(data);
+          } catch { /* ignore bad payload */ }
+        };
+        channel.addEventListener('message', onChannel);
+        try { channel.postMessage({ type: 'player-ready' }); } catch { /* noop */ }
+        cleanups.push(() => { channel.removeEventListener('message', onChannel); channel.close(); });
+      }
+
+      // 5b. window.opener postMessage
+      if (window.opener) {
+        const openerHandler = (e: MessageEvent) => {
+          if (e.origin !== expectedOrigin) return;
+          if (e.source !== window.opener) return;
+          if (e.data?.type !== 'trailpaint-project' || !e.data?.data) return;
+          try {
+            const data = migrateProject(e.data.data);
+            loadProject(data);
+          } catch { /* ignore */ }
+        };
+        window.addEventListener('message', openerHandler);
         try {
-          const data = migrateProject(e.data.data);
-          loadProject(data);
-        } catch { /* ignore bad payload */ }
-      };
-      window.addEventListener('message', openerHandler);
-      try {
-        window.opener.postMessage({ type: 'trailpaint-opener-ready' }, expectedOrigin);
-      } catch { /* opener cross-origin or closed — give up quietly */ }
-      return () => window.removeEventListener('message', openerHandler);
+          window.opener.postMessage({ type: 'trailpaint-opener-ready' }, expectedOrigin);
+        } catch { /* opener gone — channel path still has a chance */ }
+        cleanups.push(() => window.removeEventListener('message', openerHandler));
+      }
+
+      if (cleanups.length > 0) {
+        return () => cleanups.forEach((c) => c());
+      }
     }
   }, [params, loadProject, setError, isEmbed]);
 
