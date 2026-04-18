@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Sample Map</name>
+    <Placemark>
+      <name>Point A</name>
+      <description>A test point</description>
+      <Point>
+        <coordinates>121.5,25.05,0</coordinates>
+      </Point>
+      <Style>
+        <IconStyle>
+          <Icon>
+            <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+          </Icon>
+        </IconStyle>
+      </Style>
+    </Placemark>
+    <Placemark>
+      <name>Route A</name>
+      <description>A test route</description>
+      <LineString>
+        <coordinates>
+          121.5,25.05,0
+          121.51,25.06,0
+          121.52,25.07,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Multi-segment Route</name>
+      <MultiGeometry>
+        <LineString>
+          <coordinates>
+            121.6,25.1,0
+            121.61,25.11,0
+          </coordinates>
+        </LineString>
+        <LineString>
+          <coordinates>
+            121.65,25.15,0
+            121.66,25.16,0
+          </coordinates>
+        </LineString>
+      </MultiGeometry>
+    </Placemark>
+  </Document>
+</kml>

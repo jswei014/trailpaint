@@ -1,0 +1,31 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.5, 25.05]
+      },
+      "properties": {
+        "title": "Point A",
+        "description": "A test point"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5, 25.05],
+          [121.51, 25.06],
+          [121.52, 25.07]
+        ]
+      },
+      "properties": {
+        "name": "Route A",
+        "description": "A test route"
+      }
+    }
+  ]
+}
