@@ -17,7 +17,7 @@ describe('exifToGeojson', () => {
 
   it('should handle single photo with GPS and DateTimeOriginal', async () => {
     const mockFile = new File(['test'], 'photo.jpg', { type: 'image/jpeg' });
-    const mockDate = new Date('2026-04-18T14:30:00Z');
+    const mockDate = new Date(2026, 3, 18, 14, 30);
 
     mockParseExif.mockResolvedValueOnce({
       file: mockFile,
@@ -34,7 +34,8 @@ describe('exifToGeojson', () => {
     expect(feature.type).toBe('Feature');
     expect(feature.geometry.type).toBe('Point');
     expect(feature.geometry.coordinates).toEqual([121.5628, 25.0442]);
-    expect(feature.properties.title).toBe('2026-04-18 14:30');
+    expect(feature.properties.title).toBe('04-18');
+    expect(feature.properties.desc).toBe('2026-04-18 14:30');
     expect(feature.properties.photoRef).toBe('photo.jpg::0');
     expect(feature.properties.pendingLocation).toBeUndefined();
 
@@ -48,7 +49,7 @@ describe('exifToGeojson', () => {
 
   it('should handle photo without GPS (pendingLocation)', async () => {
     const mockFile = new File(['test'], 'photo-no-gps.jpg', { type: 'image/jpeg' });
-    const mockDate = new Date('2026-04-18T14:30:00Z');
+    const mockDate = new Date(2026, 3, 18, 14, 30);
     const mapCenter: [number, number] = [25.05, 121.56];
 
     mockParseExif.mockResolvedValueOnce({
@@ -62,7 +63,8 @@ describe('exifToGeojson', () => {
     const feature = result.featureCollection.features[0];
     expect(feature.geometry.coordinates).toEqual([121.56, 25.05]); // [lng, lat] from mapCenter [lat, lng]
     expect(feature.properties.pendingLocation).toBe(true);
-    expect(feature.properties.title).toBe('2026-04-18 14:30');
+    expect(feature.properties.title).toBe('04-18');
+    expect(feature.properties.desc).toBe('2026-04-18 14:30');
 
     expect(result.stats.withoutGps).toBe(1);
   });
@@ -91,7 +93,7 @@ describe('exifToGeojson', () => {
       Promise.resolve({
         file,
         latlng: [25.05, 121.56],
-        takenAt: new Date('2026-04-18T14:30:00Z'),
+        takenAt: new Date(2026, 3, 18, 14, 30),
       })
     );
 
@@ -112,17 +114,17 @@ describe('exifToGeojson', () => {
       .mockResolvedValueOnce({
         file: file1,
         latlng: [25.0442, 121.5628],
-        takenAt: new Date('2026-04-18T14:30:00Z'),
+        takenAt: new Date(2026, 3, 18, 14, 30),
       })
       .mockResolvedValueOnce({
         file: file2,
         latlng: null,
-        takenAt: new Date('2026-04-18T14:31:00Z'),
+        takenAt: new Date(2026, 3, 18, 14, 31),
       })
       .mockResolvedValueOnce({
         file: file3,
         latlng: [25.0443, 121.5628],
-        takenAt: new Date('2026-04-18T14:32:00Z'),
+        takenAt: new Date(2026, 3, 18, 14, 32),
       });
 
     const result = await exifToGeojson([file1, file2, file3], [25.05, 121.56]);
@@ -145,7 +147,7 @@ describe('exifToGeojson', () => {
       Promise.resolve({
         file,
         latlng: [25.05, 121.56],
-        takenAt: new Date('2026-04-18T14:30:00Z'),
+        takenAt: new Date(2026, 3, 18, 14, 30),
       })
     );
 
@@ -167,7 +169,7 @@ describe('exifToGeojson', () => {
       Promise.resolve({
         file,
         latlng: [25.05, 121.56],
-        takenAt: new Date('2026-04-18T14:30:00Z'),
+        takenAt: new Date(2026, 3, 18, 14, 30),
       })
     );
 
@@ -200,31 +202,49 @@ describe('exifToGeojson', () => {
     expect(result.stats.total).toBe(1);
   });
 
-  it('counts unreadable files in stats + skips them (no feature produced)', async () => {
+  it('counts only non-image files as unreadable (images with bad EXIF go pending)', async () => {
     const good = new File(['test'], 'good.jpg', { type: 'image/jpeg' });
-    const bad = new File(['test'], 'bad.bin', { type: 'application/octet-stream' });
+    const nonImage = new File(['test'], 'bad.bin', { type: 'application/octet-stream' });
 
     mockParseExif
       .mockResolvedValueOnce({
         file: good,
         latlng: [25.05, 121.56],
-        takenAt: new Date('2026-04-18T14:30:00Z'),
+        takenAt: new Date(2026, 3, 18, 14, 30),
       })
       .mockRejectedValueOnce(new Error('Invalid image'));
 
-    const result = await exifToGeojson([good, bad], [25.05, 121.56]);
+    const result = await exifToGeojson([good, nonImage], [25.05, 121.56]);
 
     expect(result.featureCollection.features).toHaveLength(1);
-    expect(result.featureCollection.features[0].properties.title).toBe('2026-04-18 14:30');
+    expect(result.featureCollection.features[0].properties.title).toBe('04-18');
     expect(result.stats.total).toBe(2);
     expect(result.stats.withGps).toBe(1);
     expect(result.stats.withoutGps).toBe(0);
     expect(result.stats.unreadable).toBe(1);
   });
 
+  it('HEIC / PNG / other image/* files with exifr throw are treated as pendingLocation (not unreadable)', async () => {
+    const heic = new File(['heic bytes'], 'IMG_9928.HEIC', { type: 'image/heic' });
+    const pngByExt = new File(['png bytes'], 'screenshot.png', { type: '' });
+
+    mockParseExif
+      .mockRejectedValueOnce(new Error('exifr cannot decode HEIC'))
+      .mockRejectedValueOnce(new Error('no EXIF'));
+
+    const result = await exifToGeojson([heic, pngByExt], [25, 121]);
+
+    expect(result.featureCollection.features).toHaveLength(2);
+    expect(result.featureCollection.features[0].properties.pendingLocation).toBe(true);
+    expect(result.featureCollection.features[0].properties.title).toBe('IMG_9928');
+    expect(result.featureCollection.features[1].properties.pendingLocation).toBe(true);
+    expect(result.stats.unreadable).toBe(0);
+    expect(result.stats.withoutGps).toBe(2);
+  });
+
   it('should format DateTimeOriginal as YYYY-MM-DD HH:mm', async () => {
     const mockFile = new File(['test'], 'photo.jpg', { type: 'image/jpeg' });
-    const mockDate = new Date('2026-04-18T09:05:30Z'); // 09:05:30
+    const mockDate = new Date(2026, 3, 18, 9, 5, 30); // local 09:05:30
 
     mockParseExif.mockResolvedValueOnce({
       file: mockFile,
@@ -235,6 +255,7 @@ describe('exifToGeojson', () => {
     const result = await exifToGeojson([mockFile], [25.05, 121.56]);
 
     const feature = result.featureCollection.features[0];
-    expect(feature.properties.title).toBe('2026-04-18 09:05');
+    expect(feature.properties.title).toBe('04-18');
+    expect(feature.properties.desc).toBe('2026-04-18 09:05');
   });
 });

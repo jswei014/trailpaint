@@ -90,6 +90,27 @@ export default function PlayerApp() {
       window.parent.postMessage({ type: 'trailpaint-ready' }, expectedOrigin);
       return () => window.removeEventListener('message', handler);
     }
+
+    // 5. window.opener postMessage — Safari cross-tab localStorage isolation
+    //    fallback: the Editor's "Story Mode" opens us in a new tab and waits
+    //    for our ready ping, then posts the project data back.
+    if (window.opener) {
+      const expectedOrigin = window.location.origin;
+      const openerHandler = (e: MessageEvent) => {
+        if (e.origin !== expectedOrigin) return;
+        if (e.source !== window.opener) return;
+        if (e.data?.type !== 'trailpaint-project' || !e.data?.data) return;
+        try {
+          const data = migrateProject(e.data.data);
+          loadProject(data);
+        } catch { /* ignore bad payload */ }
+      };
+      window.addEventListener('message', openerHandler);
+      try {
+        window.opener.postMessage({ type: 'trailpaint-opener-ready' }, expectedOrigin);
+      } catch { /* opener cross-origin or closed — give up quietly */ }
+      return () => window.removeEventListener('message', openerHandler);
+    }
   }, [params, loadProject, setError, isEmbed]);
 
   // Autoplay: trigger after project loads

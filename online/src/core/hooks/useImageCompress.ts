@@ -1,3 +1,4 @@
+import exifr from 'exifr';
 import { t } from '../../i18n';
 
 const MAX_SIDE = 800;
@@ -11,7 +12,48 @@ export async function compressImage(file: File): Promise<string> {
 
   // createImageBitmap decodes at the engine level — avoids expanding
   // full-resolution pixels (e.g. 48 MP) into the JS heap on iOS Safari.
-  const bitmap = await createImageBitmap(file);
+  // Chrome/Firefox desktop can't decode HEIC; fall back to the EXIF-embedded
+  // JPEG thumbnail (every iPhone HEIC carries one).
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(file);
+  } catch {
+    // createImageBitmap can't decode — most commonly HEIC on Chrome/Firefox.
+    // Two-tier fallback:
+    //   1. HEIC → heic2any (dynamic import so the libheif WASM chunk only
+    //      loads when a user actually imports HEIC)
+    //   2. Anything else → EXIF thumbnail IFD
+    const isHeic =
+      /\.(heic|heif)$/i.test(file.name) || /heic|heif/i.test(file.type);
+
+    if (isHeic) {
+      try {
+        // heic-to tracks current libheif (1.21.2+) and handles iPhone 15 Pro
+        // iOS 18 HEIC variants that the older heic2any 0.0.4 rejected with
+        // "ERR_LIBHEIF format not supported".
+        const { heicTo } = await import('heic-to');
+        const jpeg = await heicTo({
+          blob: file,
+          type: 'image/jpeg',
+          quality: 0.8,
+        });
+        bitmap = await createImageBitmap(jpeg);
+      } catch (heicErr) {
+        // Keep a brief warn so HEIC decode failures stay visible in DevTools.
+        // No filename / metadata to avoid unnecessary PII in logs.
+        console.warn('[compressImage] heic-to failed, falling back to EXIF thumbnail:', heicErr);
+        const thumb = await exifr.thumbnail(file).catch(() => null);
+        if (!thumb) throw new Error(t('photo.decodeFailed'));
+        const thumbBlob = new Blob([thumb as BlobPart], { type: 'image/jpeg' });
+        bitmap = await createImageBitmap(thumbBlob);
+      }
+    } else {
+      const thumb = await exifr.thumbnail(file).catch(() => null);
+      if (!thumb) throw new Error(t('photo.decodeFailed'));
+      const thumbBlob = new Blob([thumb as BlobPart], { type: 'image/jpeg' });
+      bitmap = await createImageBitmap(thumbBlob);
+    }
+  }
   let { width, height } = bitmap;
   if (width > MAX_SIDE || height > MAX_SIDE) {
     const ratio = Math.min(MAX_SIDE / width, MAX_SIDE / height);

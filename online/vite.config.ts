@@ -34,7 +34,10 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globIgnores: ['**/examples/**', '**/*.trailpaint-*'],
+        // heic-to* is a 2.7MB libheif wasm bundle, dynamically imported only
+        // when the user picks a HEIC photo. Excluding it from precache keeps
+        // first-load fast; the service worker will still serve it on demand.
+        globIgnores: ['**/examples/**', '**/*.trailpaint-*', '**/heic-to-*'],
         navigateFallbackDenylist: [/^\/app\/player/],
         runtimeCaching: [
           // Carto 圖磚

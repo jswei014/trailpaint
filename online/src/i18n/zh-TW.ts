@@ -19,6 +19,7 @@ export default {
   // SpotList
   'spot.empty': '📍 點「加景點」在地圖上標記\n🖊️ 點「畫路線」繪製路線\n📷 拖曳圖片到畫面換底圖',
   'spot.defaultTitle': '景點',
+  'photo.decodeFailed': '此瀏覽器無法解碼這張照片（例如 HEIC 在 Chrome/Firefox）。請改用 Safari 或先轉 JPEG',
   'spot.pendingLocationGroup': '待定位',
   'spot.locatedGroup': '已定位',
   'spot.loadSample': '載入範例步道 ▼',

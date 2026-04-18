@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useProjectStore } from '../store/useProjectStore';
+import { openStoryMode } from '../utils/storyMode';
 import SpotList from './SpotList';
 import SpotEditor from './SpotEditor';
 import RouteEditor from './RouteEditor';
@@ -101,13 +102,7 @@ export default function Sidebar({
         {spots.length > 0 && (
           <div className="sidebar__toolbar">
             <button className="sidebar__tool-btn sidebar__tool-btn--story" onClick={() => {
-              const project = useProjectStore.getState().project;
-              try {
-                localStorage.setItem('trailpaint-player-project', JSON.stringify(project));
-                window.open('/app/player/', '_blank');
-              } catch {
-                window.open('/app/player/', '_blank');
-              }
+              openStoryMode(useProjectStore.getState().project);
             }}>{t('app.storyMode')}</button>
           </div>
         )}

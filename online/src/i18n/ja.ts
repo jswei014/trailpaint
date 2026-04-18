@@ -19,6 +19,7 @@ export default {
   // SpotList
   'spot.empty': '📍「スポット追加」で地図にマーク\n🖊️「ルート描画」でルートを描く\n📷 画像をドラッグして背景を変更',
   'spot.defaultTitle': 'スポット',
+  'photo.decodeFailed': 'このブラウザでは写真をデコードできません（Chrome/Firefox での HEIC 等）。Safari を使うか JPEG に変換してください',
   'spot.pendingLocationGroup': '位置未設定',
   'spot.locatedGroup': '位置設定済み',
   'spot.loadSample': 'サンプルルートを読込 ▼',

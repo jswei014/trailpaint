@@ -1,4 +1,4 @@
-import exifr from 'exifr/dist/lite.umd.js';
+import exifr from 'exifr';
 
 export interface ExifData {
   file: File;
@@ -14,27 +14,43 @@ export interface ExifData {
 export async function parseExif(file: File): Promise<ExifData> {
   // exifr throws on unreadable input — we let that propagate so the caller
   // (exifToGeojson) can distinguish unreadable from "readable but missing EXIF".
-  const data = await exifr.parse(file, {
-    gps: true,
-    ifd0: false,
-    exif: true,
-    pick: ['DateTimeOriginal', 'latitude', 'longitude'],
-  });
+  //
+  // Two calls instead of one:
+  // - exifr.gps() is a dedicated helper that always enables the GPS IFD and
+  //   returns translated { latitude, longitude } decimals (handles iPhone HEIC
+  //   containers reliably where the pick-array shortcut on exifr.parse does not).
+  // - exifr.parse() with a pick list is cheapest for just the timestamp.
+  // exifr reads the file bytes once internally for each call; Blob.arrayBuffer
+  // is cached by the browser so there is no duplicate I/O.
+  const [gps, meta] = await Promise.all([
+    exifr.gps(file).catch(() => null),
+    exifr.parse(file, ['DateTimeOriginal']).catch(() => null),
+  ]);
 
   let latlng: [number, number] | null = null;
-  if (data?.latitude !== undefined && data?.longitude !== undefined) {
-    latlng = [data.latitude, data.longitude];
+  if (
+    gps &&
+    typeof gps.latitude === 'number' &&
+    typeof gps.longitude === 'number' &&
+    isFinite(gps.latitude) &&
+    isFinite(gps.longitude)
+  ) {
+    latlng = [gps.latitude, gps.longitude];
   }
 
   let takenAt: Date | null = null;
-  if (data?.DateTimeOriginal) {
+  if (meta?.DateTimeOriginal) {
     const candidate =
-      data.DateTimeOriginal instanceof Date
-        ? data.DateTimeOriginal
-        : new Date(data.DateTimeOriginal);
-    // Reject Invalid Date (e.g. EXIF with garbage timestamp); formatDateTime
-    // would otherwise emit "NaN-NaN-NaN NaN:NaN" as the spot title.
+      meta.DateTimeOriginal instanceof Date
+        ? meta.DateTimeOriginal
+        : new Date(meta.DateTimeOriginal);
     if (!isNaN(candidate.getTime())) takenAt = candidate;
+  }
+
+  // If both helpers failed outright (the file cannot be parsed at all), throw
+  // so the caller counts it as unreadable rather than silently pending.
+  if (gps === null && meta === null) {
+    throw new Error('無法解析照片 metadata');
   }
 
   return { file, latlng, takenAt };

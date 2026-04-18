@@ -19,6 +19,7 @@ export default {
   // SpotList
   'spot.empty': '📍 Tap "Add Spot" to mark the map\n🖊️ Tap "Draw Route" to trace a path\n📷 Drag an image to change the basemap',
   'spot.defaultTitle': 'Spot',
+  'photo.decodeFailed': 'This browser cannot decode this photo (e.g. HEIC on Chrome/Firefox). Use Safari or convert to JPEG first',
   'spot.pendingLocationGroup': 'Awaiting location',
   'spot.locatedGroup': 'Located',
   'spot.loadSample': 'Load sample trail ▼',

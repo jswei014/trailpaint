@@ -135,11 +135,11 @@ describe('importPOIs — geocodeQueue integration (010 D4 / Task 5)', () => {
     mockEnqueueGeocode.mockClear();
   });
 
-  it('enqueues a geocode job per new non-pending spot', async () => {
+  it('enqueues a geocode job per new non-pending timestamp-titled spot', async () => {
     const result: ImportResult = {
       spots: [
-        mkSpot({ latlng: [25, 121], title: '2026-04-18 14:30' }),
-        mkSpot({ latlng: [24, 120], title: '2026-04-18 14:31' }),
+        mkSpot({ latlng: [25, 121], title: '04-18' }),
+        mkSpot({ latlng: [24, 120], title: '04-19' }),
       ],
       routes: [],
     };
@@ -147,7 +147,7 @@ describe('importPOIs — geocodeQueue integration (010 D4 / Task 5)', () => {
     expect(mockEnqueueGeocode).toHaveBeenCalledTimes(2);
     const firstCall = mockEnqueueGeocode.mock.calls[0][0];
     expect(firstCall.spotId).toBe(result.spots[0].id);
-    expect(firstCall.originalTitle).toBe('2026-04-18 14:30');
+    expect(firstCall.originalTitle).toBe('04-18');
     expect(firstCall.latlng).toEqual([25, 121]);
     expect(typeof firstCall.onResult).toBe('function');
   });
@@ -155,37 +155,48 @@ describe('importPOIs — geocodeQueue integration (010 D4 / Task 5)', () => {
   it('skips pendingLocation spots (coord is mapCenter, not real)', async () => {
     const result: ImportResult = {
       spots: [
-        mkSpot({ latlng: [0, 0], title: 'pending', pendingLocation: true }),
-        mkSpot({ latlng: [25, 121], title: 'real' }),
+        mkSpot({ latlng: [0, 0], title: '04-18', pendingLocation: true }),
+        mkSpot({ latlng: [25, 121], title: '04-19' }),
       ],
       routes: [],
     };
     await useProjectStore.getState().importPOIs(result);
     expect(mockEnqueueGeocode).toHaveBeenCalledTimes(1);
     const call = mockEnqueueGeocode.mock.calls[0][0];
-    expect(call.originalTitle).toBe('real');
+    expect(call.originalTitle).toBe('04-19');
   });
 
-  it('callback overwrites title only if user has not edited it (checkAndSet)', async () => {
-    const spot = mkSpot({ latlng: [25, 121], title: '2026-04-18 14:30' });
+  it('callback appends place name to the timestamp title (preserves date prefix)', async () => {
+    const spot = mkSpot({ latlng: [25, 121], title: '04-18' });
     const result: ImportResult = { spots: [spot], routes: [] };
     await useProjectStore.getState().importPOIs(result);
 
     const job = mockEnqueueGeocode.mock.calls[0][0];
-    // Simulate queue firing callback — title still matches original → overwrite
-    job.onResult(spot.id, '台北 101', '2026-04-18 14:30');
-    expect(useProjectStore.getState().project.spots.find((s) => s.id === spot.id)?.title).toBe('台北 101');
+    // Simulate queue firing callback — title still matches original → append
+    job.onResult(spot.id, '台北 101', '04-18');
+    expect(
+      useProjectStore.getState().project.spots.find((s) => s.id === spot.id)?.title,
+    ).toBe('04-18 台北 101');
+  });
+
+  it('skips enqueueGeocode for non-timestamp titles (KML/GeoJSON imports)', async () => {
+    const result: ImportResult = {
+      spots: [mkSpot({ latlng: [25, 121], title: 'Central Plaza' })],
+      routes: [],
+    };
+    await useProjectStore.getState().importPOIs(result);
+    expect(mockEnqueueGeocode).not.toHaveBeenCalled();
   });
 
   it('callback skips when originalTitle no longer matches (user edited)', async () => {
-    const spot = mkSpot({ latlng: [25, 121], title: '2026-04-18 14:30' });
+    const spot = mkSpot({ latlng: [25, 121], title: '04-18' });
     const result: ImportResult = { spots: [spot], routes: [] };
     await useProjectStore.getState().importPOIs(result);
     // User renames the spot before geocode resolves
     useProjectStore.getState().updateSpot(spot.id, { title: 'my custom name' });
 
     const job = mockEnqueueGeocode.mock.calls[0][0];
-    job.onResult(spot.id, '台北 101', '2026-04-18 14:30');
+    job.onResult(spot.id, '台北 101', '04-18');
 
     expect(useProjectStore.getState().project.spots.find((s) => s.id === spot.id)?.title).toBe('my custom name');
   });

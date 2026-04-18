@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeBoundingBoxCenter, renumberSpots } from './storeHelpers';
+import { computeBoundingBoxCenter, renumberSpots, spreadNewSpotOffsets } from './storeHelpers';
 import type { Spot } from '../models/types';
 import { DEFAULT_CARD_OFFSET } from '../models/types';
 
@@ -45,6 +45,54 @@ describe('computeBoundingBoxCenter', () => {
 
   it('returns null when every point is non-finite', () => {
     expect(computeBoundingBoxCenter([[NaN, NaN], [Infinity, 0]])).toBeNull();
+  });
+});
+
+describe('spreadNewSpotOffsets (010 UX: cardOffset anti-overlap)', () => {
+  it('leaves a lone new spot at its default offset', () => {
+    const s = mkSpot({ latlng: [25, 121] });
+    const result = spreadNewSpotOffsets([], [s]);
+    expect(result[0].cardOffset).toEqual(s.cardOffset);
+  });
+
+  it('spreads the 2nd..8th spots in the same cell around the pin', () => {
+    const spots = Array.from({ length: 8 }, () => mkSpot({ latlng: [25, 121] }));
+    const result = spreadNewSpotOffsets([], spots);
+    expect(result[0].cardOffset).toEqual(spots[0].cardOffset); // 1st: default
+    // 2nd..8th should be distinct and pulled from the spread table
+    const offsets = result.slice(1).map((s) => s.cardOffset);
+    const unique = new Set(offsets.map((o) => `${o.x},${o.y}`));
+    expect(unique.size).toBe(7);
+  });
+
+  it('does not touch existing spots, only new ones', () => {
+    const existing = [
+      mkSpot({ latlng: [25, 121], cardOffset: { x: 999, y: 999 } }),
+    ];
+    const newSpots = [mkSpot({ latlng: [25, 121] })];
+    const result = spreadNewSpotOffsets(existing, newSpots);
+    // Existing kept its quirky offset (not in returned array but untouched)
+    expect(existing[0].cardOffset).toEqual({ x: 999, y: 999 });
+    // New spot gets spread because cell was occupied
+    expect(result[0].cardOffset).not.toEqual({ x: 0, y: -60 });
+  });
+
+  it('groups only by ~100m (3 decimal places), so far-apart spots are independent', () => {
+    const a = mkSpot({ latlng: [25.001, 121.001] });
+    const b = mkSpot({ latlng: [26.000, 122.000] }); // far
+    const c = mkSpot({ latlng: [25.0014, 121.0014] }); // within 100m of a
+    const result = spreadNewSpotOffsets([], [a, b, c]);
+    expect(result[0].cardOffset).toEqual(a.cardOffset); // first in its cell
+    expect(result[1].cardOffset).toEqual(b.cardOffset); // first in its (different) cell
+    expect(result[2].cardOffset).not.toEqual(c.cardOffset); // second in a's cell → spread
+  });
+
+  it('wraps around when more than 8 spots share a cell', () => {
+    const spots = Array.from({ length: 10 }, () => mkSpot({ latlng: [25, 121] }));
+    const result = spreadNewSpotOffsets([], spots);
+    // 9th spot (index 8) should reuse position at (nth=8 → index 7 % 7 = 0)
+    // i.e. same as 2nd spot
+    expect(result[8].cardOffset).toEqual(result[1].cardOffset);
   });
 });
 

@@ -407,6 +407,7 @@ function PhotoPreview({
 }) {
   // Build object URLs for thumbnails + revoke on unmount to avoid leaks
   const [urls, setUrls] = useState<string[]>([]);
+  const [brokenThumbs, setBrokenThumbs] = useState<Set<number>>(new Set());
   useEffect(() => {
     const next = state.files.map((f) => URL.createObjectURL(f));
     setUrls(next);
@@ -425,6 +426,8 @@ function PhotoPreview({
       .filter((f) => f.properties?.pendingLocation === true)
       .map((f) => f.properties?.photoRef as string),
   );
+  const features = state.bundle.featureCollection.features.length;
+  const canConfirm = features > 0;
 
   return (
     <div className="import-wizard__photo-preview">
@@ -433,13 +436,30 @@ function PhotoPreview({
         {state.files.map((file, i) => {
           const photoRef = `${file.name}::${i}`;
           const isPending = pendingByRef.has(photoRef);
+          const broken = brokenThumbs.has(i);
           return (
             <div
               key={photoRef}
               className={`import-wizard__photo-thumb${isPending ? ' import-wizard__photo-thumb--pending' : ''}`}
               title={file.name}
             >
-              {urls[i] && <img src={urls[i]} alt={file.name} />}
+              {urls[i] && !broken ? (
+                <img
+                  src={urls[i]}
+                  alt={file.name}
+                  onError={() => {
+                    // Browsers other than Safari can't decode HEIC via <img>;
+                    // fall back to a generic placeholder instead of broken glyph.
+                    setBrokenThumbs((s) => {
+                      const next = new Set(s);
+                      next.add(i);
+                      return next;
+                    });
+                  }}
+                />
+              ) : (
+                <div className="import-wizard__photo-thumb-fallback">📷</div>
+              )}
               <span className="import-wizard__photo-badge">
                 {isPending ? '❓' : '📍'}
               </span>
@@ -451,7 +471,11 @@ function PhotoPreview({
         <button className="import-wizard__card" onClick={onBack}>
           {t('import.photoPreview.back')}
         </button>
-        <button className="import-wizard__card import-wizard__card--primary" onClick={onConfirm}>
+        <button
+          className="import-wizard__card import-wizard__card--primary"
+          onClick={onConfirm}
+          disabled={!canConfirm}
+        >
           {t('import.photoPreview.confirm')}
         </button>
       </div>

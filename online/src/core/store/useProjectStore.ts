@@ -11,7 +11,7 @@ import { t } from '../../i18n';
 
 import type { GpxData } from '../utils/gpxParser';
 import type { ImportResult } from '../utils/geojsonImport';
-import { computeBoundingBoxCenter, renumberSpots } from './storeHelpers';
+import { computeBoundingBoxCenter, renumberSpots, spreadNewSpotOffsets } from './storeHelpers';
 import { compressImage } from '../hooks/useImageCompress';
 import { enqueueGeocode } from '../utils/geocodeQueue';
 
@@ -394,7 +394,11 @@ export const useProjectStore = create<ProjectState>()(
 
   importPOIs: async (result) => {
     const s = get();
-    const combinedSpots = [...s.project.spots, ...result.spots];
+    // Spread newly-imported spots that pile on the same ~100m cell so
+    // their cards don't overlap the existing ones. Existing spots are
+    // never touched (the user may have positioned them by hand).
+    const spreadNew = spreadNewSpotOffsets(s.project.spots, result.spots);
+    const combinedSpots = [...s.project.spots, ...spreadNew];
     const combinedRoutes = [...s.project.routes, ...result.routes];
     const allPts: [number, number][] = [
       ...combinedRoutes.flatMap((r) => r.pts),
@@ -428,15 +432,23 @@ export const useProjectStore = create<ProjectState>()(
               }));
             }
           })
-          .catch(() => { /* photo attach is best-effort; spot stays without photo */ });
+          .catch((err) => {
+            // Keep error visible in DevTools for troubleshooting without
+            // emitting filename / size (PII-minimising).
+            console.error('[importPOIs] compressImage failed:', err);
+          });
       }
     }
 
     // Background reverseGeocode — per spot, queued at 1 req/s with dedup.
     // Skip pendingLocation spots: their coordinate is mapCenter, not the real
     // photo location, so the resolved place name would be misleading.
+    // Only auto-geocode photo imports (title matches "MM-DD" from exifToGeojson);
+    // KML/GeoJSON imports carry meaningful titles already and must be preserved.
+    const TIMESTAMP_TITLE = /^\d{2}-\d{2}$/;
     for (const newSpot of result.spots) {
       if (newSpot.pendingLocation) continue;
+      if (!TIMESTAMP_TITLE.test(newSpot.title)) continue;
       enqueueGeocode({
         spotId: newSpot.id,
         latlng: newSpot.latlng,
@@ -444,13 +456,15 @@ export const useProjectStore = create<ProjectState>()(
         onResult: (spotId, placeName, origTitle) => {
           const curr = get();
           const target = curr.project.spots.find((sp) => sp.id === spotId);
-          // checkAndSet: only overwrite if user hasn't edited the title
+          // checkAndSet: only overwrite if user hasn't edited the title.
+          // Keep the timestamp prefix + append the resolved place name so a
+          // multi-day batch shows "2026-01-21 13:48 曼谷" and "2026-01-22 09:00 清邁".
           if (target && target.title === origTitle) {
             set((s2) => ({
               project: {
                 ...s2.project,
                 spots: s2.project.spots.map((sp) =>
-                  sp.id === spotId ? { ...sp, title: placeName } : sp
+                  sp.id === spotId ? { ...sp, title: `${origTitle} ${placeName}` } : sp
                 ),
               },
             }));
