@@ -4,16 +4,16 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>TrailPaint 路小繪 — 手繪風路線地圖工具</title>
-  <meta name="description" content="在真實地圖上製作手繪風格的路線插畫。景點卡片、照片標記、GPX 匯入，匯出可分享的漂亮地圖。"/>
+  <meta name="description" content="手繪風路線地圖工具。從照片 EXIF、KML、GPX 三種方式建立，一鍵匯出 PNG、備份、GeoJSON/KML 互通格式。"/>
   <meta property="og:title" content="TrailPaint 路小繪"/>
-  <meta property="og:description" content="手繪風路線地圖工具 — 景點卡片 · 路線繪製 · GPX 匯入 · 漂亮匯出"/>
+  <meta property="og:description" content="手繪風路線地圖工具 — 從照片建路線 · KML/GeoJSON 互通 · 一鍵匯出 PNG"/>
   <meta property="og:image" content="https://trailpaint.org/examples/og-image.jpg"/>
   <meta property="og:image:width" content="1200"/>
   <meta property="og:image:height" content="630"/>
   <meta property="og:type" content="website"/>
   <meta name="twitter:card" content="summary_large_image"/>
   <meta name="twitter:title" content="TrailPaint 路小繪 — 手繪風路線地圖工具"/>
-  <meta name="twitter:description" content="在真實地圖上製作手繪風格的路線插畫。景點卡片、照片標記、GPX 匯入，匯出可分享的漂亮地圖。"/>
+  <meta name="twitter:description" content="手繪風路線地圖工具。從照片 EXIF、KML、GPX 三種方式建立，一鍵匯出 PNG、備份、GeoJSON/KML 互通格式。"/>
   <meta name="twitter:image" content="https://trailpaint.org/examples/og-image.jpg"/>
   <meta property="og:url" content="https://trailpaint.org/"/>
   <meta property="og:locale" content="zh_TW"/>
@@ -27,7 +27,7 @@
     "@type": "WebApplication",
     "name": "TrailPaint 路小繪",
     "url": "https://trailpaint.org/app/",
-    "description": "在真實地圖上製作手繪風格的路線插畫。景點卡片、照片標記、GPX 匯入，匯出可分享的漂亮地圖。",
+    "description": "手繪風路線地圖工具。從照片 EXIF、KML、GPX 三種方式建立，一鍵匯出 PNG、備份、GeoJSON/KML 互通格式。",
     "applicationCategory": "DesignApplication",
     "operatingSystem": "Web",
     "offers": {
@@ -38,17 +38,17 @@
     "inLanguage": ["zh-TW", "en", "ja"],
     "screenshot": "https://trailpaint.org/examples/og-image.jpg",
     "featureList": [
+      "照片 EXIF GPS 匯入（JPEG/HEIC，自動建立景點）",
+      "KML / GeoJSON 匯入匯出（與 Google My Maps、Gaia GPS 互通）",
+      "GPX 軌跡匯入 + 海拔剖面",
       "路線繪製（5 色虛線+箭頭）",
-      "景點卡片（28 種圖示）",
-      "照片標記",
-      "GPX 匯入",
-      "多比例匯出（IG/限動/4:3）",
-      "高品質 2x PNG 匯出",
+      "景點卡片（31 種圖示）",
+      "統一 ExportWizard（圖片/備份/互通 3 tab）",
+      "多比例匯出（IG/限動/4:3）+ 3 種邊框 + 2 種濾鏡",
       "AI 提示詞 4 種風格",
-      "分享連結",
-      "海拔剖面圖與路線統計",
-      "Story Player 故事播放器（自動播放、嵌入、全螢幕）",
-      "Story Page 故事集合展示（台灣宣教士腳蹤等）",
+      "分享連結（URL hash）+ Player 嵌入碼",
+      "Story Player 故事播放器（自動播放、嵌入、全螢幕、歷史地圖疊加）",
+      "Story Page 故事集合展示（台灣宣教士腳蹤、耶穌受難週等）",
       "多語支援（繁中/英/日）"
     ],
     "author": {
@@ -184,18 +184,18 @@
   <div class="hero">
     <div class="logo">🌿</div>
     <h1>TrailPaint 路小繪</h1>
-    <p class="tagline">在真實地圖上畫出手繪風路線插畫<br/>匯出即作品，簡單好用不複雜</p>
+    <p class="tagline">在真實地圖上畫出手繪風路線插畫<br/>從照片、地圖、AI 三種方式建立，匯出即作品</p>
 
-    <img class="example-img" src="examples/trailpaint-map.jpg"
-         alt="TrailPaint 範例 — 白石湖步道路線圖"/>
+    <img class="example-img" src="examples/trailpaint-01.jpg"
+         alt="TrailPaint 成品範例 — 台北士林 8 景點手繪地圖"/>
 
     <div class="features">
-      <span class="feat">📍 景點卡片</span>
-      <span class="feat">📷 照片標記</span>
+      <span class="feat">📸 照片 EXIF 匯入</span>
+      <span class="feat">🌐 KML / GeoJSON</span>
       <span class="feat">🗺️ GPX 匯入</span>
-      <span class="feat">🎨 手繪風濾鏡</span>
-      <span class="feat">📤 高品質匯出</span>
-      <span class="feat">📖 故事播放</span>
+      <span class="feat">📍 31 種景點圖示</span>
+      <span class="feat">🎨 手繪風 + AI 風格化</span>
+      <span class="feat">📖 Story Player</span>
     </div>
 
     <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:1.5rem;">
@@ -221,19 +221,28 @@
     <h2>適合誰用？</h2>
     <p>登山健行、單車騎行、城市散步、旅行紀錄 — 任何想把走過的路線變成一張漂亮地圖的人。也很適合老師做校外教學路線圖、導遊製作行程說明素材、部落客為文章配上手繪路線圖。無論是分享到社群、放進部落格，或是印出來當紀念，TrailPaint 產出的地圖都像是一幅手繪插畫。</p>
 
-    <h2>主要功能</h2>
+    <h2>三種建立路線的方式</h2>
     <ul>
-      <li>在地圖上繪製路線，5 種顏色搭配虛線與箭頭方向</li>
-      <li>放置景點卡片，手繪紙紋風格，28 種圖示分類（含三角點、集合點）</li>
-      <li>在路線上標記照片，匯出時自動嵌入地圖</li>
-      <li>匯入 GPX 軌跡檔，GPS 紀錄自動轉為路線</li>
-      <li>海拔剖面圖與路線統計（距離、爬升、預估時間）</li>
-      <li>匯出選擇 IG / 限動 / 4:3 等比例，搭配多種邊框風格</li>
-      <li>高品質 2x 解析度 PNG 匯出</li>
-      <li>AI 提示詞 4 種風格（日系手繪、藏寶圖、療癒卡通、極簡線條），搭配 AI 繪圖工具重新風格化</li>
-      <li>產生分享連結，一鍵傳給朋友</li>
-      <li>支援繁體中文、英文、日文三種語言</li>
-      <li>手機、平板、電腦都能使用</li>
+      <li><strong>📷 從照片建立</strong>：拖 20 張照片進 TrailPaint，EXIF GPS 自動建景點（支援 iPhone HEIC / Android JPEG）</li>
+      <li><strong>🗺️ 在地圖上手動</strong>：搜尋地點、畫路線、放景點卡片，3 步教學帶你上手</li>
+      <li><strong>🤖 用 AI 生成</strong>：複製提示詞模板給 ChatGPT / Claude，描述行程產出可匯入的 JSON</li>
+    </ul>
+
+    <h2>一張地圖，多種輸出</h2>
+    <ul>
+      <li><strong>圖片</strong>：PNG 多比例（IG / Story / 4:3）+ 3 種邊框 + 2 種濾鏡 + AI 提示詞 4 風格</li>
+      <li><strong>備份</strong>：.trailpaint 專案檔（完整保留景點、路線、照片）</li>
+      <li><strong>互通格式</strong>：GeoJSON / KML（給 Google My Maps、Google Earth、Gaia GPS 用）</li>
+      <li><strong>分享</strong>：一鍵產生分享連結 + Player 嵌入碼</li>
+    </ul>
+
+    <h2>其他功能</h2>
+    <ul>
+      <li>31 種景點圖示（含三角點、集合點、生態類）</li>
+      <li>GPX 匯入 + 海拔剖面圖（距離、爬升、預估時間）</li>
+      <li>5 種底圖（標準 / 衛星 / 等高線 / 暗色 / 多語向量）+ 拖曳截圖當底圖</li>
+      <li>PWA 可安裝到手機主畫面像原生 App</li>
+      <li>支援繁體中文、英文、日文三種語言（自動偵測）</li>
     </ul>
 
     <h2>Story Player 故事播放器</h2>
