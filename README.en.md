@@ -27,7 +27,7 @@ TrailPaint is a **hand-drawn style trail map maker**. Take a trip, come back, an
 
 ### Sample map
 
-![TrailPaint sample](./examples/trailpaint-map.jpg)
+![TrailPaint sample — Taipei Shilin 8-spot trail](./examples/trailpaint-01.jpg)
 
 ---
 
@@ -99,6 +99,8 @@ v1.3 unifies all outputs into a single "Export Wizard" with three tabs matching 
 ---
 
 ## Story Player: Turn Maps into Stories
+
+![Story Player — Jesus' Passion Week auto-tour](./examples/trailpaint-02.jpg)
 
 **[/app/player/](https://trailpaint.org/app/player/)** is a standalone entry for "auto-guided playback":
 
