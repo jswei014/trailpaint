@@ -18,9 +18,109 @@
   <meta name="twitter:title" content="TrailPaint Stories — 互動故事地圖" />
   <meta name="twitter:description" content="探索互動故事地圖：台灣宣教士腳蹤、聖經地圖等。" />
   <meta name="twitter:image" content="https://trailpaint.org/examples/og-image.jpg" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="author" content="NotoriousLab" />
+  <meta name="keywords" content="故事地圖, 互動地圖, 台灣宣教士, 耶穌受難週, Story Player, 手繪地圖, 歷史路線, TrailPaint Stories, interactive story map, missionary routes" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:locale:alternate" content="ja_JP" />
   <link rel="icon" type="image/svg+xml" href="/app/favicon.svg" />
   <link rel="canonical" href="https://trailpaint.org/stories/" />
   <link rel="stylesheet" href="stories.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "TrailPaint Stories — 互動故事地圖",
+    "description": "探索 TrailPaint 精選互動故事地圖：台灣宣教士腳蹤、耶穌受難週等主題。每個故事包含多條歷史路線，可自動播放導覽、嵌入網頁、全螢幕投影。",
+    "url": "https://trailpaint.org/stories/",
+    "inLanguage": ["zh-TW", "en", "ja"],
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "TrailPaint 路小繪",
+      "url": "https://trailpaint.org/"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "NotoriousLab",
+      "url": "https://github.com/notoriouslab"
+    },
+    "hasPart": [
+      {
+        "@type": "CreativeWork",
+        "name": "台灣宣教士腳蹤",
+        "description": "馬偕、巴克禮、蘭大衛、馬雅各、彭蒙惠 5 位宣教士的台灣服事路線故事地圖",
+        "url": "https://trailpaint.org/stories/taiwan-missionaries/",
+        "inLanguage": "zh-TW",
+        "about": ["馬偕", "巴克禮", "蘭大衛", "馬雅各", "彭蒙惠", "台灣宣教史"]
+      },
+      {
+        "@type": "CreativeWork",
+        "name": "耶穌受難週",
+        "description": "從榮耀進城、最後晚餐、受難、到復活顯現的聖地路線故事地圖",
+        "url": "https://trailpaint.org/stories/passion-week/",
+        "inLanguage": "zh-TW",
+        "about": ["耶穌", "受難週", "聖地", "福音書路線"]
+      }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "TrailPaint Stories 是什麼？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TrailPaint Stories 是 TrailPaint 的精選故事地圖集合，展示用 TrailPaint 製作的歷史路線、宣教士腳蹤、聖經題材等主題故事。每個故事可以自動播放導覽（fly-to 動畫 + 照片 popup + 配樂），支援歷史地圖疊加（中研院 1897/1921/1966），也可全螢幕投影做教學展示。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "目前收錄哪些故事地圖？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "目前收錄兩大主題：(1) 台灣宣教士腳蹤：馬偕、巴克禮、蘭大衛、馬雅各、彭蒙惠 5 位宣教士的服事路線；(2) 耶穌受難週：從榮耀進城、最後晚餐、受難到復活顯現的聖地路線。未來會持續增加新主題。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "我可以做自己的故事地圖嗎？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "可以。打開 https://trailpaint.org/app/ 用 TrailPaint 編輯器建立景點與路線，然後點「▶ 故事模式」進入 Story Player 自動播放。也可以從匯出對話框的「圖片」tab 複製 Player 嵌入碼，把地圖嵌入部落格、教會網站、Notion 等任何可嵌入 HTML 的平台。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Story Player 支援哪些功能？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "自動 fly-to 動畫逐點飛過去、popup 展示照片與說明、播放間隔 2s/4s/6s/8s 可調、循環 1×/2×/3×/∞、5 種底圖可切換、中研院 1897/1921/1966 台灣歷史地圖疊加、背景音樂（MP3/M4A 直連 URL）、全螢幕模式適合展場投影、一鍵嵌入任何網頁。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "可以商業或教會使用嗎？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "可以。TrailPaint 採 GPL-3.0 License，允許商業、教育、教會使用，以及修改與二次創作，但衍生作品必須同樣以 GPL-3.0 開源。故事地圖本身的內容版權歸各作者所有。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "故事地圖可以離線投影或展場使用嗎？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "可以。Story Player 支援全螢幕模式，第一次開啟後會透過 PWA 快取離線播放。適合博物館展場、課堂教學、教會主日講道、戶外活動現場投影等情境。也可透過 Player 嵌入碼內嵌到自家站台內展示。"
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <div class="stories-page">
