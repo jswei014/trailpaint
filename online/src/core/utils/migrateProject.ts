@@ -85,12 +85,19 @@ export function migrateProject(data: Record<string, unknown>): Project {
     } else {
       delete spot.scripture_refs;
     }
+    // v4+ pendingLocation: only preserve genuine boolean true — spread could
+    // otherwise carry strings/numbers through and trick `=== true` checks
+    if (s.pendingLocation === true) {
+      spot.pendingLocation = true;
+    } else {
+      delete spot.pendingLocation;
+    }
     spots.push(spot);
   }
 
   const p = { ...(data as unknown as Project), spots };
   if (!p.routes || !Array.isArray(p.routes)) {
-    return { ...p, version: 3, routes: [] };
+    return { ...p, version: 4, routes: [] };
   }
   if (p.routes.length > 50) throw new Error('Too many routes (max 50)');
   const validColorIds = ROUTE_COLORS.map((c) => c.id);
@@ -133,7 +140,7 @@ export function migrateProject(data: Record<string, unknown>): Project {
   }
   // Explicit optional-field handling: ...p spread would carry raw input values through
   // even when validation rejects them. Delete = input overridden by sanitized result.
-  const result: Project = { ...p, version: 3, routes };
+  const result: Project = { ...p, version: 4, routes };
   if (overlay) result.overlay = overlay; else delete result.overlay;
   if (basemapId) result.basemapId = basemapId; else delete result.basemapId;
   if (music) result.music = music; else delete result.music;

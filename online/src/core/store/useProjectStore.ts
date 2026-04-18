@@ -10,6 +10,9 @@ import { fetchElevations } from '../utils/elevationApi';
 import { t } from '../../i18n';
 
 import type { GpxData } from '../utils/gpxParser';
+import type { ImportResult } from '../utils/geojsonImport';
+import { computeBoundingBoxCenter, renumberSpots } from './storeHelpers';
+import { compressImage } from '../hooks/useImageCompress';
 
 export type BaseMode = 'map' | 'image';
 
@@ -48,6 +51,9 @@ interface ProjectState {
 
   // GPX
   importGpx: (data: GpxData) => void;
+
+  // POI (EXIF / KML / GeoJSON — 010 D6)
+  importPOIs: (result: ImportResult) => Promise<void>;
 
   // UI
   setMode: (mode: Mode) => void;
@@ -137,9 +143,15 @@ export const useProjectStore = create<ProjectState>()(
     set((s) => ({
       project: {
         ...s.project,
-        spots: s.project.spots.map((sp) =>
-          sp.id === id ? { ...sp, ...patch } : sp
-        ),
+        spots: s.project.spots.map((sp) => {
+          if (sp.id !== id) return sp;
+          // 010 D5: dragging a pendingLocation spot to a new latlng clears the pending flag
+          const clearPending =
+            patch.latlng !== undefined && sp.pendingLocation === true
+              ? { pendingLocation: false }
+              : null;
+          return { ...sp, ...patch, ...(clearPending ?? {}) };
+        }),
       },
     })),
 
@@ -375,6 +387,51 @@ export const useProjectStore = create<ProjectState>()(
         }
       }).catch(() => { /* naming is best-effort */ });
     }
+  },
+
+  // ── POI import (010 E4) ──
+
+  importPOIs: async (result) => {
+    const s = get();
+    const combinedSpots = [...s.project.spots, ...result.spots];
+    const combinedRoutes = [...s.project.routes, ...result.routes];
+    const allPts: [number, number][] = [
+      ...combinedRoutes.flatMap((r) => r.pts),
+      ...combinedSpots.map((sp) => sp.latlng),
+    ];
+    const bbox = computeBoundingBoxCenter(allPts);
+
+    set({
+      project: {
+        ...s.project,
+        spots: renumberSpots(combinedSpots),
+        routes: combinedRoutes,
+      },
+      pendingFlyTo: bbox ?? s.pendingFlyTo,
+    });
+
+    // Async photo compression outside set()
+    if (result.spotPhotoMap && result.spotPhotoMap.size > 0) {
+      for (const [spotId, file] of result.spotPhotoMap) {
+        compressImage(file)
+          .then((dataUrl) => {
+            const curr = get();
+            if (curr.project.spots.find((sp) => sp.id === spotId)) {
+              set((s2) => ({
+                project: {
+                  ...s2.project,
+                  spots: s2.project.spots.map((sp) =>
+                    sp.id === spotId ? { ...sp, photo: dataUrl } : sp
+                  ),
+                },
+              }));
+            }
+          })
+          .catch(() => { /* photo attach is best-effort; spot stays without photo */ });
+      }
+    }
+
+    // geocodeQueue integration added in Task 5; importPOIs spots currently keep their initial title
   },
 
   // ── UI ──

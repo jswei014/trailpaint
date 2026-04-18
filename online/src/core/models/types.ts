@@ -10,6 +10,7 @@ export interface Spot {
   iconId: string;       // key into ICONS
   cardOffset: { x: number; y: number }; // pixel offset from pin (screen coords)
   scripture_refs?: string[]; // v3+, optional (see 009 D3)
+  pendingLocation?: boolean; // v4+, set when EXIF had no GPS — user must drag to real location
 }
 
 export interface OverlaySetting {
@@ -23,7 +24,7 @@ export interface MusicSetting {
 }
 
 export interface Project {
-  version: 1 | 2 | 3;
+  version: 1 | 2 | 3 | 4;
   name: string;
   center: [number, number]; // [lat, lng]
   zoom: number;
