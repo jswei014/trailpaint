@@ -227,18 +227,23 @@ export default function ExportWizard({
   }, [baseImage, format, borderStyle, filter, showWatermark, routes, projectName]);
 
   const handleCopyShareLink = useCallback(async () => {
-    // Safari (desktop + iOS) revokes the clipboard write permission the moment
-    // we `await` the backend fetch — the user gesture is spent by then. The
-    // supported workaround is ClipboardItem with a pending Blob Promise:
-    // Safari synchronously enqueues the write inside the gesture and waits
-    // for the promise to resolve before the browser actually touches the
-    // clipboard. Chrome/Firefox also honour this shape, so it's safe to try
-    // first and only fall back to the legacy path when ClipboardItem is
-    // missing or throws (e.g. older Safari, privacy-locked contexts).
+    // Call the backend exactly once per click and share the Promise across
+    // both clipboard paths. Why: calling `createBackendShare` twice (once in
+    // the ClipboardItem path, then again in the await fallback) would have
+    // the second call hit the WAF rate limit (10 req / 10s per IP), silently
+    // degrading to TinyURL or long-hash URL — which is the "short link turns
+    // into a long URL" bug Safari hit with photo-heavy projects.
+    //
+    // Why ClipboardItem with a pending Blob Promise: Safari (desktop + iOS)
+    // revokes clipboard permission the moment we `await` — the user gesture
+    // is spent. ClipboardItem lets us synchronously enqueue the write inside
+    // the gesture and wait for the promise to resolve before the browser
+    // actually touches the clipboard. Chrome/Firefox honour this shape too.
+    const urlPromise = createBackendShare(project);
     try {
       if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
         try {
-          const blobPromise = createBackendShare(project).then(
+          const blobPromise = urlPromise.then(
             (url) => new Blob([url], { type: 'text/plain' }),
           );
           await navigator.clipboard.write([
@@ -247,10 +252,10 @@ export default function ExportWizard({
           showToast(t('export.preview.shareCopied'));
           return;
         } catch (err) {
-          console.warn('[share] ClipboardItem promise path failed, falling back:', err);
+          console.warn('[share] ClipboardItem path failed, falling back:', err);
         }
       }
-      const url = await createBackendShare(project);
+      const url = await urlPromise;
       const ok = await copyToClipboard(url);
       if (ok) showToast(t('export.preview.shareCopied'));
       else showToast(t('export.preview.shortFailed'));
