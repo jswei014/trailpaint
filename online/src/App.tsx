@@ -57,16 +57,37 @@ export default function App() {
   const [capturedImage, setCapturedImage] = useState<HTMLImageElement | null>(null);
   const [importWizardOpen, setImportWizardOpen] = useState(false);
 
-  // Handle share link on load
+  // Handle share link on load.
+  // Two paths:
+  //   (A) sessionStorage — primary for /s/:id backend shares. Worker redirect
+  //       stashes the deflate-base64 hash in sessionStorage (same origin) and
+  //       navigates here with ?share=ss, sidestepping the URL fragment length
+  //       cap that breaks photo-heavy shares (>~300KB).
+  //   (B) window.location.hash — legacy path for directly-pasted long-hash
+  //       URLs (pre-012 shares, or fallback when sessionStorage is blocked).
   useEffect(() => {
-    if (!window.location.hash.startsWith('#share=')) return;
-    decodeShareLink(window.location.hash).then((project) => {
+    let hash: string | null = null;
+    try {
+      const stored = sessionStorage.getItem('tp_share_hash');
+      if (stored) {
+        sessionStorage.removeItem('tp_share_hash');
+        hash = '#share=' + stored;
+      }
+    } catch { /* sessionStorage unavailable (Safari private mode, quota) */ }
+
+    if (!hash && window.location.hash.startsWith('#share=')) {
+      hash = window.location.hash;
+    }
+
+    if (!hash) return;
+
+    decodeShareLink(hash).then((project) => {
       if (project) {
         useProjectStore.getState().importJSON(JSON.stringify(project));
       }
-      history.replaceState(null, '', window.location.pathname + window.location.search);
+      history.replaceState(null, '', window.location.pathname);
     }).catch(() => {
-      history.replaceState(null, '', window.location.pathname + window.location.search);
+      history.replaceState(null, '', window.location.pathname);
       alert(t('import.failed'));
     });
   }, []);
@@ -74,9 +95,11 @@ export default function App() {
   // Restore Editor project saved before entering Story Mode.
   // PWA standalone replaces the window when opening Player, wiping in-memory Zustand
   // state. storyMode.ts saves a snapshot to localStorage so we can restore on return.
-  // Share link (#share=...) takes precedence — it's an explicit intent.
+  // Share link (sessionStorage 'tp_share_hash' or #share=...) takes precedence
+  // — it's an explicit intent overriding any editor auto-restore.
   useEffect(() => {
     if (window.location.hash.startsWith('#share=')) return;
+    if (new URLSearchParams(window.location.search).get('share') === 'ss') return;
     try {
       const raw = localStorage.getItem('trailpaint-editor-restore');
       if (!raw) return;

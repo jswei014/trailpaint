@@ -19,8 +19,10 @@
  * Rate limiting is done at Cloudflare WAF layer (see cloudflare/README.md),
  * not in this Worker. Deploy: paste to Dashboard Worker editor.
  *
- * Task 4 status: POST + GET + Analytics Engine counter writes all live.
- * Analytics are fire-and-forget; write failures never block the redirect.
+ * Envelope v2: payload is pre-compressed at POST time (CPU-heavy work done
+ * behind rate limit) so GET is read + redirect only — stays well under free
+ * tier's 10ms CPU budget even for photo-heavy shares. v1 rows (legacy) still
+ * work via on-the-fly compress fallback but may 502 on very large payloads.
  */
 
 const TTL_SECONDS = 90 * 24 * 3600;
@@ -110,11 +112,17 @@ async function handlePost(request, env) {
     return errorJson('id collision, please retry', 503);
   }
 
+  // Pre-compress to the hash fragment the frontend decodeShareLink expects.
+  // Doing the deflate+base64 here (POST path, rate-limited) keeps GET within
+  // Worker free-tier CPU budget (10ms) — a large photo payload deflate can
+  // easily blow that budget if done per-GET.
+  const hash = await compressAndBase64(JSON.stringify(payload));
+
   const envelope = {
-    payload,
+    hash,
     userId: null,
     createdAt: Math.floor(Date.now() / 1000),
-    v: 1,
+    v: 2,
   };
 
   await env.SHARE_KV.put(id, JSON.stringify(envelope), { expirationTtl: TTL_SECONDS });
@@ -169,15 +177,46 @@ async function handleGet(request, env, ctx) {
     return new Response('corrupted envelope', { status: 500 });
   }
 
-  // Re-compress payload into hash fragment the existing decodeShareLink expects.
-  const payloadJson = JSON.stringify(envelope.payload);
-  const b64 = await compressAndBase64(payloadJson);
-  const redirectUrl = `${ORIGIN}/app/#share=${b64}`;
+  // v2 envelope: hash pre-compressed at POST time → GET does zero work.
+  // v1 fallback: compress on-the-fly (kept for backward compat with any
+  // pre-existing v1 rows; note v1 GETs may 502 on large photo payloads).
+  let hash;
+  if (typeof envelope.hash === 'string') {
+    hash = envelope.hash;
+  } else if (envelope.payload) {
+    hash = await compressAndBase64(JSON.stringify(envelope.payload));
+  } else {
+    return new Response('bad envelope', { status: 500 });
+  }
 
-  const response = new Response(null, {
-    status: 307,
+  // Why HTML body and not 307 + Location: a photo-heavy hash can be several
+  // hundred KB, and Cloudflare edge caps response headers near 32KB which
+  // hangs HTTP/2 framing. Why sessionStorage and not /app/#share= directly:
+  // browsers truncate or drop the URL fragment when total URL exceeds their
+  // internal parser limits (~300KB+ in practice), causing the share payload
+  // to vanish on 7+ photo projects. sessionStorage is same-origin and has no
+  // such cap. Fallback to URL hash only for the small-payload path where
+  // sessionStorage is blocked (Safari private mode, quota exhaustion).
+  const html = `<!doctype html>
+<meta charset="utf-8">
+<title>TrailPaint</title>
+<script>
+(function(){
+  var h = ${JSON.stringify(hash)};
+  try {
+    sessionStorage.setItem('tp_share_hash', h);
+    location.replace(${JSON.stringify(ORIGIN + '/app/?share=ss')});
+  } catch (e) {
+    location.replace(${JSON.stringify(ORIGIN + '/app/#share=')} + h);
+  }
+})();
+</script>
+<noscript><p>請啟用 JavaScript 以開啟分享連結。</p></noscript>`;
+
+  const response = new Response(html, {
+    status: 200,
     headers: {
-      'Location': redirectUrl,
+      'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'public, max-age=3600',
       'X-Served-By': 'trailpaint-share',
     },
