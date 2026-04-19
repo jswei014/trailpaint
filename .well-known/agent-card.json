@@ -1,0 +1,141 @@
+{
+  "$schema": "https://a2a-protocol.github.io/spec/agent-card.schema.json",
+  "name": "TrailPaint",
+  "description": "Hand-drawn style trail map maker. Browser-only tool for building route maps from photos (EXIF GPS), KML, GeoJSON, GPX, or AI prompts, with export to PNG illustration, project backup, or geographic interop formats.",
+  "url": "https://trailpaint.org/",
+  "documentationUrl": "https://trailpaint.org/llms.txt",
+  "provider": {
+    "name": "NotoriousLab",
+    "url": "https://github.com/notoriouslab"
+  },
+  "version": "1.3.0",
+  "license": "GPL-3.0",
+  "languages": ["zh-TW", "en", "ja"],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateful": false,
+    "authentication": { "schemes": [] }
+  },
+  "skills": [
+    {
+      "id": "editor",
+      "name": "Trail Map Editor",
+      "description": "Interactive web editor for building hand-drawn style trail maps. Users add spots with 31 icons, draw routes with 5 colors and hand-drawn dashed lines with arrows, attach photos to spots, adjust elevation profiles.",
+      "url": "https://trailpaint.org/app/",
+      "tags": ["map", "editor", "illustration", "hand-drawn"],
+      "examples": [
+        "Draw a hiking route on Yangmingshan with 10 scenic spots and photos",
+        "Create a bike route across Taipei with distance and elevation stats"
+      ]
+    },
+    {
+      "id": "import-photos",
+      "name": "Build Route from Photos (EXIF GPS)",
+      "description": "Drop up to 20 photos; TrailPaint reads EXIF GPS coordinates and auto-creates spots. Supports iPhone HEIC and Android JPEG. Photos without GPS land in a 'pending location' group for manual placement. Nominatim reverse geocoding auto-fills place names.",
+      "url": "https://trailpaint.org/app/",
+      "inputModes": ["image/jpeg", "image/heic", "image/heif"],
+      "tags": ["photos", "exif", "gps", "import"]
+    },
+    {
+      "id": "import-geo",
+      "name": "Import Geographic Formats",
+      "description": "Import routes and waypoints from KML (Google My Maps), GeoJSON (geojson.io, Google Takeout), GPX (hiking apps, Garmin), or native .trailpaint project files.",
+      "url": "https://trailpaint.org/app/",
+      "inputModes": [
+        "application/vnd.google-earth.kml+xml",
+        "application/geo+json",
+        "application/gpx+xml",
+        "application/json"
+      ],
+      "tags": ["kml", "geojson", "gpx", "import", "interop"]
+    },
+    {
+      "id": "export-png",
+      "name": "Export as PNG Illustration",
+      "description": "Export the trail map as a high-resolution PNG illustration. Multiple aspect ratios (1:1 IG feed, 9:16 Story, 4:3, original), 3 border styles (classic double, paper sketch, minimal thin), 2 style filters (original, sketch), optional stats overlay.",
+      "outputModes": ["image/png"],
+      "tags": ["export", "png", "illustration", "instagram", "share"]
+    },
+    {
+      "id": "export-backup",
+      "name": "Export Project Backup",
+      "description": "Download the full project as a .trailpaint file (JSON with embedded photo data URLs). Fully re-importable for continued editing.",
+      "outputModes": ["application/json"],
+      "tags": ["backup", "export", "trailpaint"]
+    },
+    {
+      "id": "export-geo",
+      "name": "Export Geographic Interop Formats",
+      "description": "Export pure geographic structure as GeoJSON (for geojson.io, Mapbox, D3) or KML (for Google My Maps, Google Earth, Gaia GPS). Photos excluded by design (open data boundary).",
+      "outputModes": [
+        "application/geo+json",
+        "application/vnd.google-earth.kml+xml"
+      ],
+      "tags": ["export", "geojson", "kml", "interop"]
+    },
+    {
+      "id": "share-link",
+      "name": "Generate Share Link",
+      "description": "Encode the entire project (spots, routes, photos) into a URL hash. Recipient opens the link to see the map in TrailPaint. Optional TinyURL shortening.",
+      "outputModes": ["text/uri-list"],
+      "tags": ["share", "link"]
+    },
+    {
+      "id": "story-player",
+      "name": "Story Player Auto-Playback",
+      "description": "Standalone entry for auto-guided playback: fly-to animation through each spot, photo popups, playback interval and loop control, 5 basemaps plus Academia Sinica historical overlays (1897/1921/1966 for Taiwan), background music, fullscreen mode, one-click embed code.",
+      "url": "https://trailpaint.org/app/player/",
+      "tags": ["player", "playback", "narrative", "embed", "fullscreen"]
+    },
+    {
+      "id": "ai-prompt",
+      "name": "Generate AI Map-Style Prompts",
+      "description": "Copy TrailPaint-generated prompts in 4 styles (Japanese hand-drawn, Treasure map, Kawaii cartoon, Minimal line art) to feed into external image generation AI (Midjourney, Gemini, ChatGPT image) for pure illustration variants.",
+      "outputModes": ["text/plain"],
+      "tags": ["ai", "prompt", "illustration"]
+    },
+    {
+      "id": "embed",
+      "name": "Player Embed Code",
+      "description": "Copy an <iframe> HTML snippet with the project data baked in. Paste into blogs, Notion, WordPress, Substack, church sites for a self-contained interactive story map.",
+      "outputModes": ["text/html"],
+      "tags": ["embed", "iframe"]
+    }
+  ],
+  "defaultInputModes": [
+    "image/jpeg",
+    "image/heic",
+    "application/vnd.google-earth.kml+xml",
+    "application/geo+json",
+    "application/gpx+xml",
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "image/png",
+    "application/json",
+    "application/geo+json",
+    "application/vnd.google-earth.kml+xml",
+    "text/uri-list",
+    "text/html"
+  ],
+  "metadata": {
+    "repository": "https://github.com/notoriouslab/trailpaint",
+    "issues": "https://github.com/notoriouslab/trailpaint/issues",
+    "llmsTxt": "https://trailpaint.org/llms.txt",
+    "sitemap": "https://trailpaint.org/sitemap.xml",
+    "privacy": {
+      "backend": false,
+      "account": false,
+      "dataLocation": "browser-localStorage",
+      "externalServices": [
+        "OpenStreetMap (map tiles)",
+        "CARTO (map tiles)",
+        "Protomaps (multilingual vector tiles)",
+        "Nominatim (reverse geocoding)",
+        "Open-Meteo (elevation data)",
+        "TinyURL (optional URL shortening, user-triggered)"
+      ]
+    }
+  }
+}
