@@ -1,7 +1,7 @@
 import exifr from 'exifr';
 import { t } from '../../i18n';
 
-const MAX_SIDE = 800;
+const MAX_SIDE = 600;
 const QUALITY = 0.7;
 // 10MB aligns with exifToGeojson.MAX_PHOTO_BYTES; iPhone 15 Pro HDR HEIC
 // can exceed 5MB even when Finder reports 3-4MB (depth maps + motion photo).
