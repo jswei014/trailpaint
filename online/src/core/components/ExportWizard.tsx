@@ -227,7 +227,29 @@ export default function ExportWizard({
   }, [baseImage, format, borderStyle, filter, showWatermark, routes, projectName]);
 
   const handleCopyShareLink = useCallback(async () => {
+    // Safari (desktop + iOS) revokes the clipboard write permission the moment
+    // we `await` the backend fetch — the user gesture is spent by then. The
+    // supported workaround is ClipboardItem with a pending Blob Promise:
+    // Safari synchronously enqueues the write inside the gesture and waits
+    // for the promise to resolve before the browser actually touches the
+    // clipboard. Chrome/Firefox also honour this shape, so it's safe to try
+    // first and only fall back to the legacy path when ClipboardItem is
+    // missing or throws (e.g. older Safari, privacy-locked contexts).
     try {
+      if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
+        try {
+          const blobPromise = createBackendShare(project).then(
+            (url) => new Blob([url], { type: 'text/plain' }),
+          );
+          await navigator.clipboard.write([
+            new ClipboardItem({ 'text/plain': blobPromise }),
+          ]);
+          showToast(t('export.preview.shareCopied'));
+          return;
+        } catch (err) {
+          console.warn('[share] ClipboardItem promise path failed, falling back:', err);
+        }
+      }
       const url = await createBackendShare(project);
       const ok = await copyToClipboard(url);
       if (ok) showToast(t('export.preview.shareCopied'));
