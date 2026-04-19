@@ -43,7 +43,20 @@ export function openStoryMode(project: Project): void {
   maybeShowPwaHint();
   const expectedOrigin = window.location.origin;
 
-  // Path 1: localStorage (fast, best-effort)
+  // Restore snapshot: PWA standalone replaces the current window when Player opens,
+  // wiping the Editor's in-memory Zustand state. Save the project so that when the
+  // user hits "← Back" and the Editor reloads, it can restore the work-in-progress.
+  try {
+    localStorage.setItem('trailpaint-editor-restore', JSON.stringify({
+      project,
+      savedAt: Date.now(),
+    }));
+  } catch {
+    // Quota exceeded — user will lose the in-memory state on return.
+    // Acceptable fallback: they can re-import from a backup if they saved one.
+  }
+
+  // Path 1: localStorage (fast, best-effort) — consumed and cleared by Player
   try {
     localStorage.setItem('trailpaint-player-project', JSON.stringify(project));
   } catch {

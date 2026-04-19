@@ -67,6 +67,26 @@ export default function App() {
     });
   }, []);
 
+  // Restore Editor project saved before entering Story Mode.
+  // PWA standalone replaces the window when opening Player, wiping in-memory Zustand
+  // state. storyMode.ts saves a snapshot to localStorage so we can restore on return.
+  // Share link (#share=...) takes precedence — it's an explicit intent.
+  useEffect(() => {
+    if (window.location.hash.startsWith('#share=')) return;
+    try {
+      const raw = localStorage.getItem('trailpaint-editor-restore');
+      if (!raw) return;
+      const { project, savedAt } = JSON.parse(raw);
+      // Expire after 1 hour to avoid stale restores across days
+      if (project && typeof savedAt === 'number' && Date.now() - savedAt < 60 * 60 * 1000) {
+        useProjectStore.getState().importJSON(JSON.stringify(project));
+      }
+      localStorage.removeItem('trailpaint-editor-restore');
+    } catch {
+      localStorage.removeItem('trailpaint-editor-restore');
+    }
+  }, []);
+
   const handleOpenExportWizard = useCallback(() => {
     // Dismiss any open on-screen keyboard (e.g. iOS when focus is on project name input)
     // so it doesn't cover the Wizard bottom area.

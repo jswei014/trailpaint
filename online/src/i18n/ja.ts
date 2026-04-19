@@ -238,7 +238,7 @@ export default {
   'player.playback.pause': '一時停止',
   'player.fullscreen.enter': 'フルスクリーン',
   'player.fullscreen.exit': 'フルスクリーン終了',
-  'player.backToEditor': '← 編集へ戻る',
+  'player.backToEditor': '← 戻る',
   'story.pwaHint': 'ストーリーモードは同じウィンドウで再生されます。「← 編集へ戻る」ボタンで戻れます。',
   'update.available': '✨ 新しいバージョンが利用可能',
   'update.now': '今すぐ更新',

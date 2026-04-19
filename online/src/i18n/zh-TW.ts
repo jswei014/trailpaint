@@ -238,7 +238,7 @@ export default {
   'player.playback.pause': '暫停',
   'player.fullscreen.enter': '全螢幕',
   'player.fullscreen.exit': '退出全螢幕',
-  'player.backToEditor': '← 返回編輯',
+  'player.backToEditor': '← 返回',
   'story.pwaHint': '故事模式會在同一視窗播放，點「返回編輯」按鈕可回來。',
   'update.available': '✨ 有新版可用',
   'update.now': '立即更新',
