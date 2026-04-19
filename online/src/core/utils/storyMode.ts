@@ -1,6 +1,29 @@
 import type { Project } from '../models/types';
+import { t } from '../../i18n';
 
 const CHANNEL_NAME = 'trailpaint-player';
+const PWA_HINT_FLAG = 'trailpaint-pwa-story-hint-seen';
+
+/**
+ * When running as an installed PWA (display-mode: standalone), window.open('_blank')
+ * replaces the current view with the Player instead of opening a new tab. There is
+ * no browser chrome to return, so we warn the user once that the "← back to editor"
+ * button in the Player is their way back.
+ */
+function maybeShowPwaHint(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as { standalone?: boolean }).standalone === true;
+    if (!isStandalone) return;
+    if (localStorage.getItem(PWA_HINT_FLAG) === '1') return;
+    alert(t('story.pwaHint'));
+    localStorage.setItem(PWA_HINT_FLAG, '1');
+  } catch {
+    // matchMedia / localStorage unavailable — skip hint silently
+  }
+}
 
 /**
  * Open the Player in a new tab with this project loaded.
@@ -17,6 +40,7 @@ const CHANNEL_NAME = 'trailpaint-player';
  * The Player picks whichever arrives first.
  */
 export function openStoryMode(project: Project): void {
+  maybeShowPwaHint();
   const expectedOrigin = window.location.origin;
 
   // Path 1: localStorage (fast, best-effort)

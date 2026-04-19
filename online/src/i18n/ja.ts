@@ -238,6 +238,8 @@ export default {
   'player.playback.pause': '一時停止',
   'player.fullscreen.enter': 'フルスクリーン',
   'player.fullscreen.exit': 'フルスクリーン終了',
+  'player.backToEditor': '← 編集へ戻る',
+  'story.pwaHint': 'ストーリーモードは同じウィンドウで再生されます。「← 編集へ戻る」ボタンで戻れます。',
   'player.embed.empty': 'No story loaded',
   'player.music.on': 'BGMを再生',
   'player.music.off': 'BGMを停止',

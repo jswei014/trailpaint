@@ -38,6 +38,27 @@ export default function PlaybackControl() {
   const [embedCopied, setEmbedCopied] = useState(false);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const canFullscreen = useMemo(() => !!document.documentElement.requestFullscreen, []);
+  // Hide "back to editor" button when Player is embedded via iframe (story pages)
+  // or when ?embed=1 is explicitly set.
+  const isEmbedded = useMemo(() => {
+    try {
+      const embedParam = new URLSearchParams(window.location.search).get('embed');
+      return embedParam === '1' || window.parent !== window;
+    } catch {
+      return true; // cross-origin parent access throws — assume embedded
+    }
+  }, []);
+  const handleBackToEditor = useCallback(() => {
+    // Prefer history.back when the Editor is the previous entry (same origin),
+    // so the Editor state (spots, routes, photos) is preserved. Fall back to
+    // navigating to /app/ for direct Player access (PWA opened from home screen).
+    const sameOriginReferrer = document.referrer && document.referrer.startsWith(window.location.origin);
+    if (window.history.length > 1 && sameOriginReferrer) {
+      window.history.back();
+    } else {
+      window.location.href = '/app/';
+    }
+  }, []);
 
   const DEFAULT_MUSIC = 'https://trailpaint.org/stories/music/redeemed.mp3';
   const [musicUrlInput, setMusicUrlInput] = useState(project.music?.url || DEFAULT_MUSIC);
@@ -220,6 +241,15 @@ export default function PlaybackControl() {
         </div>
       )}
       <div className="playback">
+        {!isEmbedded && (
+          <button
+            className="playback__btn playback__btn--back"
+            onClick={handleBackToEditor}
+            title={t('player.backToEditor')}
+          >
+            {t('player.backToEditor')}
+          </button>
+        )}
         {canFullscreen && (
           <button
             className="playback__btn"

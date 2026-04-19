@@ -222,6 +222,22 @@ html, body {
   color: #fde68a;
 }
 
+/* Text-label variant (e.g. "← Editor" / 「← 返回編輯」) — pill shape, auto width */
+.playback__btn--back {
+  width: auto;
+  padding: 0 12px;
+  border-radius: 18px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .playback__btn--back {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}
+
 .playback__dots {
   display: flex;
   gap: 6px;

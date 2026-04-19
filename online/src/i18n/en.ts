@@ -238,6 +238,8 @@ export default {
   'player.playback.pause': 'Pause',
   'player.fullscreen.enter': 'Fullscreen',
   'player.fullscreen.exit': 'Exit fullscreen',
+  'player.backToEditor': '← Editor',
+  'story.pwaHint': 'Story Mode plays in this window. Tap "← Editor" to return.',
   'player.embed.empty': 'No story loaded',
   'player.music.on': 'Play background music',
   'player.music.off': 'Stop background music',
