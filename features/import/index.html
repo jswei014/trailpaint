@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>匯入 Import — TrailPaint 路小繪</title>
+  <meta name="description" content="TrailPaint 匯入功能 reference：照片 EXIF GPS（JPEG / HEIC）、KML（Google My Maps）、GeoJSON、GPX（登山 App）、.trailpaint 專案檔、截圖底圖。">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta property="og:title" content="匯入功能 — TrailPaint 路小繪">
+  <meta property="og:description" content="6 種匯入方式：照片 EXIF、KML、GeoJSON、GPX、.trailpaint、截圖底圖。每種詳細說明與注意事項。">
+  <meta property="og:image" content="https://trailpaint.org/examples/import-wizard.jpg">
+  <meta property="og:url" content="https://trailpaint.org/features/import">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://trailpaint.org/features/import">
+  <link rel="alternate" type="text/markdown" href="https://trailpaint.org/features/import.md">
+  <link rel="icon" type="image/svg+xml" href="/app/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a class="brand" href="/">🌿 TrailPaint</a>
+      <div class="site-nav-links">
+        <a href="/features/" class="active">功能</a>
+        <a href="/examples/">範例</a>
+        <a href="/stories/">故事地圖</a>
+        <a href="/faq">FAQ</a>
+        <a href="/app/" target="_blank">開始繪製 →</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page">
+    <h1>匯入 Import</h1>
+    <p class="subtitle">6 種方式把外部資料帶進 Editor。統一的 ImportWizard 入口（點 Editor 左下「匯入」）。</p>
+
+    <img src="/examples/import-wizard.jpg" alt="ImportWizard 介面截圖">
+
+    <h2>1. 照片 EXIF GPS（JPEG / HEIC）</h2>
+    <p>最多拖 20 張照片進來，TrailPaint 讀 EXIF GPS 自動建立景點。</p>
+    <ul>
+      <li><strong>iPhone HEIC</strong>：原生支援，Chrome / Firefox 桌機經 libheif 轉 JPEG 處理</li>
+      <li><strong>Android JPEG</strong>：標準 EXIF 讀取</li>
+      <li><strong>無 GPS 的照片</strong>：放在「待定位」分組，拖曳到地圖上即可設定位置</li>
+      <li><strong>地名自動補全</strong>：Photon（預設）/ Nominatim 反向地理編碼，title 變成 <code>MM-DD 館前12商業大樓</code> 這種「日期 + 地名」</li>
+      <li><strong>照片壓縮</strong>：自動 600px 邊長 + JPEG Q0.7 壓縮後存進景點 photo 欄位</li>
+      <li><strong>隱私</strong>：所有處理在瀏覽器本地，EXIF 和照片不會上傳任何伺服器；只有座標傳給 Photon 取地名</li>
+    </ul>
+
+    <h2>2. KML（Google My Maps）</h2>
+    <p>從 Google My Maps 或 Google Earth 匯出的 <code>.kml</code> 檔可以直接匯入。</p>
+    <ul>
+      <li>Point Feature → 景點</li>
+      <li>LineString Feature → 路線</li>
+      <li>Polygon 不支援（TrailPaint 沒有多邊形概念）</li>
+      <li>KML 裡的 description / ExtendedData 會被解析成景點說明</li>
+    </ul>
+
+    <h2>3. GeoJSON</h2>
+    <p>從 <a href="https://geojson.io">geojson.io</a>、Google Takeout、或其他 GIS 工具匯出的 <code>.geojson</code> 檔。</p>
+    <ul>
+      <li>FeatureCollection 格式</li>
+      <li>Point Feature → 景點；LineString / MultiLineString → 路線</li>
+      <li>properties.name → 景點 / 路線名稱</li>
+      <li>properties.description → 景點說明</li>
+    </ul>
+
+    <h2>4. GPX（登山 App 軌跡）</h2>
+    <p>從 Garmin、Strava、Hikingbook、綠野遊蹤等登山 App 匯出的 <code>.gpx</code> 檔。</p>
+    <ul>
+      <li><code>&lt;trk&gt;</code> → 路線（帶海拔點）</li>
+      <li><code>&lt;wpt&gt;</code> → 景點</li>
+      <li>軌跡含海拔 → 自動產生海拔剖面</li>
+      <li>多段軌跡 → 多條路線</li>
+    </ul>
+
+    <h2>5. .trailpaint 專案檔</h2>
+    <p>TrailPaint 自己的完整專案備份格式（內含景點、路線、照片、設定、音樂 URL）。</p>
+    <ul>
+      <li>從「匯出 → 備份 tab」產生</li>
+      <li>schema 版本會自動遷移（v1 → v2 → v3，含 MIME 白名單等安全檢查）</li>
+      <li>重新匯入後完全一致，可繼續編輯或分享</li>
+    </ul>
+
+    <h2>6. 截圖底圖（Base Map Image）</h2>
+    <p>上傳一張靜態圖片當地圖底圖（手繪地圖、古地圖掃描、遊戲地圖等）。</p>
+    <ul>
+      <li>上傳後手動拖移 / 縮放對位</li>
+      <li>不會影響真實地圖座標（景點仍走真實 GPS）</li>
+      <li>適合復古風格或虛構世界地圖</li>
+    </ul>
+
+    <h2>安全規則</h2>
+    <ul>
+      <li>所有匯入檔案在瀏覽器本地解析，<strong>不上傳任何伺服器</strong></li>
+      <li>照片 MIME 白名單（JPEG / HEIC / PNG / WebP），非圖片附件拒絕</li>
+      <li>GeoJSON / KML / GPX 的 URL 欄位走白名單（<code>http(s):</code>），阻擋 <code>javascript:</code> 等危險協定</li>
+      <li>座標 clamp 到 <code>[-90,90]</code> × <code>[-180,180]</code>，防呆處理</li>
+      <li>單次匯入上限：20 張照片；spot 上限 200；route 點上限 5,000</li>
+    </ul>
+
+    <p style="margin-top: 2rem; text-align: center;">
+      <a class="cta" href="/app/" target="_blank">立即試用</a>
+      <a class="cta cta--ghost" href="/features/export" style="margin-left: 0.5rem;">看匯出功能 →</a>
+    </p>
+  </main>
+
+  <footer class="footer">
+    <p>TrailPaint 路小繪 · 手繪風路線地圖工具 · GPL-3.0 Open Source</p>
+    <p><a href="/">首頁</a> · <a href="/features/">功能</a> · <a href="/examples/">範例</a> · <a href="/stories/">故事地圖</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/notoriouslab/trailpaint">GitHub</a></p>
+  </footer>
+</body>
+</html>

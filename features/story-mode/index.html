@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>故事地圖 Story Player — TrailPaint 路小繪</title>
+  <meta name="description" content="TrailPaint Story Player：地圖自動導覽（fly-to、popup、循環）、背景音樂、中研院 1897/1921/1966 台灣歷史地圖疊加、全螢幕展場模式、iframe 嵌入碼給部落格與教會網站。">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta property="og:title" content="故事地圖 Story Player — TrailPaint">
+  <meta property="og:description" content="把地圖變成自動導覽的故事 — fly-to 動畫、歷史地圖疊加、全螢幕、嵌入碼。">
+  <meta property="og:url" content="https://trailpaint.org/features/story-mode">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://trailpaint.org/features/story-mode">
+  <link rel="alternate" type="text/markdown" href="https://trailpaint.org/features/story-mode.md">
+  <link rel="icon" type="image/svg+xml" href="/app/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a class="brand" href="/">🌿 TrailPaint</a>
+      <div class="site-nav-links">
+        <a href="/features/" class="active">功能</a>
+        <a href="/examples/">範例</a>
+        <a href="/stories/">故事地圖</a>
+        <a href="/faq">FAQ</a>
+        <a href="/app/" target="_blank">開始繪製 →</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page">
+    <h1>故事地圖 Story Player</h1>
+    <p class="subtitle">把 <code>.trailpaint.json</code> 變成自動導覽的地圖故事。獨立入口 <a href="/app/player/">/app/player/</a>，適合展場、教學、部落格嵌入。</p>
+
+    <h2>核心功能</h2>
+    <ul>
+      <li><strong>Fly-to 動畫</strong>：逐個景點飛過去，Leaflet 平滑 pan + zoom</li>
+      <li><strong>Popup 展示</strong>：景點卡自動開合，顯示照片與說明</li>
+      <li><strong>播放控制</strong>：可設定每點停留時間、是否循環、是否自動播放</li>
+      <li><strong>背景音樂</strong>：專案內設定 MP3 URL，播放時自動 loop</li>
+      <li><strong>歷史地圖疊加</strong>：中研院 1897（台灣堡圖）/ 1921（日治地形圖）/ 1966（經建版）三種老地圖圖磚，疊在現代底圖上</li>
+      <li><strong>全螢幕模式</strong>：適合展場、教學投影、電視屏</li>
+      <li><strong>多底圖切換</strong>：Voyager、Positron、Dark Matter、OSM Standard、Protomaps</li>
+    </ul>
+
+    <h2>兩種啟動方式</h2>
+    <h3>A. 直接開啟 Player</h3>
+    <p>打開 <a href="/app/player/">https://trailpaint.org/app/player/</a>，用左上「載入專案」上傳 <code>.trailpaint.json</code>。</p>
+
+    <h3>B. 從 Editor 切換故事模式</h3>
+    <p>Editor 右下的「故事模式」按鈕切到 Player，同 project state 沿用。</p>
+
+    <h2>URL 參數</h2>
+    <p>Player 支援以下 query string：</p>
+    <ul>
+      <li><code>?src=&lt;url&gt;</code> — 自動載入指定的 <code>.trailpaint.json</code>（同源或 CORS 允許的外部 URL）</li>
+      <li><code>?embed=1</code> — 嵌入模式，隱藏控制列，適合 iframe</li>
+      <li><code>?autoplay=1</code> — 自動開始播放</li>
+      <li><code>?interval=&lt;seconds&gt;</code> — 每點停留時間（預設 3 秒）</li>
+      <li><code>?loop=1</code> — 結束後重頭播</li>
+    </ul>
+
+    <h2>iframe 嵌入範例</h2>
+    <pre><code>&lt;iframe
+  src="https://trailpaint.org/app/player/?src=https://example.com/my-trail.trailpaint.json&amp;embed=1&amp;autoplay=1&amp;interval=4&amp;loop=1"
+  width="100%"
+  height="500"
+  frameborder="0"
+  allow="autoplay"&gt;
+&lt;/iframe&gt;</code></pre>
+    <p>可直接貼到 WordPress、Notion、Ghost、HackMD（支援 HTML）、教會網站等。</p>
+
+    <h2>Story Page 故事集合</h2>
+    <p>主公策展的故事集合入口在 <a href="/stories/">/stories/</a>，目前有：</p>
+    <ul>
+      <li><a href="/stories/taiwan-missionaries/">台灣宣教士腳蹤</a> — 馬偕、巴克禮、蘭大衛、布勞姆、馬雅各等五位 19-20 世紀宣教士的宣教路線</li>
+      <li><a href="/stories/passion-week/">耶穌受難週</a> — 從進城、受難、復活三段共 12+ 個聖經地點，搭配古典繪畫（達文西、卡拉瓦喬、林布蘭、Giotto、東正教 icon 等）</li>
+    </ul>
+
+    <h2>故事展示 schema</h2>
+    <p>Story Page 用兩層分離 schema：</p>
+    <ul>
+      <li><code>&lt;filename&gt;.trailpaint.json</code> — 地理結構（Editor 產出）</li>
+      <li><code>story.json</code> — 展示 metadata（標題、描述、章節切分、scripture_refs 聖經經文引用）</li>
+    </ul>
+    <p>Editor 不編輯 story.json 欄位，保持一般使用者介面單純。</p>
+
+    <p style="margin-top: 2rem; text-align: center;">
+      <a class="cta" href="/app/player/" target="_blank">打開 Story Player</a>
+      <a class="cta cta--ghost" href="/stories/" target="_blank" style="margin-left: 0.5rem;">看既有故事</a>
+    </p>
+  </main>
+
+  <footer class="footer">
+    <p>TrailPaint 路小繪 · 手繪風路線地圖工具 · GPL-3.0 Open Source</p>
+    <p><a href="/">首頁</a> · <a href="/features/">功能</a> · <a href="/examples/">範例</a> · <a href="/stories/">故事地圖</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/notoriouslab/trailpaint">GitHub</a></p>
+  </footer>
+</body>
+</html>

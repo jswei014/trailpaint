@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>功能一覽 — TrailPaint 路小繪</title>
+  <meta name="description" content="TrailPaint 功能 reference：匯入（照片 EXIF / KML / GeoJSON / GPX）、匯出（PNG / 備份 / GeoJSON / KML）、故事地圖 Player、AI 提示詞生成地圖。">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta property="og:title" content="功能一覽 — TrailPaint 路小繪">
+  <meta property="og:description" content="TrailPaint 功能 reference — 匯入、匯出、故事地圖、AI 提示詞生成地圖。">
+  <meta property="og:url" content="https://trailpaint.org/features/">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://trailpaint.org/features/">
+  <link rel="alternate" type="text/markdown" href="https://trailpaint.org/features/index.md">
+  <link rel="icon" type="image/svg+xml" href="/app/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a class="brand" href="/">🌿 TrailPaint</a>
+      <div class="site-nav-links">
+        <a href="/features/" class="active">功能</a>
+        <a href="/examples/">範例</a>
+        <a href="/stories/">故事地圖</a>
+        <a href="/faq">FAQ</a>
+        <a href="/app/" target="_blank">開始繪製 →</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page">
+    <h1>功能一覽</h1>
+    <p class="subtitle">每個功能獨立一頁，方便 Cmd+F 搜尋或直接 link。四大主題：匯入、匯出、故事地圖、AI 提示詞。</p>
+
+    <div class="card-grid">
+      <a class="card" href="/features/import">
+        <h3>📥 匯入</h3>
+        <p>照片 EXIF GPS（JPEG / HEIC）、KML、GeoJSON、GPX、.trailpaint、截圖底圖。最多拖 20 張照片自動建景點。</p>
+      </a>
+      <a class="card" href="/features/export">
+        <h3>📤 匯出 / 分享</h3>
+        <p>PNG 多比例（IG 1:1、限動 9:16、4:3、原比例）、.trailpaint 備份、GeoJSON、KML、Cloudflare 短網址。</p>
+      </a>
+      <a class="card" href="/features/story-mode">
+        <h3>📖 故事地圖 Story Player</h3>
+        <p>地圖變自動導覽：fly-to 動畫、popup、循環、背景音樂、中研院歷史地圖疊加、嵌入碼。</p>
+      </a>
+      <a class="card" href="/features/ai-prompt">
+        <h3>🤖 AI 提示詞生成地圖</h3>
+        <p>把景點描述丟給 ChatGPT / Claude 產 <code>.trailpaint.json</code>，匯入即成地圖。4 種風格提示詞內建。</p>
+      </a>
+    </div>
+
+    <h2>快速對照</h2>
+    <ul>
+      <li><strong>31 種景點圖示</strong> — 📍 🏠 🏯 🌳 ⛰️ 🏖️ ☕ 🍜 🏛️ 📸 等（SpotEditor 內選擇）</li>
+      <li><strong>5 色路線</strong> — 循環配色，手繪虛線 + 箭頭自動</li>
+      <li><strong>多底圖</strong> — Voyager（預設）、Positron、Dark Matter、OSM Standard、Protomaps 向量地圖</li>
+      <li><strong>歷史地圖疊加</strong> — 中研院 1897 台灣堡圖、1921 日治地形圖、1966 經建版地形圖</li>
+      <li><strong>海拔剖面</strong> — 從 GPX 軌跡或手動查詢 open-elevation 繪製</li>
+      <li><strong>多比例 PNG 匯出</strong> — 1:1 IG feed、9:16 限動、4:3 列印、原比例</li>
+      <li><strong>3 種邊框 + 2 種濾鏡</strong> — 經典雙邊、紙張素描、最小細邊 × 原始、素描化</li>
+      <li><strong>多語</strong> — 繁中、英、日自動偵測或 <code>?lang=</code> 強制</li>
+    </ul>
+
+    <p style="margin-top: 2rem; text-align: center;">
+      <a class="cta" href="/app/" target="_blank">立即試用 Editor</a>
+    </p>
+  </main>
+
+  <footer class="footer">
+    <p>TrailPaint 路小繪 · 手繪風路線地圖工具 · GPL-3.0 Open Source</p>
+    <p><a href="/">首頁</a> · <a href="/features/">功能</a> · <a href="/examples/">範例</a> · <a href="/stories/">故事地圖</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/notoriouslab/trailpaint">GitHub</a></p>
+  </footer>
+</body>
+</html>

@@ -30,10 +30,14 @@ const AGENT_LINKS = [
   '</sitemap.xml>; rel="sitemap"; type="application/xml"',
 ].join(', ');
 
-/** Only root-level HTML pages and story landing pages get Link headers.
+/** Only content HTML pages get Link headers.
  *  Everything else (assets, /app/, /api/, .well-known itself) pass through. */
 function shouldInjectLinkHeader(pathname) {
   if (pathname === '/' || pathname === '/index.html') return true;
+  if (pathname === '/faq' || pathname === '/faq/' || pathname === '/faq/index.html') return true;
+  if (pathname === '/examples' || pathname === '/examples/' || pathname === '/examples/index.html') return true;
+  if (pathname.startsWith('/features/') && (pathname.endsWith('/') || pathname.endsWith('.html'))) return true;
+  if (pathname === '/features' || pathname === '/features/index.html') return true;
   if (pathname === '/stories/' || pathname === '/stories/index.html') return true;
   if (pathname.startsWith('/stories/') && (pathname.endsWith('/') || pathname.endsWith('.html'))) return true;
   return false;

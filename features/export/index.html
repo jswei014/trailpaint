@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>匯出與分享 Export — TrailPaint 路小繪</title>
+  <meta name="description" content="TrailPaint 匯出功能 reference：PNG 多比例插畫（IG / 限動 / 4:3 / 原比例）、.trailpaint 備份、GeoJSON / KML 互通、Cloudflare 短網址分享、Player 嵌入碼。">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta property="og:title" content="匯出與分享 — TrailPaint 路小繪">
+  <meta property="og:description" content="四大匯出 tab：圖片、備份、互通、分享。PNG / GeoJSON / KML / 短網址 / 嵌入碼。">
+  <meta property="og:image" content="https://trailpaint.org/examples/export-wizard-image.jpg">
+  <meta property="og:url" content="https://trailpaint.org/features/export">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://trailpaint.org/features/export">
+  <link rel="alternate" type="text/markdown" href="https://trailpaint.org/features/export.md">
+  <link rel="icon" type="image/svg+xml" href="/app/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a class="brand" href="/">🌿 TrailPaint</a>
+      <div class="site-nav-links">
+        <a href="/features/" class="active">功能</a>
+        <a href="/examples/">範例</a>
+        <a href="/stories/">故事地圖</a>
+        <a href="/faq">FAQ</a>
+        <a href="/app/" target="_blank">開始繪製 →</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page">
+    <h1>匯出 Export</h1>
+    <p class="subtitle">統一的 ExportWizard 入口，三 tab 分類：圖片、備份、互通。分享連結內建在圖片 tab。</p>
+
+    <img src="/examples/export-wizard-image.jpg" alt="ExportWizard 圖片 tab 截圖">
+
+    <h2>圖片 Tab — PNG 插畫</h2>
+    <p>匯出手繪風 PNG 地圖插畫。</p>
+    <h3>比例選項</h3>
+    <ul>
+      <li><strong>原比例</strong>：跟目前地圖視窗比例一致</li>
+      <li><strong>1:1（IG feed）</strong>：Instagram 方形貼文</li>
+      <li><strong>9:16（限動）</strong>：Instagram / Facebook Story、TikTok</li>
+      <li><strong>4:3</strong>：列印或簡報常用比例</li>
+    </ul>
+    <h3>邊框風格</h3>
+    <ul>
+      <li><strong>經典雙邊</strong>：外粗內細雙層</li>
+      <li><strong>紙張素描</strong>：粗筆手繪邊</li>
+      <li><strong>最小細邊</strong>：單一細邊</li>
+    </ul>
+    <h3>濾鏡</h3>
+    <ul>
+      <li><strong>原始</strong>：地圖底圖照常</li>
+      <li><strong>素描化</strong>：CSS filter 把地圖變成鉛筆素描風，景點卡與路線保持原色</li>
+    </ul>
+    <h3>選用項目</h3>
+    <ul>
+      <li>統計資訊覆蓋（總距離、時間、景點數）</li>
+      <li>固定 DPR 2x 匯出（iOS 自動降級為 1x 避免 canvas 上限）</li>
+    </ul>
+
+    <h2>圖片 Tab — 分享連結 Share Link</h2>
+    <img src="/examples/export-wizard-backup.jpg" alt="ExportWizard 分享按鈕位置">
+    <p>按「複製分享連結」會：</p>
+    <ol>
+      <li>前端 deflate 壓縮完整專案（含照片）成 base64 hash</li>
+      <li>POST 到 <code>https://trailpaint.org/api/s</code>（Cloudflare Worker + KV）</li>
+      <li>Worker 產 12 字元隨機 ID，存 KV（TTL 90 天），回傳 <code>https://trailpaint.org/s/&lt;id&gt;</code></li>
+      <li>複製到剪貼簿；Safari 透過 ClipboardItem + pending promise pattern 突破 user gesture 限制</li>
+    </ol>
+    <p><strong>社交媒體預覽</strong>：貼到 LINE / Facebook / Threads / X / Slack 時自動顯示：</p>
+    <ul>
+      <li>og:title：專案名稱</li>
+      <li>og:image：第一個有照片的景點（無 cover 時 fallback 品牌預覽圖）</li>
+    </ul>
+    <p><strong>降級鏈</strong>：後端失敗時自動退回長 hash URL（<code>/app/#share=...</code>）。</p>
+
+    <h2>備份 Tab — .trailpaint 完整專案檔</h2>
+    <img src="/examples/export-wizard-backup.jpg" alt="ExportWizard 備份 tab">
+    <p>下載一個 <code>.trailpaint.json</code> 檔，內含：</p>
+    <ul>
+      <li>全部景點 + 路線 + 照片（base64 data URL）</li>
+      <li>地圖中心 + zoom + 底圖選擇</li>
+      <li>音樂 URL 與自動播放設定</li>
+      <li>Schema version（目前 v3），未來版本會自動 migrate</li>
+    </ul>
+    <p>用途：永久備份（不像分享連結 90 天過期）、跨裝置遷移、版本控管（git 追蹤）。</p>
+
+    <h2>互通 Tab — GeoJSON / KML</h2>
+    <img src="/examples/export-wizard-interop.jpg" alt="ExportWizard 互通 tab">
+    <p>匯出給其他工具使用的純地理結構（<strong>不含照片</strong>，遵守 open data 邊界）。</p>
+    <ul>
+      <li><strong>GeoJSON</strong>：給 <a href="https://geojson.io">geojson.io</a>、Google Takeout、Mapbox 等</li>
+      <li><strong>KML</strong>：給 <a href="https://www.google.com/maps/d/">Google My Maps</a>、Google Earth、<a href="https://www.gaiagps.com/">Gaia GPS</a> 等</li>
+    </ul>
+
+    <h2>Player 嵌入碼（HTML iframe）</h2>
+    <p>圖片 tab 裡的「複製嵌入碼」產一段 <code>&lt;iframe&gt;</code>，可貼到部落格、教會網站、Notion。詳見 <a href="/features/story-mode">故事地圖</a>。</p>
+
+    <p style="margin-top: 2rem; text-align: center;">
+      <a class="cta" href="/app/" target="_blank">立即試用</a>
+      <a class="cta cta--ghost" href="/features/story-mode" style="margin-left: 0.5rem;">看故事地圖 →</a>
+    </p>
+  </main>
+
+  <footer class="footer">
+    <p>TrailPaint 路小繪 · 手繪風路線地圖工具 · GPL-3.0 Open Source</p>
+    <p><a href="/">首頁</a> · <a href="/features/">功能</a> · <a href="/examples/">範例</a> · <a href="/stories/">故事地圖</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/notoriouslab/trailpaint">GitHub</a></p>
+  </footer>
+</body>
+</html>

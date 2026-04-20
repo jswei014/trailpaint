@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>常見問題 FAQ — TrailPaint 路小繪</title>
+  <meta name="description" content="TrailPaint 路小繪常見問題：免費？要不要註冊？支援哪些格式？手機可以用嗎？分享連結會過期嗎？開源授權？">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta property="og:title" content="常見問題 — TrailPaint 路小繪">
+  <meta property="og:description" content="TrailPaint 路小繪常見問題：免費？隱私？支援哪些格式？手機可用？分享連結過期？開源授權？">
+  <meta property="og:image" content="https://trailpaint.org/examples/og-image.jpg">
+  <meta property="og:url" content="https://trailpaint.org/faq">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://trailpaint.org/faq">
+  <link rel="alternate" type="text/markdown" href="https://trailpaint.org/faq.md">
+  <link rel="icon" type="image/svg+xml" href="/app/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "TrailPaint 是什麼？",
+        "acceptedAnswer": { "@type": "Answer", "text": "TrailPaint 路小繪是一個免費、開源的瀏覽器工具，在真實地圖上製作手繪風格的路線插畫。支援從照片 EXIF、KML、GeoJSON、GPX 匯入，匯出 PNG 地圖插畫、完整備份、以及 GeoJSON / KML 互通格式。純前端運作，無需註冊，資料存在瀏覽器本地不上傳伺服器。" } },
+      { "@type": "Question", "name": "免費嗎？",
+        "acceptedAnswer": { "@type": "Answer", "text": "完全免費。採 GPL-3.0 開源授權，原始碼在 GitHub (notoriouslab/trailpaint) 公開。沒有帳號、沒有訂閱、沒有廣告。" } },
+      { "@type": "Question", "name": "需要註冊帳號嗎？",
+        "acceptedAnswer": { "@type": "Answer", "text": "不需要。打開 https://trailpaint.org/app/ 直接使用，專案資料存在瀏覽器 localStorage。分享連結是可選功能（由 Cloudflare Workers + KV 提供短網址），同樣不需登入。" } },
+      { "@type": "Question", "name": "資料會上傳到伺服器嗎？",
+        "acceptedAnswer": { "@type": "Answer", "text": "不會上傳編輯資料。TrailPaint 是純前端工具，所有專案資料存在瀏覽器 localStorage。只有地圖圖磚、反向地理編碼（Photon / Nominatim）、海拔查詢等地圖功能會呼叫外部服務，由使用者主動觸發，不含個人資料。只有當使用者主動按「複製分享連結」才會把專案送到 trailpaint.org 的 Cloudflare Workers + KV（TTL 90 天）。" } },
+      { "@type": "Question", "name": "如何從照片批次建立景點？",
+        "acceptedAnswer": { "@type": "Answer", "text": "點「匯入」→「匯入照片」→ 選取或拖曳最多 20 張照片（JPEG / HEIC 皆可）。TrailPaint 會讀取 EXIF GPS 座標自動建立景點，無 GPS 的照片會放在「待定位」分組，拖曳即可設定位置。Photon（預設）或 Nominatim 反向地理編碼會自動補上地名作為景點標題。" } },
+      { "@type": "Question", "name": "支援哪些匯入與匯出格式？",
+        "acceptedAnswer": { "@type": "Answer", "text": "匯入：.trailpaint 專案檔、照片 EXIF（JPEG / HEIC）、KML（Google My Maps）、GeoJSON（geojson.io / Google Takeout）、GPX（登山 App）、截圖底圖。匯出：PNG 多比例插畫、.trailpaint 完整備份、GeoJSON / KML 純地理結構（給 Google My Maps、Google Earth、Gaia GPS 用）、分享連結、Player 嵌入 HTML。" } },
+      { "@type": "Question", "name": "分享連結會過期嗎？",
+        "acceptedAnswer": { "@type": "Answer", "text": "會。後端 share link（trailpaint.org/s/<id>）TTL 90 天，90 天後自動失效。想永久保存要用備份功能下載 .trailpaint 專案檔，未來可重新匯入或再次產生分享連結。" } },
+      { "@type": "Question", "name": "分享連結的預覽圖是什麼？",
+        "acceptedAnswer": { "@type": "Answer", "text": "分享到 LINE、Facebook、Threads、X、Slack 等平台時，預覽圖是該專案裡第一個有照片的景點。若專案沒有任何照片，會 fallback 到 TrailPaint 的品牌預覽圖。" } },
+      { "@type": "Question", "name": "Story Player 是什麼？",
+        "acceptedAnswer": { "@type": "Answer", "text": "Story Player 是 TrailPaint 的獨立入口（/app/player/），把地圖變成自動導覽故事：fly-to 動畫逐點飛過去、popup 展示照片與說明、可設定播放間隔與循環、支援背景音樂、中研院 1897/1921/1966 台灣歷史地圖疊加、全螢幕模式適合展場與教學投影。一鍵複製嵌入碼可貼到部落格、教會網站、Notion。" } },
+      { "@type": "Question", "name": "手機可以用嗎？離線能用嗎？",
+        "acceptedAnswer": { "@type": "Answer", "text": "手機：iOS Safari、Android Chrome 都支援響應式設計。可安裝為 PWA（Progressive Web App）加到主畫面當原生 App 使用，包含離線啟動能力。離線：PWA 快取可以離線開啟 Editor，但新照片匯入的反向地理編碼、地圖圖磚需要網路才能取得最新內容。" } },
+      { "@type": "Question", "name": "可以商業使用嗎？",
+        "acceptedAnswer": { "@type": "Answer", "text": "可以。TrailPaint 採 GPL-3.0 License，允許商業使用、修改、二次創作，但衍生作品必須同樣以 GPL-3.0 開源。匯出的 PNG 插畫 / 專案檔屬於你自己的創作，不受授權限制。" } },
+      { "@type": "Question", "name": "支援哪些語言？",
+        "acceptedAnswer": { "@type": "Answer", "text": "繁體中文、英文、日文三種語言，根據瀏覽器偏好自動偵測，也可透過 ?lang=zh-TW / en / ja URL 參數手動切換。" } },
+      { "@type": "Question", "name": "找到 bug 或有建議怎麼回報？",
+        "acceptedAnswer": { "@type": "Answer", "text": "到 GitHub 開 issue：https://github.com/notoriouslab/trailpaint/issues。 附上重現步驟、截圖、瀏覽器與版本資訊最有幫助。" } }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a class="brand" href="/">🌿 TrailPaint</a>
+      <div class="site-nav-links">
+        <a href="/features/">功能</a>
+        <a href="/examples/">範例</a>
+        <a href="/stories/">故事地圖</a>
+        <a href="/faq" class="active">FAQ</a>
+        <a href="/app/" target="_blank">開始繪製 →</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page">
+    <h1>常見問題</h1>
+    <p class="subtitle">13 題覆蓋免費、隱私、匯入匯出、分享連結、手機、授權、回報 bug。</p>
+
+    <div class="faq-list">
+      <details class="faq-item" open>
+        <summary>TrailPaint 是什麼？</summary>
+        <div class="faq-body">
+          TrailPaint 路小繪是一個免費、開源的瀏覽器工具，在真實地圖上製作手繪風格的路線插畫。支援從照片 EXIF、KML、GeoJSON、GPX 匯入，匯出 PNG 地圖插畫、完整備份、以及 GeoJSON / KML 互通格式。純前端運作，無需註冊，資料存在瀏覽器本地不上傳伺服器。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>免費嗎？</summary>
+        <div class="faq-body">
+          完全免費。採 GPL-3.0 開源授權，原始碼在 GitHub（<a href="https://github.com/notoriouslab/trailpaint">notoriouslab/trailpaint</a>）公開。沒有帳號、沒有訂閱、沒有廣告。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>需要註冊帳號嗎？</summary>
+        <div class="faq-body">
+          不需要。打開 <a href="/app/">trailpaint.org/app/</a> 直接使用，專案資料存在瀏覽器 localStorage。分享連結是可選功能（由 Cloudflare Workers + KV 提供短網址），同樣不需登入。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>資料會上傳到伺服器嗎？</summary>
+        <div class="faq-body">
+          <p>不會上傳編輯資料。TrailPaint 是純前端工具，所有專案資料存在瀏覽器 localStorage。</p>
+          <p>只有以下三種情況會呼叫外部服務，且都是由使用者主動觸發：</p>
+          <ul>
+            <li>地圖圖磚（OpenStreetMap / Carto / Protomaps）</li>
+            <li>反向地理編碼（Photon 為主、Nominatim 為備用）— 僅傳送座標</li>
+            <li>海拔查詢（open-elevation）— 僅傳送座標</li>
+          </ul>
+          <p>只有當主動按「複製分享連結」才會把專案壓縮後送到 trailpaint.org 的 Cloudflare Workers + KV（TTL 90 天）。</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>如何從照片批次建立景點？</summary>
+        <div class="faq-body">
+          點「匯入」→「匯入照片」→ 選取或拖曳最多 20 張照片（JPEG / HEIC 皆可）。TrailPaint 會讀取 EXIF GPS 座標自動建立景點，無 GPS 的照片會放在「待定位」分組，拖曳即可設定位置。Photon 或 Nominatim 反向地理編碼會自動補上地名作為景點標題。詳見 <a href="/features/import">匯入功能</a>。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>支援哪些匯入與匯出格式？</summary>
+        <div class="faq-body">
+          <p><strong>匯入</strong>：.trailpaint 專案檔、照片 EXIF（JPEG / HEIC）、KML（Google My Maps）、GeoJSON（geojson.io / Google Takeout）、GPX（登山 App）、截圖底圖。</p>
+          <p><strong>匯出</strong>：PNG 多比例插畫、.trailpaint 完整備份、GeoJSON / KML 純地理結構（給 Google My Maps、Google Earth、Gaia GPS 用）、分享連結、Player 嵌入 HTML。</p>
+          <p>詳見 <a href="/features/import">匯入功能</a> 與 <a href="/features/export">匯出功能</a>。</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>分享連結會過期嗎？</summary>
+        <div class="faq-body">
+          會。後端 share link（<code>trailpaint.org/s/&lt;id&gt;</code>）TTL 90 天，90 天後自動失效。想永久保存要用備份功能下載 <code>.trailpaint</code> 專案檔，未來可重新匯入或再次產生分享連結。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>分享連結的預覽圖是什麼？</summary>
+        <div class="faq-body">
+          分享到 LINE、Facebook、Threads、X、Slack 等平台時，預覽圖是該專案裡第一個有照片的景點。若專案沒有任何照片，會 fallback 到 TrailPaint 的品牌預覽圖。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Story Player 是什麼？</summary>
+        <div class="faq-body">
+          Story Player 是 TrailPaint 的獨立入口（<a href="/app/player/">/app/player/</a>），把地圖變成自動導覽故事：
+          <ul>
+            <li>Fly-to 動畫逐點飛過去、popup 展示照片與說明</li>
+            <li>可設定播放間隔與循環</li>
+            <li>支援背景音樂</li>
+            <li>中研院 1897 / 1921 / 1966 台灣歷史地圖疊加</li>
+            <li>全螢幕模式適合展場與教學投影</li>
+          </ul>
+          一鍵複製嵌入碼可貼到部落格、教會網站、Notion。詳見 <a href="/features/story-mode">故事地圖</a>。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>手機可以用嗎？離線能用嗎？</summary>
+        <div class="faq-body">
+          <p><strong>手機</strong>：iOS Safari、Android Chrome 都支援響應式設計。可安裝為 PWA（Progressive Web App）加到主畫面當原生 App 使用。</p>
+          <p><strong>離線</strong>：PWA 快取可以離線開啟 Editor，但新照片匯入的反向地理編碼、地圖圖磚需要網路才能取得最新內容。</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>可以商業使用嗎？</summary>
+        <div class="faq-body">
+          可以。TrailPaint 採 <a href="https://www.gnu.org/licenses/gpl-3.0.html">GPL-3.0 License</a>，允許商業使用、修改、二次創作，但衍生作品必須同樣以 GPL-3.0 開源。匯出的 PNG 插畫 / 專案檔屬於你自己的創作，不受授權限制。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>支援哪些語言？</summary>
+        <div class="faq-body">
+          繁體中文、英文、日文三種語言，根據瀏覽器偏好自動偵測，也可透過 <code>?lang=zh-TW</code> / <code>?lang=en</code> / <code>?lang=ja</code> URL 參數手動切換。
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>找到 bug 或有建議怎麼回報？</summary>
+        <div class="faq-body">
+          到 GitHub 開 issue：<a href="https://github.com/notoriouslab/trailpaint/issues">github.com/notoriouslab/trailpaint/issues</a>。附上重現步驟、截圖、瀏覽器與版本資訊最有幫助。
+        </div>
+      </details>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>TrailPaint 路小繪 · 手繪風路線地圖工具 · GPL-3.0 Open Source</p>
+    <p><a href="/">首頁</a> · <a href="/features/">功能</a> · <a href="/examples/">範例</a> · <a href="/stories/">故事地圖</a> · <a href="https://github.com/notoriouslab/trailpaint">GitHub</a></p>
+  </footer>
+</body>
+</html>
