@@ -128,23 +128,19 @@ export async function encodeShareLink(project: Project, targetPath?: string): Pr
 }
 
 /**
- * Shorten a URL via TinyURL. Sends the full URL to a third-party service.
- * Returns short URL on success, null on failure.
+ * Extract the first photo in the project as a plain base64 string (stripping
+ * the `data:image/...;base64,` prefix). Used as the Open Graph preview image
+ * on backend shares so social media (LINE / Facebook / Twitter / Slack) can
+ * render a real photo instead of a generic logo.
+ *
+ * Returns null when no spot has a photo; in that case the Worker falls back
+ * to a static brand image.
  */
-export async function shortenUrl(longUrl: string): Promise<string | null> {
-  try {
-    const res = await fetch(
-      `https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`,
-      { signal: AbortSignal.timeout(5000) },
-    );
-    if (res.ok) {
-      const shortUrl = (await res.text()).trim();
-      if (shortUrl.startsWith('http')) return shortUrl;
-    }
-  } catch {
-    // Shortener unavailable
-  }
-  return null;
+function extractCoverBase64(project: Project): string | null {
+  const spotWithPhoto = project.spots.find((s) => s.photo);
+  if (!spotWithPhoto?.photo) return null;
+  const match = spotWithPhoto.photo.match(/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/);
+  return match ? match[2] : null;
 }
 
 /**
@@ -240,19 +236,26 @@ const BACKEND_TIMEOUT_MS = 20000;
  * Always returns a usable URL. Never throws — logs and degrades silently.
  */
 export async function createBackendShare(project: Project): Promise<string> {
-  // Compress on the frontend, POST only the deflate-base64 hash. Two wins:
-  //   (1) body shrinks ~3× (photos are JSON-embedded base64 → JSON → deflate),
-  //       so mobile Safari's fetch doesn't silently choke on 400KB+ uploads
-  //       and degrade to TinyURL.
-  //   (2) Worker POST does zero compression work, staying comfortably under
-  //       the 10ms free-tier CPU budget even for photo-heavy projects.
-  const hash = await compressToBase64Hash(project, true); // include photos
+  // Compress on the frontend, POST only the deflate-base64 hash + cover meta.
+  // Three wins:
+  //   (1) body shrinks ~3× vs sending raw compact JSON, so mobile Safari
+  //       doesn't choke on 400KB+ uploads.
+  //   (2) Worker POST does zero compression work, staying under the 10ms
+  //       free-tier CPU budget even for photo-heavy projects.
+  //   (3) `name` + `cover` let the Worker render Open Graph previews with a
+  //       real first-photo thumbnail on LINE / Facebook / Twitter / Slack.
+  const hash = await compressToBase64Hash(project, true);
+  const cover = extractCoverBase64(project);
 
   try {
     const res = await fetch(BACKEND_URL, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ hash }),
+      body: JSON.stringify({
+        hash,
+        name: project.name || '',
+        cover, // null when no photo; Worker falls back to brand image
+      }),
       signal: AbortSignal.timeout(BACKEND_TIMEOUT_MS),
     });
     if (res.ok) {
@@ -266,9 +269,11 @@ export async function createBackendShare(project: Project): Promise<string> {
     console.warn('[createBackendShare] backend failed:', err);
   }
 
-  const longUrl = await encodeShareLink(project);
-  const tinyUrl = await shortenUrl(longUrl);
-  return tinyUrl ?? longUrl;
+  // Fallback: long hash URL. TinyURL was removed — it handed out photo-less
+  // shares that looked broken to recipients. A long URL is honest: small
+  // shares fit anywhere, large ones truncate in LINE/WeChat and the user
+  // knows to retry when backend comes back.
+  return await encodeShareLink(project);
 }
 
 /* ── Helpers ── */

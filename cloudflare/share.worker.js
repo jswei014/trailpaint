@@ -38,6 +38,11 @@ const ID_PATTERN = /^[A-Za-z0-9_-]{12}$/;
 // is unavailable (never on modern Safari/Chrome/Firefox, but kept as a
 // last-resort fallback).
 const HASH_PATTERN = /^(raw\.)?[A-Za-z0-9+/=]+$/;
+// Cover image: standard base64 only (no raw. prefix), reasonable size cap.
+const COVER_PATTERN = /^[A-Za-z0-9+/=]+$/;
+const MAX_COVER_BYTES = 400_000; // ~300KB raw JPEG after base64 → OK for OG preview
+const MAX_NAME_LEN = 200;
+const FALLBACK_COVER_URL = 'https://trailpaint.org/examples/trailpaint-hero.jpg';
 
 // CORS: share API has no auth or cookies, so `*` is equivalent to server-
 // direct access. Rate limit + schema validation + size cap are the real
@@ -104,23 +109,39 @@ async function handlePost(request, env) {
   }
 
   // Two accepted shapes:
-  //   (A) { hash: "<deflate-base64>" }       ← current frontend, zero Worker CPU
+  //   (A) { hash, name?, cover? }             ← current frontend, zero Worker CPU
   //   (B) { v, n, c, z, s, r, ... }           ← legacy frontend (worker-side deflate)
   // Shape A keeps us clear of the 10ms free-tier CPU budget on photo-heavy
   // payloads; shape B is retained as a backward-compat path for any cached
   // old frontend bundle still around.
+  // Optional `name` and `cover` enable Open Graph previews on /s/:id —
+  // cover is a plain base64 JPEG (no data URL prefix) served later via
+  // /s/:id/cover.jpg for social media bots.
   let hash;
+  let name = null;
+  let cover = null;
   if (typeof parsed.hash === 'string') {
     if (!HASH_PATTERN.test(parsed.hash)) {
       return errorJson('invalid hash format', 400);
     }
     hash = parsed.hash;
+    if (typeof parsed.name === 'string' && parsed.name.length <= MAX_NAME_LEN) {
+      name = parsed.name;
+    }
+    if (typeof parsed.cover === 'string'
+        && parsed.cover.length <= MAX_COVER_BYTES
+        && COVER_PATTERN.test(parsed.cover)) {
+      cover = parsed.cover;
+    }
   } else {
     const schemaErr = validateCompactSchema(parsed);
     if (schemaErr) {
       return errorJson(schemaErr, 400);
     }
     hash = await compressAndBase64(JSON.stringify(parsed));
+    if (typeof parsed.n === 'string' && parsed.n.length <= MAX_NAME_LEN) {
+      name = parsed.n;
+    }
   }
 
   let id;
@@ -136,9 +157,11 @@ async function handlePost(request, env) {
 
   const envelope = {
     hash,
+    name,
+    cover,
     userId: null,
     createdAt: Math.floor(Date.now() / 1000),
-    v: 2,
+    v: 3,
   };
 
   await env.SHARE_KV.put(id, JSON.stringify(envelope), { expirationTtl: TTL_SECONDS });
@@ -153,8 +176,56 @@ async function handlePost(request, env) {
   );
 }
 
+function htmlEscape(s) {
+  return String(s).replace(/[<>&"']/g, (c) => (
+    { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+}
+
+async function handleCover(id, env, ctx, request) {
+  const cache = caches.default;
+  const cacheKey = new Request(new URL(request.url).toString(), { method: 'GET' });
+  const cached = await cache.match(cacheKey);
+  if (cached) return cached;
+
+  const raw = await env.SHARE_KV.get(id);
+  if (!raw) {
+    return Response.redirect(FALLBACK_COVER_URL, 302);
+  }
+  let envelope;
+  try { envelope = JSON.parse(raw); }
+  catch { return Response.redirect(FALLBACK_COVER_URL, 302); }
+
+  if (typeof envelope.cover !== 'string' || !envelope.cover) {
+    return Response.redirect(FALLBACK_COVER_URL, 302);
+  }
+
+  // Base64 → binary. Small covers (≤300KB) decode in ~1-2ms, safely under
+  // the 10ms CPU budget. Nothing heavier runs in this path.
+  const binary = atob(envelope.cover);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+  const response = new Response(bytes, {
+    status: 200,
+    headers: {
+      'Content-Type': 'image/jpeg',
+      'Cache-Control': 'public, max-age=86400',
+      'X-Served-By': 'trailpaint-share',
+    },
+  });
+  ctx.waitUntil(cache.put(cacheKey, response.clone()));
+  return response;
+}
+
 async function handleGet(request, env, ctx) {
   const url = new URL(request.url);
+  // /s/:id/cover.jpg — social media OG image endpoint
+  const coverMatch = url.pathname.match(/^\/s\/([A-Za-z0-9_-]{12})\/cover\.jpg$/);
+  if (coverMatch) {
+    return handleCover(coverMatch[1], env, ctx, request);
+  }
+
   const id = url.pathname.slice(3); // strip "/s/"
 
   if (!ID_PATTERN.test(id)) {
@@ -213,9 +284,37 @@ async function handleGet(request, env, ctx) {
   // to vanish on 7+ photo projects. sessionStorage is same-origin and has no
   // such cap. Fallback to URL hash only for the small-payload path where
   // sessionStorage is blocked (Safari private mode, quota exhaustion).
+  //
+  // OG meta lets LINE / Facebook / Twitter / Slack render a real preview
+  // with the first spot photo. Social bots don't execute the JS redirect —
+  // they just scrape these tags. Missing cover → Worker's /cover.jpg route
+  // 302-redirects to a static brand image, so the preview always renders.
+  const pageTitle = envelope.name
+    ? `${htmlEscape(envelope.name)} — TrailPaint`
+    : 'TrailPaint 路小繪';
+  const pageDesc = envelope.name
+    ? `由 TrailPaint 路小繪製作的手繪風路線地圖 — ${htmlEscape(envelope.name)}`
+    : '由 TrailPaint 路小繪製作的手繪風路線地圖';
+  const shareUrl = `${ORIGIN}/s/${id}`;
+  const coverUrl = `${shareUrl}/cover.jpg`;
   const html = `<!doctype html>
+<html lang="zh-TW">
+<head>
 <meta charset="utf-8">
-<title>TrailPaint</title>
+<title>${pageTitle}</title>
+<meta name="description" content="${pageDesc}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TrailPaint 路小繪">
+<meta property="og:title" content="${pageTitle}">
+<meta property="og:description" content="${pageDesc}">
+<meta property="og:url" content="${shareUrl}">
+<meta property="og:image" content="${coverUrl}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${pageTitle}">
+<meta name="twitter:description" content="${pageDesc}">
+<meta name="twitter:image" content="${coverUrl}">
 <script>
 (function(){
   var h = ${JSON.stringify(hash)};
@@ -227,7 +326,11 @@ async function handleGet(request, env, ctx) {
   }
 })();
 </script>
-<noscript><p>請啟用 JavaScript 以開啟分享連結。</p></noscript>`;
+</head>
+<body>
+<noscript><p>請啟用 JavaScript 以開啟分享連結。</p></noscript>
+</body>
+</html>`;
 
   const response = new Response(html, {
     status: 200,

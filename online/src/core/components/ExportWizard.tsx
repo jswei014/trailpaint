@@ -7,7 +7,7 @@ import {
   type StyleFilter,
 } from '../utils/exportRenderer';
 import { applyStyleFilter } from '../utils/styleFilters';
-import { encodeShareLink, shortenUrl, createBackendShare } from '../utils/shareLink';
+import { createBackendShare } from '../utils/shareLink';
 import { buildProjectEmbedHtml } from '../utils/embedCode';
 import { t, currentLocale } from '../../i18n';
 import './ExportWizard.css';
@@ -265,21 +265,6 @@ export default function ExportWizard({
     }
   }, [project, showToast]);
 
-  const handleShortenLink = useCallback(async () => {
-    try {
-      const url = await encodeShareLink(project);
-      const short = await shortenUrl(url);
-      if (short) {
-        const ok = await copyToClipboard(short);
-        if (ok) showToast(t('export.preview.shortCopied'));
-      } else {
-        showToast(t('export.preview.shortFailed'));
-      }
-    } catch {
-      showToast(t('export.preview.shortFailed'));
-    }
-  }, [project, showToast]);
-
   const handleCopyAiPrompt = useCallback(async () => {
     const routeName = routes[0]?.name?.trim() ?? projectName;
     const text = getAiPrompt(routeName, aiStyle);
@@ -412,13 +397,6 @@ export default function ExportWizard({
                   style={{ flex: 1 }}
                 >
                   🔗 {t('export.preview.shareLink')}
-                </button>
-                <button
-                  className="export-preview__btn export-preview__btn--small"
-                  onClick={handleShortenLink}
-                  title={t('export.preview.shortenTip')}
-                >
-                  ✂️
                 </button>
               </div>
               <div className="export-preview__ai-row">
