@@ -1,28 +1,81 @@
 /**
- * Cloudflare Worker — Markdown Content Negotiation for trailpaint.org
+ * Cloudflare Worker — Markdown Content Negotiation + AEO agent-discovery for trailpaint.org
  *
- * Intercepts requests with `Accept: text/markdown` and serves the corresponding
- * pre-rendered .md file, bypassing the HTML version. Falls through to origin
- * (GitHub Pages) for all other requests.
+ * Three responsibilities:
+ *   1. Intercept requests with `Accept: text/markdown` → serve the matching
+ *      pre-rendered .md file (saves ~5× tokens for AI crawlers vs full HTML).
+ *   2. Fix `/.well-known/api-catalog` Content-Type to `application/linkset+json`
+ *      (RFC 9727 — GitHub Pages would otherwise serve it as text/plain and
+ *      RFC 9264 scanners reject it).
+ *   3. Inject an RFC 8288 `Link:` response header on homepage / stories
+ *      pointing agents at llms.txt / agent-card / agent-skills / api-catalog /
+ *      sitemap so automated discovery doesn't need HTML scraping.
  *
- * Why: AI crawlers (Claude Code, ChatGPT browse, Perplexity, etc.) that support
- * Accept header content negotiation get token-efficient markdown (~5× savings)
- * instead of HTML + JSON-LD + scripts + styles. Required for canaisee "Agent-
- * native" score and general GEO/AEO optimization.
+ * All other requests pass through to the GitHub Pages origin unchanged.
  *
- * Deploy:
- *   1. Cloudflare Dashboard → Workers & Pages → Create → Worker → paste this file
- *   2. Settings → Triggers → Add Route → `trailpaint.org/*` → Zone: trailpaint.org
- *   3. Test: `curl -H "Accept: text/markdown" https://trailpaint.org/ -I`
- *      → should see `content-type: text/markdown; charset=utf-8`
+ * Deploy: paste into the Dashboard Worker named
+ * `trailpaint-markdown-negotiation`. Route: `trailpaint.org/*`.
  *
  * Free tier: 100k requests/day, plenty for current traffic.
  */
+
+// RFC 8288 Link header values (joined with ", " — a single header, multiple entries).
+// kept short and useful: describedby for llms.txt, service-desc for the A2A
+// agent card, and explicit rel labels for api-catalog / sitemap / skills.
+const AGENT_LINKS = [
+  '</llms.txt>; rel="describedby"; type="text/plain"',
+  '</.well-known/agent-card.json>; rel="service-desc"; type="application/json"',
+  '</.well-known/agent-skills/index.json>; rel="agent-skills"; type="application/json"',
+  '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
+  '</sitemap.xml>; rel="sitemap"; type="application/xml"',
+].join(', ');
+
+/** Only root-level HTML pages and story landing pages get Link headers.
+ *  Everything else (assets, /app/, /api/, .well-known itself) pass through. */
+function shouldInjectLinkHeader(pathname) {
+  if (pathname === '/' || pathname === '/index.html') return true;
+  if (pathname === '/stories/' || pathname === '/stories/index.html') return true;
+  if (pathname.startsWith('/stories/') && (pathname.endsWith('/') || pathname.endsWith('.html'))) return true;
+  return false;
+}
+
+async function injectLinkHeader(request) {
+  const originRes = await fetch(request);
+  // Clone so we can mutate headers (Response headers are otherwise immutable).
+  const headers = new Headers(originRes.headers);
+  headers.set('Link', AGENT_LINKS);
+  return new Response(originRes.body, {
+    status: originRes.status,
+    statusText: originRes.statusText,
+    headers,
+  });
+}
+
+async function serveApiCatalog(request) {
+  // GitHub Pages serves the raw file; we refetch it and rewrite Content-Type.
+  const originRes = await fetch(request, { cf: { cacheTtl: 600, cacheEverything: true } });
+  if (!originRes.ok) return originRes;
+  const body = await originRes.text();
+  return new Response(body, {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/linkset+json',
+      'Cache-Control': 'public, max-age=600, s-maxage=600',
+      'X-Served-By': 'cf-worker-markdown-negotiation',
+    },
+  });
+}
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const accept = request.headers.get('Accept') || '';
+
+    // Content-Type fix for api-catalog (must match RFC 9727)
+    if ((request.method === 'GET' || request.method === 'HEAD') &&
+        url.pathname === '/.well-known/api-catalog') {
+      return serveApiCatalog(request);
+    }
 
     // Only intercept GET/HEAD requests that explicitly want markdown
     const wantsMarkdown =
@@ -30,6 +83,11 @@ export default {
       accept.includes('text/markdown');
 
     if (!wantsMarkdown) {
+      // Add RFC 8288 Link header to discoverable pages for AEO scanners.
+      if ((request.method === 'GET' || request.method === 'HEAD') &&
+          shouldInjectLinkHeader(url.pathname)) {
+        return injectLinkHeader(request);
+      }
       return fetch(request);
     }
 
@@ -56,15 +114,17 @@ export default {
     const mdUrl = `${url.origin}${mdPath}`;
     const mdRes = await fetch(mdUrl, {
       headers: {
-        // Request raw content; avoid recursion by not forwarding markdown accept
         'Accept': 'text/plain, text/markdown, */*',
         'User-Agent': request.headers.get('User-Agent') || 'Cloudflare-Worker-MarkdownNegotiation/1.0',
       },
       cf: { cacheTtl: 600, cacheEverything: true },
     });
 
-    // Fallback: .md doesn't exist → serve original HTML
+    // Fallback: .md doesn't exist → serve original HTML (with Link header if root)
     if (!mdRes.ok) {
+      if (shouldInjectLinkHeader(url.pathname)) {
+        return injectLinkHeader(request);
+      }
       return fetch(request);
     }
 
@@ -77,6 +137,7 @@ export default {
         'Cache-Control': 'public, max-age=600, s-maxage=600',
         'X-Served-By': 'cf-worker-markdown-negotiation',
         'X-Source-Path': mdPath,
+        'Link': AGENT_LINKS,
       },
     });
   },

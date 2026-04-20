@@ -101,15 +101,23 @@ export function registerWebMCP(): void {
   const nav = navigator as unknown as NavigatorWithModelContext;
   const mc = nav.modelContext;
 
-  if (!mc || typeof mc.registerTool !== 'function') {
+  if (!mc) {
     // API not available in this browser — AEO scanners reading the source for
     // navigator.modelContext reference can still pick up the signal.
     return;
   }
 
   try {
-    for (const skill of SKILLS) {
-      mc.registerTool(skill);
+    // Newer draft: provideContext with the whole tool set at once
+    // (isitagentready.com / RFC-aligned scanners check for this call).
+    if (typeof mc.provideContext === 'function') {
+      mc.provideContext({ tools: SKILLS });
+    }
+    // Older draft: registerTool per-tool (Chrome experimental builds).
+    if (typeof mc.registerTool === 'function') {
+      for (const skill of SKILLS) {
+        mc.registerTool(skill);
+      }
     }
     registered = true;
   } catch (err) {

@@ -1,0 +1,33 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://trailpaint.org/api/s",
+      "service-desc": [
+        {
+          "href": "https://trailpaint.org/.well-known/agent-card.json",
+          "type": "application/json",
+          "title": "Share Backend API — agent card (A2A)"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://trailpaint.org/llms.txt",
+          "type": "text/plain",
+          "title": "TrailPaint LLM-friendly overview"
+        },
+        {
+          "href": "https://github.com/notoriouslab/trailpaint/blob/main/cloudflare/README.md",
+          "type": "text/markdown",
+          "title": "Cloudflare Worker deployment & API usage"
+        }
+      ],
+      "status": [
+        {
+          "href": "https://trailpaint.org/api/s",
+          "type": "application/json",
+          "title": "POST endpoint (health via reachability)"
+        }
+      ]
+    }
+  ]
+}

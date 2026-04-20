@@ -1,0 +1,42 @@
+{
+  "$schema": "https://agentskills.io/schema/v0.2.0/index.json",
+  "name": "TrailPaint Agent Skills",
+  "description": "Discovery index for TrailPaint's agent-callable capabilities. Mirrors /.well-known/agent-card.json (A2A Protocol) in the Agent Skills Discovery shape (Cloudflare RFC v0.2.0).",
+  "skills": [
+    {
+      "name": "trail-map-editor",
+      "type": "web-app",
+      "description": "Interactive web editor for hand-drawn style trail maps. Add spots with 31 icons, draw routes with 5 colors and hand-drawn dashed lines, attach photos, adjust elevation profiles.",
+      "url": "https://trailpaint.org/app/",
+      "sha256": "df5e8ff778328d1a56f66a83056c8d7e7469e199923e6a2f868464aa4cd061e7"
+    },
+    {
+      "name": "import-from-photos",
+      "type": "web-app",
+      "description": "Upload up to 20 photos; TrailPaint extracts EXIF GPS coordinates to auto-create spots. Supports iPhone HEIC and Android JPEG. Photos without GPS are grouped for manual placement. Auto reverse-geocodes place names via Photon/Nominatim.",
+      "url": "https://trailpaint.org/app/",
+      "sha256": "9fbd211ccc652afa7d3293a7124f24b8a23e6ba8e3521ac76497de1e13b70a3d"
+    },
+    {
+      "name": "import-geographic-formats",
+      "type": "web-app",
+      "description": "Import routes and waypoints from KML (Google My Maps), GeoJSON (geojson.io, Google Takeout), GPX (hiking apps, Garmin), or native .trailpaint project files.",
+      "url": "https://trailpaint.org/app/",
+      "sha256": "07fe9c14a98d22f2f6fd312e579e2f32b3540250370392248680e7db00f0880f"
+    },
+    {
+      "name": "export-png-illustration",
+      "type": "web-app",
+      "description": "Export the trail map as a high-resolution PNG illustration. Multiple aspect ratios (1:1 IG, 9:16 Story, 4:3, original), 3 border styles, 2 style filters, optional stats overlay.",
+      "url": "https://trailpaint.org/app/",
+      "sha256": "8c255715a71d25404d78e30f587a0b3b7c1135ee5c9eb428fdd9431af1d721ca"
+    },
+    {
+      "name": "share-link-backend",
+      "type": "http-api",
+      "description": "Create a short share URL that round-trips a full TrailPaint project (with photos) via Cloudflare Workers + KV. POST /api/s with { hash, name?, cover? } returns { url, id, expiresAt }. TTL 90 days. See /.well-known/api-catalog.",
+      "url": "https://trailpaint.org/api/s",
+      "sha256": "af2246958e0fff76570d6050873705ebb407e337428f3071b96eaa334d9f13b6"
+    }
+  ]
+}
