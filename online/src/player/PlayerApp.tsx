@@ -28,6 +28,19 @@ export default function PlayerApp() {
   const isEmbed = params.get('embed') === '1';
   const autoplay = params.get('autoplay') === '1';
 
+  // Strip load-time params/hash from the URL once a project is in memory. Keeps
+  // the standalone player address bar as clean as the Editor's /s/:id shares —
+  // reload returns to the landing drop-zone, matching the #share= flow where
+  // the hash is effectively consumed on load. Skipped in embed mode so an
+  // iframe reload keeps `?embed=1` and renders the embed shell, not the
+  // landing card.
+  const cleanUrl = useCallback(() => {
+    if (isEmbed) return;
+    try {
+      window.history.replaceState('', '', window.location.pathname);
+    } catch { /* older browsers / sandboxed contexts — leave URL as-is */ }
+  }, [isEmbed]);
+
   // Load project on mount: ?src= → localStorage → #share=
   useEffect(() => {
     // 1. Check ?src= param (embed mode — fetch same-origin JSON)
@@ -45,6 +58,7 @@ export default function PlayerApp() {
         .then((raw) => {
           const data = migrateProject(raw);
           loadProject(data);
+          cleanUrl();
         })
         .catch((e) => {
           const msg = e instanceof Error && e.name === 'TimeoutError'
@@ -87,8 +101,10 @@ export default function PlayerApp() {
     }
     if (shareHash) {
       decodeShareLink(shareHash).then((p) => {
-        if (p) loadProject(p);
-        else setError(t('player.error.share'));
+        if (p) {
+          loadProject(p);
+          cleanUrl();
+        } else setError(t('player.error.share'));
       }).catch(() => setError(t('player.error.format')));
       return;
     }
@@ -158,7 +174,7 @@ export default function PlayerApp() {
         return () => cleanups.forEach((c) => c());
       }
     }
-  }, [params, loadProject, setError, isEmbed]);
+  }, [params, loadProject, setError, isEmbed, cleanUrl]);
 
   // Autoplay: trigger after project loads
   useEffect(() => {
