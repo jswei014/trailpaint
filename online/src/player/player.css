@@ -401,8 +401,8 @@ html, body {
 
 .player-popup__body {
   font-family: Georgia, serif;
-  max-height: 60vh;
-  overflow-y: auto;
+  /* word-break handles long strings without forcing an inner scrollbar —
+     the previous 60vh cap clipped desc under common photo + title combos. */
   word-break: break-word;
   overflow-wrap: anywhere;
 }
