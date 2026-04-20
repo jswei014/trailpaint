@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatPlaceName } from './reverseGeocode';
+import { formatPlaceName, formatPhotonPlaceName } from './reverseGeocode';
 
 describe('formatPlaceName — POI tier (010 Nominatim upgrade)', () => {
   it('prefers namedetails name:zh-TW when available', () => {
@@ -90,5 +90,53 @@ describe('formatPlaceName — city-only and final fallback', () => {
   it('returns empty string when nothing is parseable', () => {
     const result = formatPlaceName({});
     expect(result).toBe('');
+  });
+});
+
+describe('formatPhotonPlaceName — Photon (primary geocoder)', () => {
+  it('prefers name (POI label) + city', () => {
+    const result = formatPhotonPlaceName({
+      features: [{
+        properties: { name: '台北 101', city: '臺北市', district: '信義區' },
+      }],
+    });
+    expect(result).toBe('台北 101, 臺北市');
+  });
+
+  it('uses district + city when no name', () => {
+    const result = formatPhotonPlaceName({
+      features: [{ properties: { district: '中正區', city: '臺北市' } }],
+    });
+    expect(result).toBe('中正區, 臺北市');
+  });
+
+  it('uses locality as district fallback', () => {
+    const result = formatPhotonPlaceName({
+      features: [{ properties: { locality: '黎明里', city: '臺北市' } }],
+    });
+    expect(result).toBe('黎明里, 臺北市');
+  });
+
+  it('returns city alone when POI equals city', () => {
+    const result = formatPhotonPlaceName({
+      features: [{ properties: { name: '臺北市', city: '臺北市' } }],
+    });
+    expect(result).toBe('臺北市');
+  });
+
+  it('falls back to town when no city (rural)', () => {
+    const result = formatPhotonPlaceName({
+      features: [{ properties: { name: '阿朗壹古道', town: '屏東縣牡丹鄉' } }],
+    });
+    expect(result).toBe('阿朗壹古道, 屏東縣牡丹鄉');
+  });
+
+  it('returns empty on no features', () => {
+    expect(formatPhotonPlaceName({ features: [] })).toBe('');
+    expect(formatPhotonPlaceName({})).toBe('');
+  });
+
+  it('returns empty on feature without properties', () => {
+    expect(formatPhotonPlaceName({ features: [{}] })).toBe('');
   });
 });
