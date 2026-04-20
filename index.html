@@ -297,6 +297,45 @@
       color:#6b5540;
     }
   </style>
+  <!-- WebMCP (navigator.modelContext.provideContext) early signal.
+       The homepage is a static hand-written page (no React bundle), so
+       this inline call is the only place AEO scanners can discover the
+       WebMCP API. The Editor at /app/ has its own bundle-side registration
+       via src/core/utils/webMCP.ts. -->
+  <script>
+    (function () {
+      var tools = [
+        {
+          name: 'open-trailpaint-editor',
+          description: 'Open the TrailPaint Editor at https://trailpaint.org/app/ to draw a hand-drawn style trail map.',
+          inputSchema: { type: 'object', properties: {}, required: [] }
+        },
+        {
+          name: 'create-share-link',
+          description: 'Create a short share URL backed by Cloudflare Workers + KV (POST https://trailpaint.org/api/s). Returns { url, id, expiresAt }.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              hash: { type: 'string', description: 'Deflate+base64 compressed project payload' },
+              name: { type: 'string' },
+              cover: { type: 'string', description: 'Base64 JPEG for Open Graph preview (optional)' }
+            },
+            required: ['hash']
+          }
+        }
+      ];
+      if (typeof navigator !== 'undefined' && navigator.modelContext) {
+        try {
+          if (typeof navigator.modelContext.provideContext === 'function') {
+            navigator.modelContext.provideContext({ tools: tools });
+          }
+          if (typeof navigator.modelContext.registerTool === 'function') {
+            tools.forEach(function (t) { navigator.modelContext.registerTool(t); });
+          }
+        } catch (e) { /* draft API — degrade silently */ }
+      }
+    })();
+  </script>
 </head>
 <body>
   <div class="hero">
