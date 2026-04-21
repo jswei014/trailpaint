@@ -4,24 +4,42 @@
 
 **禁止使用**：AI 生成圖、社群媒體轉載、來源不明素材。
 
-最後更新：2026-04-17（Task 6 實際下載 + 注入完成，Round 3 擴充至 13 張）
+最後更新：2026-04-21（Round 4：替換 5 張主題錯/重複畫作 — 詳見下方「替換紀錄」）
+
+---
+
+## 替換紀錄（Round 4, 2026-04-21）
+
+| Spot | Round 3 舊配圖 | Round 4 新配圖 | 理由 |
+|------|--------------|--------------|------|
+| entry[4] 寡婦小錢 | entry-temple（El Greco 潔淨聖殿，重用） | **Tissot《The Widow's Mite》** c.1890 | 主題對準 |
+| passion[1] 客西馬尼 | gethsemane-olive（現代照） | **Mantegna《Agony in the Garden》** c.1455 | 加古典畫作 |
+| passion[6] 百夫長認信 | passion-supper（Leonardo 最後晚餐，主題錯） | **Tissot《Confession of the Centurion》** c.1890 | 主題對準 |
+| resurrection[1] 以馬忤斯 | Caravaggio《Supper at Emmaus》1601（Caravaggio 重複） | **Rembrandt《Supper at Emmaus》** 1648 | 去 Caravaggio 重複 |
+| resurrection[3] 升天 | olives-panorama（現代照，主題錯） | **Rembrandt《The Ascension》** 1636 | 主題對準 |
+
+替換後 artist 分布：Van Dyck / El Greco / Leonardo / Caravaggio（1，不重複）/ Rembrandt（3）/ Velázquez / Piero / **Tissot（2 新加）** / **Mantegna（1 新加）**，共 9 位，去一個 Caravaggio 重複。
 
 ---
 
 ## 使用中的 13 張素材（古典畫作 + 聖地遺跡現代照）
 
-### 古典畫作（8 張，全 Public Domain）
+### 古典畫作（10 張，全 Public Domain）
 
 | 鍵 | 作者 | 畫作 | 年代 | 授權 | 來源 | 獲取日期 |
 |----|------|------|------|------|------|---------|
 | entry-vandyck | Anthony van Dyck | Entry of Christ into Jerusalem | 1617 | PD（作者 1641 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Entry_of_Christ_into_Jerusalem_by_Anthony_van_Dyck.jpg) | 2026-04-17 |
 | entry-temple | El Greco | The Purification of the Temple | c. 1600 | PD（作者 1614 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:El_Greco_-_The_Purification_of_the_Temple_-_WGA10541.jpg) | 2026-04-17 |
+| entry-widow-tissot | James Tissot | The Widow's Mite | c.1890 | PD（作者 1902 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Brooklyn_Museum_-_The_Widow%27s_Mite_%28Le_denier_de_la_veuve%29_-_James_Tissot.jpg) | 2026-04-21 |
+| passion-gethsemane-mantegna | Andrea Mantegna | Agony in the Garden | c. 1455 | PD（作者 1506 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Mantegna,_Andrea_-_Agony_in_the_Garden_-_National_Gallery,_London.jpg) | 2026-04-21 |
 | passion-supper | Leonardo da Vinci | The Last Supper | 1495-1498 | PD（作者 1519 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Leonardo_da_Vinci_(1452-1519)_-_The_Last_Supper_(1495-1498).jpg) | 2026-04-17 |
 | peter-denial | Caravaggio | The Denial of Saint Peter | 1610 | PD（作者 1610 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:The_Denial_of_Saint_Peter-Caravaggio_(1610).jpg) | 2026-04-17 |
 | pilate | Rembrandt | Christ before Pilate (Ecce Homo) | 1634 | PD（作者 1669 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Rembrandt,_Christ_before_Pilate_(Ecce_Homo),_1634,_National_Gallery,_London.jpg) | 2026-04-17 |
 | passion-cross | Diego Velázquez | Cristo crucificado | 1632 | PD（作者 1660 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Cristo_crucificado.jpg) | 2026-04-17 |
+| passion-centurion-tissot | James Tissot | The Confession of the Centurion | c.1890 | PD（作者 1902 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Brooklyn_Museum_-_The_Confession_of_the_Centurion_(La_Confession_du_Centurion)_-_James_Tissot.jpg) | 2026-04-21 |
 | resurrection-piero | Piero della Francesca | Resurrection | c. 1463-1465 | PD（作者 1492 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Piero_della_Francesca_-_Resurrection_-_WGA17609.jpg) | 2026-04-17 |
-| resurrection-emmaus | Caravaggio | Supper at Emmaus | 1601 | PD（作者 1610 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:1602-3_Caravaggio,Supper_at_Emmaus_National_Gallery,_London.jpg) | 2026-04-17 |
+| resurrection-emmaus-rembrandt | Rembrandt | Supper at Emmaus | 1648 | PD（作者 1669 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Rembrandt_-_Supper_at_Emmaus_-_WGA19115.jpg) | 2026-04-21 |
+| resurrection-ascension-rembrandt | Rembrandt | The Ascension of Christ | 1636 | PD（作者 1669 歿） | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Rembrandt_The_Ascension_1636_Oil_on_canvas_Alte_Pinakothek_Munich_Germany.jpg) | 2026-04-21 |
 
 ### 聖地遺跡 / 當代照片（5 張，Wikimedia CC 或 PD）
 
@@ -35,7 +53,7 @@
 
 ### Spot 配圖分配表
 
-**Entry 段（進城 + 潔淨聖殿 + 論辯，3 unique / 6 spots）**
+**Entry 段（進城 + 潔淨聖殿 + 論辯）**
 
 | # | Spot | 配圖 |
 |---|------|------|
@@ -43,29 +61,31 @@
 | 2 | 橄欖山下坡 | olives-panorama |
 | 3 | 棕枝進城 | entry-vandyck |
 | 4 | 潔淨聖殿 | entry-temple |
-| 5 | 寡婦的兩個小錢 | entry-temple |
+| 5 | 寡婦的兩個小錢 | **entry-widow-tissot** ⭐ |
 | 6 | 橄欖山末世預言 | olives-panorama |
 
-**Passion 段（受難核心，7 unique / 7 spots 每 spot 獨立）**
+**Passion 段（受難核心）**
 
 | # | Spot | 配圖 |
 |---|------|------|
 | 1 | 馬可樓 | cenacle（實際內部照） |
-| 2 | 客西馬尼園 | gethsemane-olive（老橄欖樹） |
+| 2 | 客西馬尼園 | **passion-gethsemane-mantegna** ⭐ |
 | 3 | 該亞法府 | peter-denial（Caravaggio 彼得不認主） |
 | 4 | 彼拉多衙門 | pilate（Rembrandt Ecce Homo） |
 | 5 | 苦路 | viadolorosa（現代街景） |
 | 6 | 各各他 | passion-cross（Velázquez 十字架） |
-| 7 | 百夫長認信 | passion-supper（Leonardo 晚餐，構圖聚焦） |
+| 7 | 百夫長認信 | **passion-centurion-tissot** ⭐ |
 
-**Resurrection 段（4 unique / 4 spots 每 spot 獨立）**
+**Resurrection 段**
 
 | # | Spot | 配圖 |
 |---|------|------|
 | 1 | 亞利馬太約瑟的墓 | gardentomb（花園墓空墳照） |
-| 2 | 以馬忤斯路 | resurrection-emmaus |
+| 2 | 以馬忤斯路 | **resurrection-emmaus-rembrandt** ⭐ |
 | 3 | 向門徒顯現 | resurrection-piero |
-| 4 | 橄欖山升天 | olives-panorama |
+| 4 | 橄欖山升天 | **resurrection-ascension-rembrandt** ⭐ |
+
+⭐ = Round 4 (2026-04-21) 替換項目
 
 ---
 

@@ -8,7 +8,9 @@ export interface OverlayDef {
     | 'overlay.jm200k1897'
     | 'overlay.jm20k1921'
     | 'overlay.corona1966'
+    | 'overlay.hanbc7'
     | 'overlay.tang741'
+    | 'overlay.song1208'
     | 'overlay.yuan1330'
     | 'overlay.ming1582'
     | 'overlay.rome200';
@@ -77,10 +79,30 @@ export const OVERLAYS: OverlayDef[] = [
     bounds: BOUNDS_TAIWAN,
   },
   {
+    id: 'han_bc7',
+    labelKey: 'overlay.hanbc7',
+    group: 'china',
+    url: 'https://gis.sinica.edu.tw/ccts/file-exists.php?img=bc0007-jpg-{z}-{x}-{y}',
+    attribution: '中央研究院人社中心GIS專題中心（CCTS）',
+    maxZoom: 18,
+    maxNativeZoom: 10,
+    bounds: BOUNDS_CHINA_HISTORIC,
+  },
+  {
     id: 'tang_741',
     labelKey: 'overlay.tang741',
     group: 'china',
     url: 'https://gis.sinica.edu.tw/ccts/file-exists.php?img=ad0741-jpg-{z}-{x}-{y}',
+    attribution: '中央研究院人社中心GIS專題中心（CCTS）',
+    maxZoom: 18,
+    maxNativeZoom: 10,
+    bounds: BOUNDS_CHINA_HISTORIC,
+  },
+  {
+    id: 'song_1208',
+    labelKey: 'overlay.song1208',
+    group: 'china',
+    url: 'https://gis.sinica.edu.tw/ccts/file-exists.php?img=ad1208-jpg-{z}-{x}-{y}',
     attribution: '中央研究院人社中心GIS專題中心（CCTS）',
     maxZoom: 18,
     maxNativeZoom: 10,

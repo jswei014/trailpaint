@@ -14,7 +14,10 @@ describe('getOverlayZoomCap', () => {
 
   it('returns the maxNativeZoom of a matching overlay', () => {
     // CCTS ancient-China overlays all cap at z=10
+    expect(getOverlayZoomCap('han_bc7')).toBe(10);
     expect(getOverlayZoomCap('tang_741')).toBe(10);
+    expect(getOverlayZoomCap('song_1208')).toBe(10);
+    expect(getOverlayZoomCap('yuan_1330')).toBe(10);
     expect(getOverlayZoomCap('ming_1582')).toBe(10);
     expect(getOverlayZoomCap('rome_200')).toBe(10);
     // Taiwan overlays cap at z=14 (tile server 500s above z14)
