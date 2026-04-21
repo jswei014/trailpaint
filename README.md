@@ -4,7 +4,7 @@
 
 > 手繪風路線地圖 · 從照片、地圖、AI 三種方式建立 · 一鍵輸出 PNG / 備份 / 互通格式
 
-[![Version](https://img.shields.io/badge/version-1.3.0-orange.svg)](https://trailpaint.org/app/)
+[![Version](https://img.shields.io/badge/version-1.3.1-orange.svg)](https://trailpaint.org/app/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6.svg)](https://www.typescriptlang.org/)
 [![PWA Ready](https://img.shields.io/badge/PWA-ready-5a0fc8.svg)](https://trailpaint.org/app/)

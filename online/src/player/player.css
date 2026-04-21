@@ -444,16 +444,19 @@ html, body {
 
 @media (max-width: 768px) {
   .player-popup .leaflet-popup-content {
+    width: min(360px, 82vw) !important;
     margin: 10px 12px;
   }
   .player-popup__img {
-    max-height: 300px;
+    max-height: 200px;
   }
   .player-popup__title {
     font-size: 15px;
   }
   .player-popup__desc {
     font-size: 13px;
+    max-height: 28vh;
+    overflow-y: auto;
   }
 }
 
