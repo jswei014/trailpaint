@@ -299,6 +299,7 @@ export const useProjectStore = create<ProjectState>()(
   setSelectedRoute: (id) => set({ selectedRouteId: id, selectedSpotId: null }),
 
   fetchRouteElevation: async (id) => {
+    if (get().baseMode !== 'map') return; // image-mode coords are pixels, not lat/lng
     const route = get().project.routes.find((r) => r.id === id);
     if (!route || route.elevations) return; // already has elevation
     try {

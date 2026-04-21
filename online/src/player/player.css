@@ -439,6 +439,7 @@ html, body {
   font-size: 14px;
   color: #555;
   line-height: 1.55;
+  white-space: pre-line;
 }
 
 @media (max-width: 768px) {

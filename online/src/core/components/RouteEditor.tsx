@@ -19,6 +19,7 @@ export default function RouteEditor({ route, onClose }: RouteEditorProps) {
   const baseMode = useProjectStore((s) => s.baseMode);
   const [fetching, setFetching] = useState(false);
 
+  const isMapMode = baseMode === 'map';
   const distKm = polylineDistance(route.pts);
   const hasEle = !!route.elevations;
   const stats = hasEle ? elevationStats(route.elevations!) : null;
@@ -47,11 +48,12 @@ export default function RouteEditor({ route, onClose }: RouteEditorProps) {
       />
 
       <div className="route-editor__info">
-        {formatDistance(distKm)} · {route.pts.length} {t('route.points')}
-        {time && <> · ⏱️ {time}</>}
+        {isMapMode && <>{formatDistance(distKm)} · </>}
+        {route.pts.length} {t('route.points')}
+        {isMapMode && time && <> · ⏱️ {time}</>}
       </div>
 
-      {stats && (
+      {isMapMode && stats && (
         <div className="route-editor__ele-stats">
           <span>↗ {stats.ascent}m</span>
           <span>↘ {stats.descent}m</span>
@@ -60,10 +62,10 @@ export default function RouteEditor({ route, onClose }: RouteEditorProps) {
         </div>
       )}
 
-      <ElevationProfile route={route} />
+      {isMapMode && <ElevationProfile route={route} />}
 
       {/* Fetch elevation button — only for map mode routes without elevation */}
-      {!hasEle && baseMode === 'map' && (
+      {!hasEle && isMapMode && (
         <button
           className="spot-editor__btn"
           onClick={handleFetchElevation}

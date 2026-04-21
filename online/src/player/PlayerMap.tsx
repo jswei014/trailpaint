@@ -6,6 +6,7 @@ import PlayerBasemapSwitcher from './PlayerBasemapSwitcher';
 import PlayerFitAll from './PlayerFitAll';
 import ScriptureRefs from './ScriptureRefs';
 import LocateButton from '../map/LocateButton';
+import { getOverlayZoomCap } from '../map/overlays';
 import type { Spot } from '../core/models/types';
 import 'leaflet/dist/leaflet.css';
 import '../map/MapView.css';
@@ -27,7 +28,11 @@ function FitBounds() {
       return;
     }
     const bounds = L.latLngBounds(pts);
-    map.fitBounds(bounds, { padding: [40, 40] });
+    const cap = getOverlayZoomCap(project.overlay?.id);
+    map.fitBounds(bounds, {
+      padding: [40, 40],
+      ...(cap !== undefined && { maxZoom: cap }),
+    });
   }, [map, project]);
 
   return null;
@@ -43,7 +48,9 @@ function FlyToActive() {
     if (activeIndex === null || activeIndex < 0 || !project) return;
     const spot = project.spots[activeIndex];
     if (!spot) return;
-    const zoom = Math.max(map.getZoom(), 13);
+    const cap = getOverlayZoomCap(project.overlay?.id);
+    let zoom = Math.max(map.getZoom(), 13);
+    if (cap !== undefined) zoom = Math.min(zoom, cap);
     // Offset 120px north in screen coords so marker sits in lower half
     const px = map.project(spot.latlng, zoom);
     px.y -= 120;

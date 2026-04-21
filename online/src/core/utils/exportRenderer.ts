@@ -248,6 +248,7 @@ export interface RenderOptions {
   filter: StyleFilter;
   showWatermark: boolean;
   routes: Route[];
+  showStats: boolean;
 }
 
 /**
@@ -277,7 +278,9 @@ export function renderExportCanvas(
   }
 
   drawExportBorder(ctx, cropW, cropH, options.borderStyle);
-  drawStatsOverlay(ctx, cropW, cropH, options.routes);
+  if (options.showStats) {
+    drawStatsOverlay(ctx, cropW, cropH, options.routes);
+  }
   if (options.showWatermark) {
     drawWatermark(ctx, cropW, cropH);
   }

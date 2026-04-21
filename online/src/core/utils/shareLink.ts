@@ -198,11 +198,14 @@ export async function decodeShareLink(hash: string): Promise<Project | null> {
 /** Parse JSON payload: detect compact format (has 'v' key) vs legacy (has 'version' key). */
 function parseSharePayload(json: string): Project {
   const data = JSON.parse(json);
-  // Compact format uses short keys: v, n, c, z, s, r
+  // Compact format uses short keys: v, n, c, z, s, r.
+  // Always funnel through migrateProject so the URL/MIME/size whitelist rejects
+  // crafted payloads (e.g. `photo: "javascript:..."` or oversized data-URLs).
   if ('v' in data && !('version' in data)) {
-    return expandProject(data);
+    const expanded = expandProject(data) as unknown as Record<string, unknown>;
+    return migrateProject(expanded);
   }
-  // Legacy format: full Project structure — run through migrateProject for validation
+  // Legacy format: full Project structure — migrateProject validates.
   return migrateProject(data);
 }
 
@@ -235,6 +238,13 @@ const BACKEND_TIMEOUT_MS = 20000;
  *
  * Always returns a usable URL. Never throws — logs and degrades silently.
  */
+/** Warn-level threshold for compressed share payload. Backend accepts 5MB;
+ * at ~4.5MB the browser URL bar may truncate the long-hash fallback and
+ * LINE/WeChat silently drop the share. Photo-heavy stories (e.g. 2-3MB
+ * pre-built examples) plus user additions can cross this. Kept permissive —
+ * just a console warning now, so a future UI layer can surface it. */
+const SHARE_SIZE_WARN_BYTES = 4_500_000;
+
 export async function createBackendShare(project: Project): Promise<string> {
   // Compress on the frontend, POST only the deflate-base64 hash + cover meta.
   // Three wins:
@@ -246,6 +256,14 @@ export async function createBackendShare(project: Project): Promise<string> {
   //       real first-photo thumbnail on LINE / Facebook / Twitter / Slack.
   const hash = await compressToBase64Hash(project, true);
   const cover = extractCoverBase64(project);
+
+  if (hash.length > SHARE_SIZE_WARN_BYTES) {
+    console.warn(
+      `[createBackendShare] share payload is ${Math.round(hash.length / 1024)}KB ` +
+      `(>${SHARE_SIZE_WARN_BYTES / 1024}KB warn threshold). Backend may reject, long-URL fallback may truncate.`,
+    );
+    // TODO: surface this to the UI (e.g. "project too large, consider removing some photos")
+  }
 
   try {
     const res = await fetch(BACKEND_URL, {

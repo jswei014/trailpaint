@@ -228,6 +228,15 @@
   background: #faf5eb;
 }
 
+.basemap-switcher__separator--sub {
+  padding: 4px 14px 2px;
+  font-size: 10.5px;
+  color: #a68642;
+  background: #fcf8ee;
+  border-top: 1px dashed #ecdfc5;
+  letter-spacing: 0.3px;
+}
+
 .basemap-switcher__slider-row {
   display: flex;
   align-items: center;

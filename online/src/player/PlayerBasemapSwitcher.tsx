@@ -3,7 +3,8 @@ import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { t } from '../i18n';
 import { usePlayerStore } from './usePlayerStore';
-import { OVERLAYS } from '../map/overlays';
+import { OVERLAYS, OVERLAY_GROUP_ORDER, OVERLAY_GROUP_LABEL_KEY } from '../map/overlays';
+import type { OverlayDef } from '../map/overlays';
 import { BASEMAPS, DEFAULT_BASEMAP_ID } from '../map/basemaps';
 import type { BasemapDef } from '../map/basemaps';
 import { createBasemapLayer } from '../map/basemapLayer';
@@ -65,6 +66,7 @@ export default function PlayerBasemapSwitcher() {
     const layer = L.tileLayer(ov.url, {
       attribution: ov.attribution,
       maxZoom: ov.maxZoom,
+      maxNativeZoom: ov.maxNativeZoom,
       opacity: overlayOpacity,
       crossOrigin: true,
     }).addTo(map);
@@ -83,6 +85,16 @@ export default function PlayerBasemapSwitcher() {
     applyBasemap(bm);
     setCurrent(bm.id);
     setOpen(false);
+  };
+
+  const handleSelectOverlay = (ov: OverlayDef) => {
+    setOverlayId(ov.id);
+    if (ov.bounds) {
+      const b = L.latLngBounds(ov.bounds);
+      if (!b.contains(map.getCenter())) {
+        map.fitBounds(b);
+      }
+    }
   };
 
   return (
@@ -118,15 +130,26 @@ export default function PlayerBasemapSwitcher() {
           >
             {t('overlay.none')}
           </button>
-          {OVERLAYS.map((ov) => (
-            <button
-              key={ov.id}
-              className={`basemap-switcher__option${overlayId === ov.id ? ' basemap-switcher__option--active' : ''}`}
-              onClick={() => setOverlayId(ov.id)}
-            >
-              {t(ov.labelKey)}
-            </button>
-          ))}
+          {OVERLAY_GROUP_ORDER.map((group) => {
+            const items = OVERLAYS.filter((o) => o.group === group);
+            if (items.length === 0) return null;
+            return (
+              <div key={group}>
+                <div className="basemap-switcher__separator basemap-switcher__separator--sub">
+                  {t(OVERLAY_GROUP_LABEL_KEY[group] as Parameters<typeof t>[0])}
+                </div>
+                {items.map((ov) => (
+                  <button
+                    key={ov.id}
+                    className={`basemap-switcher__option${overlayId === ov.id ? ' basemap-switcher__option--active' : ''}`}
+                    onClick={() => handleSelectOverlay(ov)}
+                  >
+                    {t(ov.labelKey)}
+                  </button>
+                ))}
+              </div>
+            );
+          })}
           {overlayId && (
             <div className="basemap-switcher__slider-row">
               <span className="basemap-switcher__slider-label">{t('overlay.opacity')}</span>

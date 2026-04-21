@@ -179,6 +179,15 @@ export default {
   'overlay.jm200k1897': '臺灣輿圖 1897',
   'overlay.jm20k1921': '堡圖 1921',
   'overlay.corona1966': '衛星影像 1966',
+  'overlay.tang741': '唐 (741)',
+  'overlay.yuan1330': '元 (1330)',
+  'overlay.ming1582': '明 (1582)',
+  'overlay.rome200': '羅馬 (AD 200)',
+  'overlay.group.taiwan': '🇹🇼 台灣',
+  'overlay.group.china': '🌏 東亞',
+  'overlay.group.ancient': '✝️ 古代',
+  'overlay.group.explore': '🌍 探險',
+  'overlay.group.war': '⚔️ 戰爭',
 
   // Floating menu
   'floating.more': '更多功能',

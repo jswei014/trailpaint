@@ -120,6 +120,7 @@ export default function ExportWizard({
 }: ExportWizardProps) {
   const spots = useProjectStore((s) => s.project.spots);
   const routes = useProjectStore((s) => s.project.routes);
+  const isMapMode = useProjectStore((s) => s.baseMode === 'map');
   const projectName = useProjectStore((s) => s.project.name);
   const showWatermark = useProjectStore((s) => s.watermark);
   const project = useProjectStore((s) => s.project);
@@ -179,6 +180,7 @@ export default function ExportWizard({
       filter,
       showWatermark,
       routes,
+      showStats: isMapMode,
     }, applyStyleFilter);
 
     // Scale down to fit preview area
@@ -192,7 +194,7 @@ export default function ExportWizard({
 
     const ctx = preview.getContext('2d')!;
     ctx.drawImage(canvas, 0, 0, preview.width, preview.height);
-  }, [baseImage, format, borderStyle, filter, showWatermark, routes]);
+  }, [baseImage, format, borderStyle, filter, showWatermark, routes, isMapMode]);
 
   // Download at full resolution (always 2x)
   const handleDownload = useCallback(async () => {
@@ -208,6 +210,7 @@ export default function ExportWizard({
         filter,
         showWatermark,
         routes,
+        showStats: isMapMode,
       }, applyStyleFilter);
 
       const finalUrl = canvas.toDataURL('image/png');

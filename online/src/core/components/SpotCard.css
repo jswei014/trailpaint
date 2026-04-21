@@ -110,6 +110,7 @@
   color: #5c3a10;
   line-height: 1.4;
   word-break: break-word;
+  white-space: pre-line;
   transform: rotate(-0.3deg);
 }
 

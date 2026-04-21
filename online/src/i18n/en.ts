@@ -179,6 +179,15 @@ export default {
   'overlay.jm200k1897': 'Taiwan Map 1897',
   'overlay.jm20k1921': 'Colonial Map 1921',
   'overlay.corona1966': 'Satellite 1966',
+  'overlay.tang741': 'Tang (741)',
+  'overlay.yuan1330': 'Yuan (1330)',
+  'overlay.ming1582': 'Ming (1582)',
+  'overlay.rome200': 'Rome (AD 200)',
+  'overlay.group.taiwan': '🇹🇼 Taiwan',
+  'overlay.group.china': '🌏 East Asia',
+  'overlay.group.ancient': '✝️ Ancient',
+  'overlay.group.explore': '🌍 Exploration',
+  'overlay.group.war': '⚔️ War',
 
   // Floating menu
   'floating.more': 'More actions',

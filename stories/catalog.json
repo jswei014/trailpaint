@@ -1,7 +1,25 @@
 {
   "collections": [
-    { "id": "missions", "title": "宣教史", "order": 1 },
-    { "id": "bible", "title": "聖經地圖", "order": 2 }
+    {
+      "id": "missions",
+      "title": "宣教史",
+      "order": 1
+    },
+    {
+      "id": "bible",
+      "title": "聖經地圖",
+      "order": 2
+    },
+    {
+      "id": "china",
+      "title": "中國歷史",
+      "order": 3
+    },
+    {
+      "id": "exploration",
+      "title": "大航海時代",
+      "order": 4
+    }
   ],
   "stories": [
     {
@@ -23,6 +41,36 @@
       "thumbnail": "passion-week/cover.jpg",
       "path": "passion-week/",
       "count": 3
+    },
+    {
+      "id": "paul",
+      "collection": "bible",
+      "title": "使徒保羅宣教路線",
+      "subtitle": "AD 46-62 使徒行傳三次旅行與押解羅馬",
+      "description": "使徒保羅一生四度橫渡地中海，從敘利亞安提阿三次差遣出航，把福音帶進小亞細亞、馬其頓、亞該亞，最後押解羅馬受審。三段互動地圖沿使徒行傳 13-28 章的足跡，配合文藝復興聖經畫作與古典遺址，重走這段奠定歐洲教會的壯遊。",
+      "thumbnail": "paul/cover.jpg",
+      "path": "paul/",
+      "count": 3
+    },
+    {
+      "id": "xuanzang",
+      "collection": "china",
+      "title": "玄奘西行",
+      "subtitle": "AD 629-645 大唐西域記",
+      "description": "唐代高僧玄奘 629 年自長安偷渡出關，歷五萬里、百餘國，入天竺求法十七年，於 645 年攜六百五十七部梵本佛經歸長安。兩段互動地圖涵蓋西行與歸程，沿途搭配敦煌莫高窟、高昌故城、那爛陀遺址等實景影像。",
+      "thumbnail": "xuanzang/cover.jpg",
+      "path": "xuanzang/",
+      "count": 2
+    },
+    {
+      "id": "zheng-he",
+      "collection": "exploration",
+      "title": "鄭和下西洋",
+      "subtitle": "AD 1405-1433 明代寶船七下西洋",
+      "description": "永樂至宣德年間，明廷七次派鄭和率寶船隊遠航西洋，足跡達東南亞、印度、阿拉伯、東非。兩段互動地圖呈現「首航」與「遺作」——1405 年的龍江寶船初啟 vs 1433 年鄭和卒於古里的最後一航——跨越二十八年的壯舉收束。",
+      "thumbnail": "zheng-he/cover.jpg",
+      "path": "zheng-he/",
+      "count": 2
     }
   ]
 }

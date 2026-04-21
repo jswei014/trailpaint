@@ -1,6 +1,7 @@
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { usePlayerStore } from './usePlayerStore';
+import { getOverlayZoomCap } from '../map/overlays';
 import { t } from '../i18n';
 
 export default function PlayerFitAll() {
@@ -15,7 +16,9 @@ export default function PlayerFitAll() {
     project.routes.forEach((r) => r.pts.forEach((pt) => points.push(pt)));
     if (points.length === 0) return;
     const bounds = L.latLngBounds(points);
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16, duration: 1 });
+    const cap = getOverlayZoomCap(project.overlay?.id);
+    const maxZoom = cap !== undefined ? Math.min(16, cap) : 16;
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom, duration: 1 });
   };
 
   return (

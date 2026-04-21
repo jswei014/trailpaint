@@ -38,7 +38,10 @@ export default function SpotListPanel() {
                 <span className="spot-panel__name">{spot.title}</span>
                 {spot.desc && (
                   <span className="spot-panel__desc">
-                    {spot.desc.length > 40 ? spot.desc.slice(0, 40) + '...' : spot.desc}
+                    {(() => {
+                      const chars = Array.from(spot.desc);
+                      return chars.length > 40 ? chars.slice(0, 40).join('') + '...' : spot.desc;
+                    })()}
                   </span>
                 )}
               </div>

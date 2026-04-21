@@ -1,0 +1,55 @@
+{
+  "id": "paul",
+  "title": "使徒保羅宣教路線",
+  "subtitle": "AD 46-62 使徒行傳三次旅行與押解羅馬",
+  "description": "使徒保羅一生四度橫渡地中海，從敘利亞安提阿三次差遣出航，把福音帶進小亞細亞、馬其頓、亞該亞，最後押解羅馬受審。三段互動地圖沿使徒行傳 13-28 章的足跡，配合文藝復興聖經畫作與古典遺址，重走這段奠定歐洲教會的壯遊。",
+  "locale": "zh-TW",
+  "cover": "cover.jpg",
+  "music": {
+    "src": "../music/sorrow-and-love.mp3",
+    "title": "Sorrow and Love — Ronny Matthes",
+    "credit": "Ronny Matthes (Jamendo / Internet Archive)",
+    "license": "CC"
+  },
+  "og": {
+    "title": "使徒保羅宣教路線 — TrailPaint Stories",
+    "description": "使徒保羅一生四度橫渡地中海，從敘利亞安提阿三次差遣出航，把福音帶進小亞細亞、馬其頓、亞該亞，最後押解羅馬受審。三段互動地圖沿使徒行傳 13-28 章的足跡，配合文藝復興聖經畫作與古典遺址，重走這段奠定歐洲教會的壯遊。",
+    "image": "og.jpg"
+  },
+  "stories": [
+    {
+      "id": "first-journey",
+      "title": "第一次宣教旅行",
+      "subtitle": "AD 46-48 居比路與南加拉太",
+      "description": "AD 46-48 居比路與南加拉太",
+      "data": "first-journey.trailpaint.json",
+      "thumbnail": "first-journey-thumb.jpg",
+      "color": "#dc2626",
+      "music": "../music/sorrow-and-love.mp3"
+    },
+    {
+      "id": "second-journey",
+      "title": "第二次宣教旅行",
+      "subtitle": "AD 49-52 馬其頓呼聲、歐洲開道",
+      "description": "AD 49-52 馬其頓呼聲、歐洲開道",
+      "data": "second-journey.trailpaint.json",
+      "thumbnail": "second-journey-thumb.jpg",
+      "color": "#b91c1c",
+      "music": "../music/sorrow-and-love.mp3"
+    },
+    {
+      "id": "to-rome",
+      "title": "押解羅馬海難記",
+      "subtitle": "AD 60-61 使徒行傳 27-28",
+      "description": "AD 60-61 使徒行傳 27-28",
+      "data": "to-rome.trailpaint.json",
+      "thumbnail": "to-rome-thumb.jpg",
+      "color": "#7f1d1d",
+      "music": "../music/sorrow-and-love.mp3"
+    }
+  ],
+  "footer": {
+    "cta": "在 TrailPaint 中建立你自己的故事地圖",
+    "url": "https://trailpaint.org/app/"
+  }
+}

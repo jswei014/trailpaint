@@ -1,0 +1,45 @@
+{
+  "id": "xuanzang",
+  "title": "玄奘西行",
+  "subtitle": "AD 629-645 大唐西域記",
+  "description": "唐代高僧玄奘 629 年自長安偷渡出關，歷五萬里、百餘國，入天竺求法十七年，於 645 年攜六百五十七部梵本佛經歸長安。兩段互動地圖涵蓋西行與歸程，沿途搭配敦煌莫高窟、高昌故城、那爛陀遺址等實景影像。",
+  "locale": "zh-TW",
+  "cover": "cover.jpg",
+  "music": {
+    "src": "../music/voller-hoffnung.mp3",
+    "title": "Voller Hoffnung — Ronny Matthes",
+    "credit": "Ronny Matthes (Jamendo / Internet Archive)",
+    "license": "CC"
+  },
+  "og": {
+    "title": "玄奘西行 — TrailPaint Stories",
+    "description": "唐代高僧玄奘 629 年自長安偷渡出關，歷五萬里、百餘國，入天竺求法十七年，於 645 年攜六百五十七部梵本佛經歸長安。兩段互動地圖涵蓋西行與歸程，沿途搭配敦煌莫高窟、高昌故城、那爛陀遺址等實景影像。",
+    "image": "og.jpg"
+  },
+  "stories": [
+    {
+      "id": "west",
+      "title": "西行取經",
+      "subtitle": "長安 → 那爛陀",
+      "description": "長安 → 那爛陀",
+      "data": "west.trailpaint.json",
+      "thumbnail": "west-thumb.jpg",
+      "color": "#e05a1a",
+      "music": "../music/voller-hoffnung.mp3"
+    },
+    {
+      "id": "return",
+      "title": "歸程東返",
+      "subtitle": "那爛陀 → 長安",
+      "description": "那爛陀 → 長安",
+      "data": "return.trailpaint.json",
+      "thumbnail": "return-thumb.jpg",
+      "color": "#c2410c",
+      "music": "../music/voller-hoffnung.mp3"
+    }
+  ],
+  "footer": {
+    "cta": "在 TrailPaint 中建立你自己的故事地圖",
+    "url": "https://trailpaint.org/app/"
+  }
+}

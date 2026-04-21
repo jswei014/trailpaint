@@ -1,12 +1,14 @@
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { useProjectStore } from '../core/store/useProjectStore';
+import { getOverlayZoomCap } from './overlays';
 import { t } from '../i18n';
 
 export default function FitAllButton() {
   const map = useMap();
   const spots = useProjectStore((s) => s.project.spots);
   const routes = useProjectStore((s) => s.project.routes);
+  const overlayId = useProjectStore((s) => s.project.overlay?.id);
 
   const handleFit = () => {
     const points: L.LatLngExpression[] = [];
@@ -40,7 +42,9 @@ export default function FitAllButton() {
     if (points.length === 0) return;
 
     const bounds = L.latLngBounds(points);
-    map.fitBounds(bounds, { padding: [60, 60], maxZoom: 16, duration: 1 });
+    const cap = getOverlayZoomCap(overlayId);
+    const maxZoom = cap !== undefined ? Math.min(16, cap) : 16;
+    map.fitBounds(bounds, { padding: [60, 60], maxZoom, duration: 1 });
   };
 
   if (spots.length === 0 && routes.length === 0) return null;
