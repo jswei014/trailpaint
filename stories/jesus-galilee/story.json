@@ -1,0 +1,45 @@
+{
+  "id": "jesus-galilee",
+  "title": "耶穌加利利事工",
+  "subtitle": "AD 27-30 從受洗到登上變像山",
+  "description": "公元 27 至 30 年間，拿撒勒人耶穌離開木匠鋪，走下約旦河接受洗禮，隨即被聖靈引入曠野受試探四十日。之後祂回到加利利，以迦百農為基地，沿湖呼召彼得、安得烈、雅各、約翰，於迦拿行第一個神蹟，於山上講論天國的八福，於曠野擘餅餵飽五千人，於風暴中行走湖面。祂被拿撒勒鄉親拒絕，卻在推羅西頓的外邦邊界醫治迦南婦人；祂在該撒利亞腓立比的山泉旁聽見彼得認信「你是基督」，於是登上變像山露出榮光，然後堅定臉面上耶路撒冷。這是一段以加利利湖北岸為半徑的巡迴——教導、醫治、同吃、渡海——直到祂從耶利哥古道走向橄欖山，迎向最後一週。",
+  "locale": "zh-TW",
+  "cover": "cover.jpg",
+  "music": {
+    "src": "../music/sorrow-and-love.mp3",
+    "title": "Sorrow and Love — Ronny Matthes",
+    "credit": "Ronny Matthes (Jamendo / Internet Archive)",
+    "license": "CC"
+  },
+  "og": {
+    "title": "耶穌加利利事工 — TrailPaint Stories",
+    "description": "公元 27 至 30 年間，拿撒勒人耶穌離開木匠鋪，走下約旦河接受洗禮，隨即被聖靈引入曠野受試探四十日。之後祂回到加利利，以迦百農為基地，沿湖呼召彼得、安得烈、雅各、約翰，於迦拿行第一個神蹟，於山上講論天國的八福，於曠野擘餅餵飽五千人，於風暴中行走湖面。祂被拿撒勒鄉親拒絕，卻在推羅西頓的外邦邊界醫治迦南婦人；祂在該撒利亞腓立比的山泉旁聽見彼得認信「你是基督」，於是登上變像山露出榮光，然後堅定臉面上耶路撒冷。這是一段以加利利湖北岸為半徑的巡迴——教導、醫治、同吃、渡海——直到祂從耶利哥古道走向橄欖山，迎向最後一週。",
+    "image": "og.jpg"
+  },
+  "stories": [
+    {
+      "id": "early-galilee",
+      "title": "加利利呼召與湖區事工",
+      "subtitle": "約旦河受洗 → 迦百農五餅二魚",
+      "description": "約旦河受洗 → 迦百農五餅二魚",
+      "data": "early-galilee.trailpaint.json",
+      "thumbnail": "early-galilee-thumb.jpg",
+      "color": "#0369a1",
+      "music": "../music/sorrow-and-love.mp3"
+    },
+    {
+      "id": "transfiguration-road",
+      "title": "登山變像與上耶路撒冷",
+      "subtitle": "推羅西頓 → 該撒利亞腓立比 → 耶利哥",
+      "description": "推羅西頓 → 該撒利亞腓立比 → 耶利哥",
+      "data": "transfiguration-road.trailpaint.json",
+      "thumbnail": "transfiguration-road-thumb.jpg",
+      "color": "#075985",
+      "music": "../music/sorrow-and-love.mp3"
+    }
+  ],
+  "footer": {
+    "cta": "在 TrailPaint 中建立你自己的故事地圖",
+    "url": "https://trailpaint.org/app/"
+  }
+}

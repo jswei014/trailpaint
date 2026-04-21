@@ -71,6 +71,56 @@
       "thumbnail": "zheng-he/cover.jpg",
       "path": "zheng-he/",
       "count": 2
+    },
+    {
+      "id": "jesus-galilee",
+      "collection": "bible",
+      "title": "耶穌加利利事工",
+      "subtitle": "AD 27-30 從受洗到登上變像山",
+      "description": "公元 27 至 30 年間，拿撒勒人耶穌離開木匠鋪，走下約旦河接受洗禮，隨即被聖靈引入曠野受試探。之後祂回到加利利，以迦百農為基地，沿湖呼召彼得、安得烈、雅各、約翰，於迦拿行第一個神蹟，於山上講論八福，於曠野擘餅餵飽五千人。祂在該撒利亞腓立比的山泉旁聽見彼得認信，於是登上變像山露出榮光，然後堅定面上耶路撒冷。",
+      "thumbnail": "jesus-galilee/cover.jpg",
+      "path": "jesus-galilee/",
+      "count": 2
+    },
+    {
+      "id": "zhang-qian",
+      "collection": "china",
+      "title": "張騫通西域",
+      "subtitle": "BC 139-126 鑿空之旅",
+      "description": "漢武帝建元二年（BC 139），張騫受命出使西域，要聯合大月氏夾擊匈奴。他從長安出發，才進河西走廊便被匈奴截獲，扣留十餘年、娶妻生子，始終持漢節未失。脫逃後翻越蔥嶺歷大宛、康居、大月氏、大夏，BC 126 年返長安，出發時百餘人僅餘二人。此行《史記》譽為「鑿空」。BC 119 年再使烏孫，派副使分赴諸國，絲綢之路正式通行。",
+      "thumbnail": "zhang-qian/cover.jpg",
+      "path": "zhang-qian/",
+      "count": 2
+    },
+    {
+      "id": "wen-tianxiang",
+      "collection": "china",
+      "title": "文天祥南逃",
+      "subtitle": "1275-1283 正氣留千古",
+      "description": "德祐元年（1275）元軍渡江，南宋殘局如風中殘燭。廬陵書生文天祥散盡家財勤王，入衛臨安，使元議和被拘；脫身輾轉閩粵擁立二王，兵敗五坡嶺被俘。押解經伶仃洋寫下「人生自古誰無死，留取丹心照汗青」，親眼見崖山蹈海。北解元大都，囚於燕獄三年作《正氣歌》，1283 年柴市就義。",
+      "thumbnail": "wen-tianxiang/cover.jpg",
+      "path": "wen-tianxiang/",
+      "count": 2
+    },
+    {
+      "id": "marco-polo",
+      "collection": "exploration",
+      "title": "馬可波羅東來",
+      "subtitle": "1271-1295 The Travels",
+      "description": "1271 年，十七歲的威尼斯少年馬可波羅隨父叔從威尼斯啟航，經阿卡、大不里士、荷姆茲，折返陸路翻越巴達克尚、帕米爾、塔克拉瑪干至上都覲見忽必烈。在元朝任職十七年，1291 年護送闊闊真公主自泉州海路西返，經占城、蘇門答臘、錫蘭、馬拉巴，1295 年回到威尼斯。口述成書《東方見聞錄》為歐洲打開了通往亞洲的想像。",
+      "thumbnail": "marco-polo/cover.jpg",
+      "path": "marco-polo/",
+      "count": 2
+    },
+    {
+      "id": "xu-xiake",
+      "collection": "china",
+      "title": "徐霞客西南壯遊",
+      "subtitle": "1636-1640 最後壯遊",
+      "description": "崇禎九年（1636）秋，五十歲的徐霞客從江陰出發踏上最後一次壯遊，經浙、贛、湘、粵西、黔、滇，歷時四年，行程逾兩萬里。他在桂林探獨秀峰、在貴州記下黃果樹瀑布，深入雲南考察石林、滇池、洱海，登上雞足山金頂。1640 年冬因足疾由麗江土司木增以竹輿護送東歸，次年春病逝家中。《徐霞客遊記》六十餘萬字為明代地理學巔峰。",
+      "thumbnail": "xu-xiake/cover.jpg",
+      "path": "xu-xiake/",
+      "count": 1
     }
   ]
 }

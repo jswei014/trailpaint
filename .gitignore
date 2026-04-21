@@ -5,6 +5,7 @@
 node_modules/
 .gstack/
 openspec/
+.claude/
 .env.local
 dist/
 stories/**/photos/
