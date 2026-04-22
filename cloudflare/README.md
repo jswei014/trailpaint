@@ -157,6 +157,55 @@ LIMIT 50
 
 降級對使用者**透明**（`console.warn` 留痕但不出錯誤 toast），確保「按複製一定有結果」。先前的 TinyURL fallback 已移除 — 它產出的是無照片連結，收件人會看到空白預覽以為連結壞掉，體驗反而更差。
 
+## Security Headers（Transform Rules）
+
+**不在 Worker 裡**，而是透過 Cloudflare dashboard 的 Modify Response Header rule 全站注入。原因：security baseline 屬平台層責任，與應用邏輯（markdown 協商、share backend）解耦；dashboard rule 失敗時只是 header 缺漏，不會讓整站 500（worker route 是 `trailpaint.org/*`，worker 崩潰 = 全站 down）。
+
+### 目前啟用 header
+
+| Header | Value | 為什麼 |
+|---|---|---|
+| `X-Content-Type-Options` | `nosniff` | 擋瀏覽器對用戶上傳/share HTML 做 MIME sniffing 升級（static asset 以外的保險） |
+
+### 為什麼沒加其他常見 header
+
+- **`X-Frame-Options` / CSP `frame-ancestors`** — Story Player 有 `?embed=1` embed 模式給第三方 iframe 嵌入，加了直接破功能
+- **HSTS** — Cloudflare「Always Use HTTPS」已處理；`Strict-Transport-Security` 一旦 `includeSubDomains + preload` 設下去 rollback 難，暫不主動發
+- **CSP** — 首頁和 `/app/` 都有 inline `style="..."`，Leaflet/React 也 runtime inject inline style；完整 CSP 需要 `'unsafe-inline'` 才不破 UI，但開了 `'unsafe-inline'` 等於主要 XSS 防護失效。威脅模型（零帳號、零第三方 UGC）判定 CSP ROI 不划算
+
+### Dashboard 設定步驟
+
+1. Cloudflare dashboard → `trailpaint.org` zone → **Rules** → **Transform Rules** → **Modify Response Header**
+2. **Create rule**，名稱 `security-headers-nosniff`
+3. **When incoming requests match**：選 `Custom filter expression`，Edit expression 貼：
+   ```
+   (http.host eq "trailpaint.org")
+   ```
+4. **Modify response header**：
+   - Action: **Set static**
+   - Header name: `X-Content-Type-Options`
+   - Value: `nosniff`
+5. **Deploy**
+
+### 驗證
+
+```bash
+node online/scripts/verify-security-headers.mjs
+```
+
+或手動：
+```bash
+curl -sI https://trailpaint.org/ | grep -i x-content-type-options
+# 預期: x-content-type-options: nosniff
+```
+
+### 未來加 header
+
+改動 Transform Rule 後，同步：
+1. 更新本節「目前啟用 header」表格
+2. 更新 `online/scripts/verify-security-headers.mjs` 的 `EXPECTED` 物件
+3. 跑 verify 確認 edge 已 propagate
+
 ## 相關設定
 
 - Cloudflare Content-Signal header（AI 訓練授權宣告）— 已在 Cloudflare Dashboard 設定
