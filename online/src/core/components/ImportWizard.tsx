@@ -5,6 +5,7 @@ import { exifToGeojson, MAX_PHOTO_BATCH } from '../utils/exifToGeojson';
 import { parseKml } from '../utils/kmlParser';
 import { parseGeoJson } from '../utils/geojsonParser';
 import { geojsonToImport, type ImportBundle } from '../utils/geojsonImport';
+import { stripJsonCodeFence } from '../utils/pasteJsonInput';
 import type { ExifStats } from '../utils/exifToGeojson';
 import { t } from '../../i18n';
 import './ImportWizard.css';
@@ -82,6 +83,9 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
   const [schemaOpen, setSchemaOpen] = useState(false);
   const [subView, setSubView] = useState<SubView>('main');
   const [preview, setPreview] = useState<PhotoPreviewState | null>(null);
+  const [pasteOpen, setPasteOpen] = useState(false);
+  const [pasteText, setPasteText] = useState('');
+  const [pasteError, setPasteError] = useState('');
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const showToast = useCallback((msg: string) => {
@@ -246,6 +250,36 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
     if (ok) showToast(t('import.ai.promptCopied'));
   }, [showToast]);
 
+  const handleOpenPaste = useCallback(() => {
+    setPasteOpen(true);
+    setPasteError('');
+  }, []);
+
+  const handleCancelPaste = useCallback(() => {
+    setPasteOpen(false);
+    setPasteText('');
+    setPasteError('');
+  }, []);
+
+  const handlePasteImport = useCallback(() => {
+    const raw = pasteText.trim();
+    if (!raw) {
+      setPasteError(t('import.ai.pasteJsonEmpty'));
+      return;
+    }
+    if (raw.length > MAX_PROJECT_SIZE) {
+      setPasteError(t('import.tooLarge'));
+      return;
+    }
+    const cleaned = stripJsonCodeFence(raw);
+    try {
+      importJSON(cleaned);
+      onClose();
+    } catch {
+      setPasteError(t('import.failed'));
+    }
+  }, [pasteText, importJSON, onClose]);
+
   const [dragOver, setDragOver] = useState(false);
 
   const handleWizardDrop = useCallback((e: React.DragEvent) => {
@@ -334,9 +368,49 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
           <div className="import-wizard__ai">
             <h3>{t('import.ai.title')}</h3>
             <p>{t('import.ai.desc')}</p>
-            <button className="import-wizard__ai-btn" onClick={handleCopyPrompt}>
-              📋 {t('import.ai.copyPrompt')}
-            </button>
+            <div className="import-wizard__ai-actions">
+              <button className="import-wizard__ai-btn" onClick={handleCopyPrompt}>
+                📋 {t('import.ai.copyPrompt')}
+              </button>
+              <button className="import-wizard__ai-btn" onClick={handleOpenPaste}>
+                📥 {t('import.ai.pasteJson')}
+              </button>
+            </div>
+
+            {pasteOpen && (
+              <div className="import-wizard__paste-panel">
+                <textarea
+                  className="import-wizard__paste-textarea"
+                  value={pasteText}
+                  onChange={(e) => setPasteText(e.target.value)}
+                  placeholder={t('import.ai.pasteJsonPlaceholder')}
+                  autoFocus
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                />
+                {pasteError && (
+                  <div className="import-wizard__paste-error">{pasteError}</div>
+                )}
+                <div className="import-wizard__paste-privacy">
+                  {t('import.ai.pasteJsonPrivacy')}
+                </div>
+                <div className="import-wizard__paste-actions">
+                  <button
+                    className="import-wizard__paste-cancel"
+                    onClick={handleCancelPaste}
+                  >
+                    {t('import.ai.pasteJsonCancel')}
+                  </button>
+                  <button
+                    className="import-wizard__paste-import"
+                    onClick={handlePasteImport}
+                  >
+                    {t('import.ai.pasteJsonImport')}
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Collapsible JSON schema */}
             <button

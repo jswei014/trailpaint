@@ -143,6 +143,12 @@
   line-height: 1.5;
 }
 
+.import-wizard__ai-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .import-wizard__ai-btn {
   font-family: Georgia, serif;
   font-size: 13px;
@@ -157,6 +163,89 @@
 
 .import-wizard__ai-btn:hover {
   background: #fef3d8;
+}
+
+/* Paste-JSON panel (AI workflow) */
+.import-wizard__paste-panel {
+  margin-top: 12px;
+  padding: 12px;
+  background: #fdf8ef;
+  border: 1px dashed #d4a574;
+  border-radius: 8px;
+}
+
+.import-wizard__paste-textarea {
+  width: 100%;
+  min-height: 140px;
+  box-sizing: border-box;
+  padding: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3d2817;
+  background: #fffdf7;
+  border: 1px solid #dcc6a8;
+  border-radius: 6px;
+  resize: vertical;
+}
+
+.import-wizard__paste-textarea:focus {
+  outline: none;
+  border-color: #b45309;
+  background: #ffffff;
+}
+
+.import-wizard__paste-error {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 4px;
+  color: #991b1b;
+  font-size: 12px;
+}
+
+.import-wizard__paste-privacy {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #8b6a40;
+}
+
+.import-wizard__paste-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.import-wizard__paste-cancel,
+.import-wizard__paste-import {
+  font-family: Georgia, serif;
+  font-size: 13px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.import-wizard__paste-cancel {
+  border: 1px solid #d4a574;
+  background: transparent;
+  color: #78350f;
+}
+
+.import-wizard__paste-cancel:hover {
+  background: #fef3d8;
+}
+
+.import-wizard__paste-import {
+  border: 1.5px solid #b45309;
+  background: #b45309;
+  color: #fffdf7;
+}
+
+.import-wizard__paste-import:hover {
+  background: #92400e;
 }
 
 /* Schema toggle */
