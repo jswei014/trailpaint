@@ -155,6 +155,7 @@ export default {
   'import.ai.pasteJsonPrivacy': '💡 貼り付けた内容はブラウザ内でのみ処理され、サーバーには送信されません',
   'import.ai.pasteJsonEmpty': 'JSON 内容を貼り付けてください',
   'import.ai.autoFetch': 'AI インポート + 写真自動取得',
+  'import.ai.autoFetchCheckbox': 'Wikimedia Commons から自動取得（ネット接続必要）',
   'import.ai.autoFetchPlaceholder': 'photo_query フィールドを含む JSON を貼り付けると Wikimedia Commons から写真を自動取得します',
   'import.ai.autoFetchNote': '🌐 各スポットについて Wikimedia Commons に検索リクエストを送信し、写真と著者情報を JSON に埋め込みます',
   'import.ai.autoFetchStart': 'インポート開始',

@@ -105,7 +105,7 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
   const [pasteOpen, setPasteOpen] = useState(false);
   const [pasteText, setPasteText] = useState('');
   const [pasteError, setPasteError] = useState('');
-  const [autoFetchOpen, setAutoFetchOpen] = useState(false);
+  const [autoFetchChecked, setAutoFetchChecked] = useState(false);
   const [autoFetchProgress, setAutoFetchProgress] = useState<AutoFetchProgressState | null>(null);
   const [autoFetchCancelled, setAutoFetchCancelled] = useState<AutoFetchCancelledState | null>(null);
   const [autoFetchReport, setAutoFetchReport] = useState<{ project: Project; report: FetchReport } | null>(null);
@@ -302,7 +302,6 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
 
   const handleOpenPaste = useCallback(() => {
     setPasteOpen(true);
-    setAutoFetchOpen(false);
     setPasteError('');
   }, []);
 
@@ -310,43 +309,28 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
     setPasteOpen(false);
     setPasteText('');
     setPasteError('');
+    setAutoFetchChecked(false);
   }, []);
 
-  const handleOpenAutoFetch = useCallback(() => {
-    setAutoFetchOpen(true);
-    setPasteOpen(false);
-    setPasteError('');
-  }, []);
+  /** 貼 JSON 後智能預設：有任一 spot 帶 photo_query 就預設勾「自動補圖」 */
+  const handlePasteTextChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const text = e.target.value;
+    setPasteText(text);
+    // 只在非空且沒手動勾選時偵測一次；勾過之後尊重用戶選擇
+    if (text.length > 50 && text.length < 100000 && !autoFetchChecked) {
+      try {
+        const parsed = JSON.parse(stripJsonCodeFence(text));
+        const hasQuery = Array.isArray(parsed?.spots)
+          && parsed.spots.some((s: { photo_query?: unknown }) => typeof s?.photo_query === 'string' && s.photo_query.trim());
+        if (hasQuery) setAutoFetchChecked(true);
+      } catch { /* 貼一半或無效 JSON 不處理 */ }
+    }
+  }, [autoFetchChecked]);
 
-  const handleCancelAutoFetch = useCallback(() => {
-    setAutoFetchOpen(false);
-    setPasteText('');
-    setPasteError('');
-  }, []);
-
-  const handleStartAutoFetch = useCallback(async () => {
-    const raw = pasteText.trim();
-    if (!raw) {
-      setPasteError(t('import.ai.pasteJsonEmpty'));
-      return;
-    }
-    if (raw.length > MAX_PROJECT_SIZE) {
-      setPasteError(t('import.tooLarge'));
-      return;
-    }
-    const cleaned = stripJsonCodeFence(raw);
-    let project: Project;
-    try {
-      const parsed = JSON.parse(cleaned);
-      project = migrateProject(parsed);
-    } catch (e) {
-      setPasteError(e instanceof SyntaxError ? t('import.ai.errorParse') : t('import.ai.errorSchema'));
-      return;
-    }
-    // Kick off pipeline
+  const handleStartAutoFetch = useCallback(async (project: Project) => {
     const ac = new AbortController();
     abortRef.current = ac;
-    setAutoFetchOpen(false);
+    setPasteOpen(false);
     setAutoFetchProgress({ current: 0, total: project.spots.length, title: '' });
     setSubView('autoFetchProgress');
     try {
@@ -369,12 +353,12 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
       } else {
         setPasteError(t('import.failed'));
         setSubView('main');
-        setAutoFetchOpen(true);
+        setPasteOpen(true);
       }
     } finally {
       abortRef.current = null;
     }
-  }, [pasteText]);
+  }, []);
 
   const handleAbortAutoFetch = useCallback(() => {
     abortRef.current?.abort();
@@ -402,13 +386,26 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
       return;
     }
     const cleaned = stripJsonCodeFence(raw);
+    // Auto-fetch 路徑：parse + migrate 後交給 autoFetchPhotos pipeline
+    if (autoFetchChecked) {
+      let project: Project;
+      try {
+        project = migrateProject(JSON.parse(cleaned));
+      } catch (e) {
+        setPasteError(e instanceof SyntaxError ? t('import.ai.errorParse') : t('import.ai.errorSchema'));
+        return;
+      }
+      void handleStartAutoFetch(project);
+      return;
+    }
+    // 直接匯入路徑：走現有 importJSON（無連網）
     try {
       importJSON(cleaned);
       onClose();
     } catch {
       setPasteError(t('import.failed'));
     }
-  }, [pasteText, importJSON, onClose]);
+  }, [pasteText, autoFetchChecked, handleStartAutoFetch, importJSON, onClose]);
 
   const [dragOver, setDragOver] = useState(false);
 
@@ -592,9 +589,6 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
               <button className="import-wizard__ai-btn" onClick={handleOpenPaste}>
                 📥 {t('import.ai.pasteJson')}
               </button>
-              <button className="import-wizard__ai-btn" onClick={handleOpenAutoFetch}>
-                ✨ {t('import.ai.autoFetch')}
-              </button>
             </div>
 
             {pasteOpen && (
@@ -602,7 +596,7 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
                 <textarea
                   className="import-wizard__paste-textarea"
                   value={pasteText}
-                  onChange={(e) => setPasteText(e.target.value)}
+                  onChange={handlePasteTextChange}
                   placeholder={t('import.ai.pasteJsonPlaceholder')}
                   autoFocus
                   autoCorrect="off"
@@ -612,8 +606,16 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
                 {pasteError && (
                   <div className="import-wizard__paste-error">{pasteError}</div>
                 )}
+                <label className="import-wizard__paste-autofetch">
+                  <input
+                    type="checkbox"
+                    checked={autoFetchChecked}
+                    onChange={(e) => setAutoFetchChecked(e.target.checked)}
+                  />
+                  <span>✨ {t('import.ai.autoFetchCheckbox')}</span>
+                </label>
                 <div className="import-wizard__paste-privacy">
-                  {t('import.ai.pasteJsonPrivacy')}
+                  {autoFetchChecked ? t('import.ai.autoFetchNote') : t('import.ai.pasteJsonPrivacy')}
                 </div>
                 <div className="import-wizard__paste-actions">
                   <button
@@ -626,42 +628,7 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
                     className="import-wizard__paste-import"
                     onClick={handlePasteImport}
                   >
-                    {t('import.ai.pasteJsonImport')}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {autoFetchOpen && (
-              <div className="import-wizard__paste-panel">
-                <textarea
-                  className="import-wizard__paste-textarea"
-                  value={pasteText}
-                  onChange={(e) => setPasteText(e.target.value)}
-                  placeholder={t('import.ai.autoFetchPlaceholder')}
-                  autoFocus
-                  autoCorrect="off"
-                  autoCapitalize="off"
-                  spellCheck={false}
-                />
-                {pasteError && (
-                  <div className="import-wizard__paste-error">{pasteError}</div>
-                )}
-                <div className="import-wizard__paste-privacy">
-                  {t('import.ai.autoFetchNote')}
-                </div>
-                <div className="import-wizard__paste-actions">
-                  <button
-                    className="import-wizard__paste-cancel"
-                    onClick={handleCancelAutoFetch}
-                  >
-                    {t('import.ai.pasteJsonCancel')}
-                  </button>
-                  <button
-                    className="import-wizard__paste-import"
-                    onClick={handleStartAutoFetch}
-                  >
-                    ✨ {t('import.ai.autoFetchStart')}
+                    {autoFetchChecked ? `✨ ${t('import.ai.autoFetchStart')}` : t('import.ai.pasteJsonImport')}
                   </button>
                 </div>
               </div>

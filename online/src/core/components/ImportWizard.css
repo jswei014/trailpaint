@@ -436,6 +436,25 @@
   background: #5c2a0c;
 }
 
+/* 013 AI auto-fetch: paste-panel checkbox */
+.import-wizard__paste-autofetch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: #4b3a22;
+  cursor: pointer;
+  user-select: none;
+}
+
+.import-wizard__paste-autofetch input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #78350f;
+}
+
 /* 013 AI auto-fetch: progress / cancelled / report views */
 .import-wizard__autofetch {
   padding: 16px 4px;

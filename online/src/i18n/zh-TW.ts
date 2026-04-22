@@ -155,6 +155,7 @@ export default {
   'import.ai.pasteJsonPrivacy': '💡 貼上內容只在你的瀏覽器裡處理，不會送到任何伺服器',
   'import.ai.pasteJsonEmpty': '請先貼上 JSON 內容',
   'import.ai.autoFetch': 'AI 匯入 + 自動補圖',
+  'import.ai.autoFetchCheckbox': '自動從 Wikimedia Commons 補圖（需連網）',
   'import.ai.autoFetchPlaceholder': '把含有 photo_query 欄位的 JSON 貼到這裡，會從 Wikimedia Commons 自動補圖',
   'import.ai.autoFetchNote': '🌐 將對每個景點向 Wikimedia Commons 發送搜尋請求，照片與作者授權會一併寫入 JSON',
   'import.ai.autoFetchStart': '開始匯入',

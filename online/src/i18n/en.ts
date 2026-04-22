@@ -155,6 +155,7 @@ export default {
   'import.ai.pasteJsonPrivacy': '💡 The pasted content is processed in your browser only — nothing is sent to a server',
   'import.ai.pasteJsonEmpty': 'Please paste JSON content first',
   'import.ai.autoFetch': 'AI Import + Auto-fetch Photos',
+  'import.ai.autoFetchCheckbox': 'Auto-fetch photos from Wikimedia Commons (requires network)',
   'import.ai.autoFetchPlaceholder': 'Paste JSON with photo_query fields — photos will be auto-fetched from Wikimedia Commons',
   'import.ai.autoFetchNote': '🌐 This sends a search to Wikimedia Commons per spot; photos and attribution are embedded into your JSON',
   'import.ai.autoFetchStart': 'Start Import',

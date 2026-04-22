@@ -14,6 +14,22 @@ import { isAllowedMediaUrl } from './embedCode';
  * null 或 https://commons.wikimedia.org/* 開頭；驗證失敗則整個 photoMeta 設 undefined
  * （all-or-nothing，避免部分保留造成 UI 不一致）。
  */
+/** authorUrl 降級規則：只接受 https://{*.wikimedia.org, *.wikipedia.org}；其他 → null。
+ *  Commons 的 Artist 欄位經常連外部（Wikipedia 其他語言、Flickr、個人站），
+ *  但 attribution 義務比「author 可點連結」重要——寧可保留姓名不連結，也不因
+ *  authorUrl 不合白名單丟掉整個 photoMeta（等於無 attribution）。 */
+function sanitizeAuthorUrl(raw: unknown): string | null {
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw !== 'string') return null;
+  if (!raw.startsWith('https://')) return null;
+  try {
+    const host = new URL(raw).hostname.toLowerCase();
+    if (host === 'wikimedia.org' || host.endsWith('.wikimedia.org')) return raw;
+    if (host === 'wikipedia.org' || host.endsWith('.wikipedia.org')) return raw;
+  } catch { /* malformed URL */ }
+  return null;
+}
+
 export function migrateProject(data: Record<string, unknown>): Project {
   // Basic schema validation
   if (!data || typeof data !== 'object') throw new Error('Invalid project data');
@@ -80,7 +96,11 @@ export function migrateProject(data: Record<string, unknown>): Project {
     // photo_query (v3.1+, 013): LLM 產的搜尋關鍵字；只做型別驗證，非字串設 undefined
     const photoQuery = typeof s.photo_query === 'string' ? s.photo_query.slice(0, 200) : undefined;
 
-    // photoMeta (v3.1+, 013): Commons attribution；白名單驗證 all-or-nothing
+    // photoMeta (v3.1+, 013): Commons attribution。
+    // 白名單原則：source / sourceUrl 嚴格（Commons 身份識別，不容錯）；
+    // authorUrl 降級（Commons Artist 常連外部 Wikipedia/個人站，reject 太
+    // 嚴會讓多數 Commons 圖失去 attribution → CC BY 合規漏洞）→ 非
+    // *.wikimedia.org / *.wikipedia.org hostname 一律設 null，保留其他欄位。
     let photoMeta: PhotoMeta | undefined;
     if (s.photoMeta && typeof s.photoMeta === 'object') {
       const pm = s.photoMeta as Record<string, unknown>;
@@ -90,16 +110,14 @@ export function migrateProject(data: Record<string, unknown>): Project {
       const authorUrl = pm.authorUrl;
       const sourceUrl = pm.sourceUrl;
       const validSource = source === 'wikimedia-commons';
-      const validAuthorUrl = authorUrl === null
-        || (typeof authorUrl === 'string' && authorUrl.startsWith('https://commons.wikimedia.org/'));
       const validSourceUrl = typeof sourceUrl === 'string' && sourceUrl.startsWith('https://commons.wikimedia.org/');
-      if (validSource && validAuthorUrl && validSourceUrl
+      if (validSource && validSourceUrl
           && typeof license === 'string' && typeof author === 'string') {
         photoMeta = {
           source: 'wikimedia-commons',
           license: license.slice(0, 80),
           author: author.slice(0, 120),
-          authorUrl: authorUrl as string | null,
+          authorUrl: sanitizeAuthorUrl(authorUrl),
           sourceUrl: sourceUrl as string,
         };
       }

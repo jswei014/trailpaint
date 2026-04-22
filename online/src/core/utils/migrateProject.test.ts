@@ -391,7 +391,32 @@ describe('migrateProject — v3.1 photoMeta / photo_query (013)', () => {
     expect(p.spots[0].photoMeta).toBeUndefined();
   });
 
-  it('drops photoMeta when authorUrl is non-Commons (XSS defense vs javascript: URLs)', () => {
+  it('downgrades non-Wikimedia authorUrl to null but keeps photoMeta (attribution still shows)', () => {
+    const p = migrateProject({
+      ...validBase,
+      spots: [{
+        id: 's1', latlng: [23.5, 121], title: 'x',
+        photoMeta: { ...validMeta, authorUrl: 'https://flickr.com/people/xxx' },
+      }],
+    });
+    // photoMeta 保留，authorUrl 降級 null（避免 CC BY 合規漏洞）
+    expect(p.spots[0].photoMeta).toBeDefined();
+    expect(p.spots[0].photoMeta?.author).toBe('AngMoKio');
+    expect(p.spots[0].photoMeta?.authorUrl).toBeNull();
+  });
+
+  it('keeps authorUrl when pointing to zh.wikipedia.org (common Commons Artist pattern)', () => {
+    const p = migrateProject({
+      ...validBase,
+      spots: [{
+        id: 's1', latlng: [23.5, 121], title: 'x',
+        photoMeta: { ...validMeta, authorUrl: 'https://zh.wikipedia.org/wiki/User:Xxx' },
+      }],
+    });
+    expect(p.spots[0].photoMeta?.authorUrl).toBe('https://zh.wikipedia.org/wiki/User:Xxx');
+  });
+
+  it('downgrades javascript: authorUrl to null (XSS defense)', () => {
     const p = migrateProject({
       ...validBase,
       spots: [{
@@ -399,7 +424,8 @@ describe('migrateProject — v3.1 photoMeta / photo_query (013)', () => {
         photoMeta: { ...validMeta, authorUrl: 'javascript:alert(1)' },
       }],
     });
-    expect(p.spots[0].photoMeta).toBeUndefined();
+    expect(p.spots[0].photoMeta).toBeDefined();
+    expect(p.spots[0].photoMeta?.authorUrl).toBeNull();
   });
 
   it('keeps photoMeta when authorUrl is null (anonymous artist)', () => {
