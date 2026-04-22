@@ -99,7 +99,7 @@ export function expandProject(c: Record<string, unknown>): Project {
     name: c.n as string,
     center: c.c as [number, number],
     zoom: c.z as number,
-    spots,
+    spots: spots as unknown as Project['spots'],
     routes,
   };
   if (c.ov && typeof c.ov === 'object') {

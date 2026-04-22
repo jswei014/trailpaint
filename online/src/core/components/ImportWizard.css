@@ -435,3 +435,65 @@
 .import-wizard__card--primary:hover {
   background: #5c2a0c;
 }
+
+/* 013 AI auto-fetch: progress / cancelled / report views */
+.import-wizard__autofetch {
+  padding: 16px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.import-wizard__autofetch h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #78350f;
+}
+
+.import-wizard__autofetch-current {
+  font-size: 14px;
+  color: #4b3a22;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.import-wizard__autofetch-bar {
+  width: 100%;
+  height: 6px;
+  background: #f3e9d2;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.import-wizard__autofetch-bar-fill {
+  height: 100%;
+  background: #78350f;
+  transition: width 0.2s ease;
+}
+
+.import-wizard__autofetch-missed {
+  list-style: none;
+  padding: 8px 12px;
+  margin: 0;
+  background: #fdf6e3;
+  border: 1px solid #e8d9b0;
+  border-radius: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  font-size: 13px;
+}
+
+.import-wizard__autofetch-missed-item {
+  padding: 6px 0;
+  border-bottom: 1px solid #f0e4c4;
+  line-height: 1.5;
+}
+
+.import-wizard__autofetch-missed-item:last-child {
+  border-bottom: none;
+}
+
+.import-wizard__autofetch-missed-item a {
+  color: #78350f;
+  text-decoration: underline;
+}

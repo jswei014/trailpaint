@@ -7,6 +7,9 @@ import { parseGeoJson } from '../utils/geojsonParser';
 import { geojsonToImport, type ImportBundle, type ImportResult } from '../utils/geojsonImport';
 import { planPhotoAdoption } from '../utils/photoAdoption';
 import { stripJsonCodeFence } from '../utils/pasteJsonInput';
+import { migrateProject } from '../utils/migrateProject';
+import { autoFetchPhotos, AutoFetchAbortError, type FetchReport } from '../utils/autoFetchPhotos';
+import type { Project } from '../models/types';
 import type { ExifStats } from '../utils/exifToGeojson';
 import { t } from '../../i18n';
 import './ImportWizard.css';
@@ -70,12 +73,25 @@ async function copyToClipboard(text: string): Promise<boolean> {
   return ok;
 }
 
-type SubView = 'main' | 'photoPreview';
+type SubView = 'main' | 'photoPreview' | 'autoFetchProgress' | 'autoFetchCancelled' | 'autoFetchReport';
 
 interface PhotoPreviewState {
   files: File[];
   stats: ExifStats;
   bundle: ImportBundle;
+}
+
+interface AutoFetchProgressState {
+  current: number;
+  total: number;
+  title: string;
+}
+
+interface AutoFetchCancelledState {
+  project: Project;
+  report: FetchReport;
+  processed: number;
+  total: number;
 }
 
 export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps) {
@@ -89,6 +105,11 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
   const [pasteOpen, setPasteOpen] = useState(false);
   const [pasteText, setPasteText] = useState('');
   const [pasteError, setPasteError] = useState('');
+  const [autoFetchOpen, setAutoFetchOpen] = useState(false);
+  const [autoFetchProgress, setAutoFetchProgress] = useState<AutoFetchProgressState | null>(null);
+  const [autoFetchCancelled, setAutoFetchCancelled] = useState<AutoFetchCancelledState | null>(null);
+  const [autoFetchReport, setAutoFetchReport] = useState<{ project: Project; report: FetchReport } | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const showToast = useCallback((msg: string) => {
@@ -281,6 +302,7 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
 
   const handleOpenPaste = useCallback(() => {
     setPasteOpen(true);
+    setAutoFetchOpen(false);
     setPasteError('');
   }, []);
 
@@ -289,6 +311,85 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
     setPasteText('');
     setPasteError('');
   }, []);
+
+  const handleOpenAutoFetch = useCallback(() => {
+    setAutoFetchOpen(true);
+    setPasteOpen(false);
+    setPasteError('');
+  }, []);
+
+  const handleCancelAutoFetch = useCallback(() => {
+    setAutoFetchOpen(false);
+    setPasteText('');
+    setPasteError('');
+  }, []);
+
+  const handleStartAutoFetch = useCallback(async () => {
+    const raw = pasteText.trim();
+    if (!raw) {
+      setPasteError(t('import.ai.pasteJsonEmpty'));
+      return;
+    }
+    if (raw.length > MAX_PROJECT_SIZE) {
+      setPasteError(t('import.tooLarge'));
+      return;
+    }
+    const cleaned = stripJsonCodeFence(raw);
+    let project: Project;
+    try {
+      const parsed = JSON.parse(cleaned);
+      project = migrateProject(parsed);
+    } catch (e) {
+      setPasteError(e instanceof SyntaxError ? t('import.ai.errorParse') : t('import.ai.errorSchema'));
+      return;
+    }
+    // Kick off pipeline
+    const ac = new AbortController();
+    abortRef.current = ac;
+    setAutoFetchOpen(false);
+    setAutoFetchProgress({ current: 0, total: project.spots.length, title: '' });
+    setSubView('autoFetchProgress');
+    try {
+      const result = await autoFetchPhotos(
+        project,
+        (current, total, title) => setAutoFetchProgress({ current, total, title }),
+        ac.signal,
+      );
+      setAutoFetchReport(result);
+      setSubView('autoFetchReport');
+    } catch (err) {
+      if (err instanceof AutoFetchAbortError) {
+        setAutoFetchCancelled({
+          project: err.partial.project,
+          report: err.partial.report,
+          processed: err.partial.processed,
+          total: project.spots.length,
+        });
+        setSubView('autoFetchCancelled');
+      } else {
+        setPasteError(t('import.failed'));
+        setSubView('main');
+        setAutoFetchOpen(true);
+      }
+    } finally {
+      abortRef.current = null;
+    }
+  }, [pasteText]);
+
+  const handleAbortAutoFetch = useCallback(() => {
+    abortRef.current?.abort();
+  }, []);
+
+  const handleLoadAutoFetchResult = useCallback(() => {
+    const data = autoFetchReport?.project ?? autoFetchCancelled?.project;
+    if (!data) return;
+    importJSON(JSON.stringify(data));
+    onClose();
+  }, [autoFetchReport, autoFetchCancelled, importJSON, onClose]);
+
+  const handleDiscardAutoFetch = useCallback(() => {
+    onClose();
+  }, [onClose]);
 
   const handlePasteImport = useCallback(() => {
     const raw = pasteText.trim();
@@ -354,7 +455,94 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
         </div>
 
         <div className="import-wizard__body">
-          {subView === 'photoPreview' && preview ? (
+          {subView === 'autoFetchProgress' && autoFetchProgress ? (
+            <div className="import-wizard__autofetch">
+              <h3>{t('import.ai.progressTitle')}</h3>
+              <p className="import-wizard__autofetch-current">
+                {t('import.ai.progressLine')
+                  .replace('{current}', String(autoFetchProgress.current))
+                  .replace('{total}', String(autoFetchProgress.total))}
+                <br />📷 {autoFetchProgress.title}
+              </p>
+              <div className="import-wizard__autofetch-bar">
+                <div
+                  className="import-wizard__autofetch-bar-fill"
+                  style={{ width: `${(autoFetchProgress.current / Math.max(1, autoFetchProgress.total)) * 100}%` }}
+                />
+              </div>
+              <button className="import-wizard__paste-cancel" onClick={handleAbortAutoFetch}>
+                {t('import.ai.progressCancel')}
+              </button>
+            </div>
+          ) : subView === 'autoFetchCancelled' && autoFetchCancelled ? (
+            <div className="import-wizard__autofetch">
+              <h3>{t('import.ai.cancelledTitle')}</h3>
+              <p>
+                {t('import.ai.cancelledDesc')
+                  .replace('{processed}', String(autoFetchCancelled.processed))
+                  .replace('{total}', String(autoFetchCancelled.total))}
+              </p>
+              <div className="import-wizard__paste-actions">
+                <button
+                  className="import-wizard__paste-cancel"
+                  onClick={handleDiscardAutoFetch}
+                >
+                  {t('import.ai.cancelledDiscard')}
+                </button>
+                <button
+                  className="import-wizard__paste-import"
+                  onClick={handleLoadAutoFetchResult}
+                >
+                  {t('import.ai.cancelledLoadPartial')}
+                </button>
+              </div>
+            </div>
+          ) : subView === 'autoFetchReport' && autoFetchReport ? (
+            <div className="import-wizard__autofetch">
+              <h3>{t('import.ai.reportTitle')}</h3>
+              <p>
+                ✅ {t('import.ai.reportFound').replace('{count}', String(autoFetchReport.report.found))}
+                {autoFetchReport.report.missed.length > 0 && (
+                  <>
+                    {' · '}
+                    ⚠️ {t('import.ai.reportMissed').replace('{count}', String(autoFetchReport.report.missed.length))}
+                  </>
+                )}
+              </p>
+              {autoFetchReport.report.missed.length > 0 && (
+                <ul className="import-wizard__autofetch-missed">
+                  {autoFetchReport.report.missed.map((m) => (
+                    <li key={m.spotId} className="import-wizard__autofetch-missed-item">
+                      <strong>{m.title}</strong>
+                      <br />
+                      {m.query
+                        ? (
+                          <>
+                            {t('import.ai.reportSuggestion')}{' '}
+                            <a
+                              href={`https://commons.wikimedia.org/w/index.php?search=${encodeURIComponent(m.query)}&profile=advanced&fulltext=1&ns6=1`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {m.query}
+                            </a>
+                          </>
+                        )
+                        : t('import.ai.reportNoQuery')}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="import-wizard__paste-actions">
+                <button
+                  className="import-wizard__paste-import"
+                  onClick={handleLoadAutoFetchResult}
+                >
+                  {t('import.ai.reportDone')}
+                </button>
+              </div>
+            </div>
+          ) : subView === 'photoPreview' && preview ? (
             <PhotoPreview
               state={preview}
               onConfirm={handleConfirmPhotos}
@@ -404,6 +592,9 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
               <button className="import-wizard__ai-btn" onClick={handleOpenPaste}>
                 📥 {t('import.ai.pasteJson')}
               </button>
+              <button className="import-wizard__ai-btn" onClick={handleOpenAutoFetch}>
+                ✨ {t('import.ai.autoFetch')}
+              </button>
             </div>
 
             {pasteOpen && (
@@ -436,6 +627,41 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
                     onClick={handlePasteImport}
                   >
                     {t('import.ai.pasteJsonImport')}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {autoFetchOpen && (
+              <div className="import-wizard__paste-panel">
+                <textarea
+                  className="import-wizard__paste-textarea"
+                  value={pasteText}
+                  onChange={(e) => setPasteText(e.target.value)}
+                  placeholder={t('import.ai.autoFetchPlaceholder')}
+                  autoFocus
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                />
+                {pasteError && (
+                  <div className="import-wizard__paste-error">{pasteError}</div>
+                )}
+                <div className="import-wizard__paste-privacy">
+                  {t('import.ai.autoFetchNote')}
+                </div>
+                <div className="import-wizard__paste-actions">
+                  <button
+                    className="import-wizard__paste-cancel"
+                    onClick={handleCancelAutoFetch}
+                  >
+                    {t('import.ai.pasteJsonCancel')}
+                  </button>
+                  <button
+                    className="import-wizard__paste-import"
+                    onClick={handleStartAutoFetch}
+                  >
+                    ✨ {t('import.ai.autoFetchStart')}
                   </button>
                 </div>
               </div>

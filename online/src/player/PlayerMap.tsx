@@ -7,6 +7,7 @@ import PlayerFitAll from './PlayerFitAll';
 import ScriptureRefs from './ScriptureRefs';
 import LocateButton from '../map/LocateButton';
 import { getOverlayZoomCap } from '../map/overlays';
+import { PhotoAttribution } from '../core/components/PhotoAttribution';
 import type { Spot } from '../core/models/types';
 import 'leaflet/dist/leaflet.css';
 import '../map/MapView.css';
@@ -106,12 +107,15 @@ function SpotPopupContent({ spot }: { spot: Spot }) {
     <div className="player-popup__body">
       <strong className="player-popup__title">{spot.title}</strong>
       {spot.photo && !imgFailed && (
-        <img
-          src={spot.photo}
-          alt={spot.title}
-          className="player-popup__img"
-          onError={() => setImgFailed(true)}
-        />
+        <div className="player-popup__img-wrap">
+          <img
+            src={spot.photo}
+            alt={spot.title}
+            className="player-popup__img"
+            onError={() => setImgFailed(true)}
+          />
+          <PhotoAttribution meta={spot.photoMeta} />
+        </div>
       )}
       {spot.photo && imgFailed && (
         <div className="player-popup__img-fallback">照片載入失敗</div>
