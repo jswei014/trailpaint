@@ -238,3 +238,27 @@ describe('updateSpot — pendingLocation drag-to-clear (010 D5)', () => {
     expect(updated.pendingLocation).toBeUndefined();
   });
 });
+
+describe('addSpot — optional title parameter (PR #2)', () => {
+  beforeEach(resetStore);
+
+  it('uses the provided title when passed', () => {
+    useProjectStore.getState().addSpot([25.034, 121.565], 'Taipei 101');
+    const spots = useProjectStore.getState().project.spots;
+    expect(spots).toHaveLength(1);
+    expect(spots[0].title).toBe('Taipei 101');
+  });
+
+  it('falls back to the default numbered title when no title is passed', () => {
+    useProjectStore.getState().addSpot([25.034, 121.565]);
+    const spots = useProjectStore.getState().project.spots;
+    expect(spots).toHaveLength(1);
+    expect(spots[0].title).toBe('spot.defaultTitle 1');
+  });
+
+  it('falls back to the default title when an empty string is passed', () => {
+    useProjectStore.getState().addSpot([25.034, 121.565], '');
+    const spots = useProjectStore.getState().project.spots;
+    expect(spots[0].title).toBe('spot.defaultTitle 1');
+  });
+});
