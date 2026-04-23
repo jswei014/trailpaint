@@ -25,11 +25,34 @@ interface CommonsApiResponse {
   query?: { pages?: Record<string, CommonsPage> };
 }
 
+/**
+ * Search Commons for the first matching photo. Accepts a single keyword or
+ * `|`-separated multi-candidate query (e.g. `"頭城濱海森林公園|Toucheng Beach Park"`).
+ * When multi-candidate, tries each in order and returns the first hit — 實測
+ * Commons full-text 搜尋把「中文|English」當一個字串會兩邊都打不到；拆開後
+ * 中文先試命中率較高（台灣地點本地上傳者多用中文命名）。
+ */
 export async function searchCommonsPhoto(
   query: string,
   signal?: AbortSignal,
 ): Promise<CommonsHit | null> {
   if (!query.trim()) return null;
+  const candidates = query
+    .split('|')
+    .map((c) => c.trim())
+    .filter((c) => c.length > 0);
+  if (candidates.length === 0) return null;
+  for (let i = 0; i < candidates.length; i++) {
+    const hit = await searchSingleCandidate(candidates[i], signal);
+    if (hit) return hit;
+    // 同 spot 內多 candidate 之間 sleep 150ms（spot 間的 500ms 另計），避免
+    // 搜 2 次對同一 IP 累積太密集。AbortSignal 即時拋 DOMException。
+    if (i < candidates.length - 1) await sleep(150, signal);
+  }
+  return null;
+}
+
+async function searchSingleCandidate(query: string, signal?: AbortSignal): Promise<CommonsHit | null> {
   const params = new URLSearchParams({
     action: 'query',
     format: 'json',
@@ -64,6 +87,16 @@ export async function searchCommonsPhoto(
     authorUrl: parsed.url,
     sourceUrl,
   };
+}
+
+function sleep(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(resolve, ms);
+    signal?.addEventListener('abort', () => {
+      clearTimeout(t);
+      reject(new DOMException('aborted', 'AbortError'));
+    });
+  });
 }
 
 // regex parse (browser + node/vitest 通吃；瀏覽器 DOMParser('text/html') 行為在 vitest

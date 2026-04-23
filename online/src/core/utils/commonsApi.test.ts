@@ -172,4 +172,62 @@ describe('searchCommonsPhoto', () => {
     expect(calledUrl).toContain('gsrlimit=1');
     expect(calledUrl).toContain('iiurlwidth=600');
   });
+
+  it('splits `|`-separated query and returns first candidate hit (Chinese first)', async () => {
+    // Candidate 1 (中文) → 0 results; Candidate 2 (English) → hit.
+    // Expect two fetches; second wins.
+    (fetch as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce(new Response(JSON.stringify({ query: { pages: {} } }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        query: { pages: { '1': {
+          title: 'File:Toucheng.jpg',
+          imageinfo: [{
+            thumburl: 'https://upload.wikimedia.org/t.jpg',
+            mime: 'image/jpeg',
+            extmetadata: { LicenseShortName: { value: 'CC BY 4.0' }, Artist: { value: 'A' } },
+          }],
+        } } },
+      }), { status: 200 }));
+    const hit = await searchCommonsPhoto('頭城濱海森林公園|Toucheng Beach Park');
+    expect(hit?.thumbUrl).toBe('https://upload.wikimedia.org/t.jpg');
+    expect((fetch as ReturnType<typeof vi.fn>).mock.calls.length).toBe(2);
+    // first call carries the Chinese candidate
+    expect((fetch as ReturnType<typeof vi.fn>).mock.calls[0][0] as string).toContain('%E9%A0%AD%E5%9F%8E');
+  });
+
+  it('returns first candidate hit without trying the second', async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+      new Response(JSON.stringify({
+        query: { pages: { '1': {
+          title: 'File:X.jpg',
+          imageinfo: [{
+            thumburl: 'https://upload.wikimedia.org/x.jpg',
+            mime: 'image/jpeg',
+            extmetadata: { LicenseShortName: { value: 'CC0' }, Artist: { value: 'B' } },
+          }],
+        } } },
+      }), { status: 200 }),
+    );
+    const hit = await searchCommonsPhoto('Taipei 101|台北101');
+    expect(hit?.thumbUrl).toBe('https://upload.wikimedia.org/x.jpg');
+    expect((fetch as ReturnType<typeof vi.fn>).mock.calls.length).toBe(1);
+  });
+
+  it('returns null when all `|`-separated candidates miss', async () => {
+    // mockImplementation: fresh Response per call (not shared body)
+    (fetch as ReturnType<typeof vi.fn>).mockImplementation(async () =>
+      new Response(JSON.stringify({ query: { pages: {} } }), { status: 200 }),
+    );
+    const hit = await searchCommonsPhoto('foo|bar|baz');
+    expect(hit).toBeNull();
+    expect((fetch as ReturnType<typeof vi.fn>).mock.calls.length).toBe(3);
+  });
+
+  it('ignores empty candidates from split (trailing `|` etc.)', async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+      new Response(JSON.stringify({ query: { pages: {} } }), { status: 200 }),
+    );
+    await searchCommonsPhoto('only|');
+    expect((fetch as ReturnType<typeof vi.fn>).mock.calls.length).toBe(1);
+  });
 });
