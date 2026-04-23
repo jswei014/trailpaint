@@ -24,3 +24,12 @@
 .photo-attribution a:hover {
   color: #fff;
 }
+
+/* 手機上縮小：Player popup 和景點卡都會被壓縮，10px 相對仍顯眼 */
+@media (max-width: 640px) {
+  .photo-attribution {
+    font-size: 8.5px;
+    padding: 1px 4px;
+    border-radius: 2px;
+  }
+}
