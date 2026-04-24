@@ -153,7 +153,8 @@ https://trailpaint.org/schemas/project-v3.schema.json），包含：
       <li><strong>Well-known discovery</strong>：<a href="/.well-known/trailpaint"><code>/.well-known/trailpaint</code></a></li>
       <li><strong>WebMCP</strong>：首頁 inline <code>navigator.modelContext.provideContext()</code> 已暴露 <code>open-trailpaint-editor</code> 與 <code>create-share-link</code> 兩個 tool</li>
       <li><strong>範例檔</strong>：<a href="/stories/paul/first-journey.trailpaint.json"><code>/stories/paul/first-journey.trailpaint.json</code></a>、<a href="/stories/xuanzang/west.trailpaint.json"><code>/stories/xuanzang/west.trailpaint.json</code></a>、<a href="/stories/taiwan-missionaries/barclay.trailpaint.json"><code>/stories/taiwan-missionaries/barclay.trailpaint.json</code></a></li>
-      <li><strong>匯出檔含 JSON-LD</strong>：從 Editor 匯出的 <code>.trailpaint.json</code> 帶 <code>@context</code>（schema.org + tp: vocab）與 <code>@type: TouristTrip</code>，可直接餵 JSON-LD parser</li>
+      <li><strong>匯出檔含 JSON-LD</strong>：從 Editor 匯出的 <code>.trailpaint.json</code> 帶 <code>@context</code>（schema.org + <a href="/ns/v3/"><code>tp:</code> vocab</a>）與 <code>@type: ["TouristTrip", "tp:TrailStory"]</code>，可直接餵 JSON-LD parser</li>
+      <li><strong>Authoritative 欄位</strong>：<code>spots</code> / <code>routes</code> 是真實資料；<code>itinerary</code> 是給 AI agent 的 ItemList mirror（每個 <code>itemListElement[i].item</code> 是 <code>Place + tp:Spot</code>）。**若兩者不一致，以 <code>spots</code> 為準**。Editor 匯入時會 strip 掉 <code>@context</code>/<code>@type</code>/<code>itinerary</code>，只信任 native 欄位。</li>
     </ul>
 
     <h2>注意事項</h2>

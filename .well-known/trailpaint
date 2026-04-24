@@ -8,13 +8,16 @@
   "jsonSchema": "https://trailpaint.org/schemas/project-v3.schema.json",
   "jsonLdContext": {
     "@vocab": "https://schema.org/",
-    "trailpaint": "https://trailpaint.org/schemas/project-v3.schema.json#/$defs/",
-    "spots": "trailpaint:Spot",
-    "routes": "trailpaint:Route",
-    "overlay": "trailpaint:OverlaySetting",
-    "photoMeta": "trailpaint:PhotoMeta",
-    "photo_query": "trailpaint:photo_query"
+    "tp": "https://trailpaint.org/ns/v3/",
+    "spots": "tp:Spot",
+    "routes": "tp:Route",
+    "overlay": "tp:OverlaySetting",
+    "photoMeta": "tp:PhotoMeta",
+    "photo_query": "tp:photoQuery",
+    "scripture_refs": "tp:scriptureRefs",
+    "iconId": "tp:iconId"
   },
+  "vocabulary": "https://trailpaint.org/ns/v3/",
   "documentation": {
     "aiPrompt": "https://trailpaint.org/features/ai-prompt",
     "homepage": "https://trailpaint.org/",

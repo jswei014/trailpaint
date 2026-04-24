@@ -152,7 +152,8 @@ Return raw JSON only, no explanation.</code></pre>
       <li><strong>Well-known discovery</strong>: <a href="/.well-known/trailpaint"><code>/.well-known/trailpaint</code></a></li>
       <li><strong>WebMCP</strong>: the homepage inlines <code>navigator.modelContext.provideContext()</code> exposing <code>open-trailpaint-editor</code> and <code>create-share-link</code> tools</li>
       <li><strong>Sample files</strong>: <a href="/stories/paul/first-journey.trailpaint.json"><code>/stories/paul/first-journey.trailpaint.json</code></a>, <a href="/stories/xuanzang/west.trailpaint.json"><code>/stories/xuanzang/west.trailpaint.json</code></a>, <a href="/stories/taiwan-missionaries/barclay.trailpaint.json"><code>/stories/taiwan-missionaries/barclay.trailpaint.json</code></a></li>
-      <li><strong>Exports carry JSON-LD</strong>: files exported from the Editor include <code>@context</code> (schema.org + tp: vocab) and <code>@type: TouristTrip</code> — feed them directly to any JSON-LD parser</li>
+      <li><strong>Exports carry JSON-LD</strong>: files exported from the Editor include <code>@context</code> (schema.org + <a href="/ns/v3/"><code>tp:</code> vocab</a>) and <code>@type: ["TouristTrip", "tp:TrailStory"]</code> — feed them directly to any JSON-LD parser</li>
+      <li><strong>Authoritative fields</strong>: <code>spots</code> / <code>routes</code> hold the real data; <code>itinerary</code> is an <code>ItemList</code> mirror (each <code>itemListElement[i].item</code> is a <code>Place + tp:Spot</code>) for AI agents. <strong>If they disagree, <code>spots</code> wins.</strong> The Editor strips <code>@context</code>/<code>@type</code>/<code>itinerary</code> on import and trusts only the native fields.</li>
     </ul>
 
     <h2>Caveats</h2>

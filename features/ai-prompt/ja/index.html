@@ -153,7 +153,8 @@ JSON のみ返し、説明は加えないでください。</code></pre>
       <li><strong>Well-known discovery</strong>：<a href="/.well-known/trailpaint"><code>/.well-known/trailpaint</code></a></li>
       <li><strong>WebMCP</strong>：ホームページ inline で <code>navigator.modelContext.provideContext()</code> が <code>open-trailpaint-editor</code> と <code>create-share-link</code> を公開</li>
       <li><strong>サンプルファイル</strong>：<a href="/stories/paul/first-journey.trailpaint.json"><code>/stories/paul/first-journey.trailpaint.json</code></a>、<a href="/stories/xuanzang/west.trailpaint.json"><code>/stories/xuanzang/west.trailpaint.json</code></a>、<a href="/stories/taiwan-missionaries/barclay.trailpaint.json"><code>/stories/taiwan-missionaries/barclay.trailpaint.json</code></a></li>
-      <li><strong>エクスポートは JSON-LD を含む</strong>：エディターからエクスポートした <code>.trailpaint.json</code> は <code>@context</code>（schema.org + tp: vocab）と <code>@type: TouristTrip</code> を持ち、JSON-LD パーサーに直接渡せます</li>
+      <li><strong>エクスポートは JSON-LD を含む</strong>：エディターからエクスポートした <code>.trailpaint.json</code> は <code>@context</code>（schema.org + <a href="/ns/v3/"><code>tp:</code> vocab</a>）と <code>@type: ["TouristTrip", "tp:TrailStory"]</code> を持ち、JSON-LD パーサーに直接渡せます</li>
+      <li><strong>Authoritative フィールド</strong>：<code>spots</code> / <code>routes</code> が真のデータ；<code>itinerary</code> は AI エージェント向けの <code>ItemList</code> ミラー（各 <code>itemListElement[i].item</code> は <code>Place + tp:Spot</code>）。<strong>食い違う場合は <code>spots</code> を優先</strong>。インポート時に <code>@context</code>/<code>@type</code>/<code>itinerary</code> は strip され、native フィールドのみ信頼されます。</li>
     </ul>
 
     <h2>注意事項</h2>
