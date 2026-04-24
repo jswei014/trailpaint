@@ -66,16 +66,18 @@
       ]
     },
     "itinerary": {
-      "description": "Optional schema.org-style mirror of `spots` as an ItemList of Places, produced by the exporter for AI consumption. Ignored on import; the authoritative spot data lives in `spots`.",
-      "type": "array"
+      "description": "Optional schema.org-style mirror of `spots`. Accepts either a bare Place[] array (simpler JSON-LD) or an ItemList object with `itemListElement[]` (preferred, produced by TrailPaint exporter). Ignored on import; the authoritative spot data lives in `spots`.",
+      "oneOf": [
+        { "type": "array" },
+        { "type": "object" }
+      ]
     }
   },
   "$defs": {
     "LatLng": {
-      "description": "[latitude, longitude] tuple. Latitude -90..90, longitude -180..180.",
+      "description": "[latitude, longitude] tuple. Latitude -90..90, longitude -180..180. Enforced length=2 via `prefixItems` + `items:false` (2020-12) plus `minItems:2`; no legacy `maxItems` since `items:false` already caps upper bound.",
       "type": "array",
       "minItems": 2,
-      "maxItems": 2,
       "prefixItems": [
         { "type": "number", "minimum": -90, "maximum": 90 },
         { "type": "number", "minimum": -180, "maximum": 180 }

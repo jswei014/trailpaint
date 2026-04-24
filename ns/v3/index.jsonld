@@ -7,7 +7,7 @@
   },
   "@graph": [
     {
-      "@id": "tp:",
+      "@id": "https://trailpaint.org/ns/v3/",
       "@type": "rdf:Vocabulary",
       "rdfs:label": "TrailPaint Namespace v3",
       "rdfs:comment": "Minimal RDF vocabulary for TrailPaint map-story terms not covered by schema.org. Used in @context of exported .trailpaint.json files so AI agents and JSON-LD parsers can resolve tp:Spot, tp:Route, tp:PhotoMeta, tp:TrailStory, tp:photoQuery, tp:iconId and tp:scriptureRefs to structured definitions.",
