@@ -11,16 +11,20 @@ import type { Project, Spot } from '../models/types';
  * Any conflict between `itinerary[i].item` and `spots[i]` is resolved in favor
  * of `spots[i]` — the mirror is for discovery, not trust.
  */
+/** `@vocab` lets AI agents read `@type: TouristTrip`, `itinerary`, `ItemList`,
+ *  etc. natively as schema.org semantics. `tp:` is kept as a prefix so
+ *  `@type: ["TouristTrip", "tp:TrailStory"]` resolves to a real IRI
+ *  (https://trailpaint.org/ns/v3/TrailStory) where the RDF vocab lives.
+ *
+ *  We intentionally do NOT alias native fields (`spots`/`routes`/`photoMeta`/
+ *  `iconId`/`scripture_refs`/`photo_query`) to `tp:` classes — those classes
+ *  describe *what a spot is*, not *the relation from project to spot*.
+ *  Aliasing them as property IRIs would produce invalid RDF triples
+ *  (Class-as-Predicate). The semantic view for AI lives in `itinerary`
+ *  (schema.org ItemList); native fields are opaque storage passthrough. */
 export const JSON_LD_CONTEXT = {
   '@vocab': 'https://schema.org/',
   tp: 'https://trailpaint.org/ns/v3/',
-  spots: 'tp:Spot',
-  routes: 'tp:Route',
-  overlay: 'tp:OverlaySetting',
-  photoMeta: 'tp:PhotoMeta',
-  photo_query: 'tp:photoQuery',
-  scripture_refs: 'tp:scriptureRefs',
-  iconId: 'tp:iconId',
 } as const;
 
 export const JSON_LD_TYPE = ['TouristTrip', 'tp:TrailStory'] as const;
