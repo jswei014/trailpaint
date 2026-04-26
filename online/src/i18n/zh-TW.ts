@@ -292,6 +292,13 @@ export default {
   'player.music.url': '音樂網址',
   'player.music.urlHint': '貼上 MP3/M4A 直連網址，例如 incompetech.com 的免費配樂',
   'player.music.autoplay': '自動播放音樂',
+  'player.music.nowPlaying': '目前播放',
+  'player.music.track.redeemed': 'Redeemed',
+  'player.music.track.morningMood': 'Morning Mood',
+  'player.music.track.vollerHoffnung': 'Voller Hoffnung',
+  'player.music.track.sorrowAndLove': 'Sorrow and Love',
+  'player.music.track.theServantKing': 'The Servant King',
+  'player.music.track.custom': '自訂',
   'player.embed.copy': '複製 Player 嵌入碼',
 
   // Icons

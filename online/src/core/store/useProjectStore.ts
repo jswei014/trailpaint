@@ -89,12 +89,13 @@ function renumber(spots: Spot[]): Spot[] {
 }
 
 function createEmptyProject(): Project {
+  // No default music URL: Player picks randomly from MUSIC_POOL on mount when
+  // project.music is unset. Pinning a single track here would bypass the pool.
   return {
     version: 2,
     name: 'Untitled',
     center: DEFAULT_CENTER,
     zoom: DEFAULT_ZOOM,
-    music: { url: 'https://trailpaint.org/stories/music/redeemed.mp3', autoplay: false },
     spots: [],
     routes: [],
   };

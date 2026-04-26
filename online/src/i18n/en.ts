@@ -292,6 +292,13 @@ export default {
   'player.music.url': 'Music URL',
   'player.music.urlHint': 'Paste a direct MP3/M4A link, e.g. free tracks from incompetech.com',
   'player.music.autoplay': 'Autoplay music',
+  'player.music.nowPlaying': 'Now playing',
+  'player.music.track.redeemed': 'Redeemed',
+  'player.music.track.morningMood': 'Morning Mood',
+  'player.music.track.vollerHoffnung': 'Voller Hoffnung',
+  'player.music.track.sorrowAndLove': 'Sorrow and Love',
+  'player.music.track.theServantKing': 'The Servant King',
+  'player.music.track.custom': 'Custom',
   'player.embed.copy': 'Copy Player embed code',
 
   // Icons

@@ -292,6 +292,13 @@ export default {
   'player.music.url': 'BGM URL',
   'player.music.urlHint': 'MP3/M4Aの直リンクを貼り付け（例：incompetech.comの無料BGM）',
   'player.music.autoplay': 'BGM自動再生',
+  'player.music.nowPlaying': '再生中',
+  'player.music.track.redeemed': 'Redeemed',
+  'player.music.track.morningMood': 'Morning Mood',
+  'player.music.track.vollerHoffnung': 'Voller Hoffnung',
+  'player.music.track.sorrowAndLove': 'Sorrow and Love',
+  'player.music.track.theServantKing': 'The Servant King',
+  'player.music.track.custom': 'カスタム',
   'player.embed.copy': 'Player埋め込みコードをコピー',
 
   // Icons
