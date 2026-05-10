@@ -115,13 +115,29 @@
   transform: rotate(-0.3deg);
 }
 
-/* ── Mobile: smaller card ── */
+/* ── Mobile: 極簡 (Editor only) — 縮到接近 pin 大小，方便調位置 ── */
 @media (max-width: 768px) {
-  .spot-card { width: 100px; }
-  .spot-card__title-tag { padding: 5px 8px; }
-  .spot-card__title { font-size: 12px; }
-  .spot-card__desc { padding: 4px 7px; font-size: 10px; }
-  .spot-card__photo { max-height: 75px; }
+  .spot-card { width: 48px; }
+  .spot-card__title-tag {
+    padding: 2px 4px;
+    border-radius: 3px 5px 4px 6px;
+  }
+  .spot-card__title { font-size: 9px; }
+  .spot-card__hole { width: 5px; height: 5px; top: -3px; }
+  .spot-card__photo-wrap {
+    padding: 2px;
+    border-radius: 0 0 4px 6px;
+  }
+  .spot-card__photo { max-height: 36px; }
+  .spot-card__desc { display: none; }
+  .spot-card__badge {
+    width: 18px;
+    height: 18px;
+    font-size: 9px;
+    top: -6px;
+    right: -6px;
+    border-width: 1.5px;
+  }
 }
 
 /* Number badge (top-right of title tag) */
