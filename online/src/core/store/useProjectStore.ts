@@ -212,6 +212,8 @@ export const useProjectStore = create<ProjectState>()(
 
     set({
       project: { ...s.project, routes: [...s.project.routes, route] },
+      currentDrawing: [],
+      mode: 'select' as Mode,
       selectedRouteId: routeId,
       selectedSpotId: null,
     });
