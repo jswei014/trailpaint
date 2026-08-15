@@ -1,0 +1,14 @@
+{
+  "name": "trailpaint-root",
+  "private": true,
+  "workspaces": [
+    "online"
+  ],
+  "scripts": {
+    "dev": "npm --prefix online run dev",
+    "build": "npm --prefix online run build",
+    "lint": "npm --prefix online run lint",
+    "preview": "npm --prefix online run preview",
+    "test": "npm --prefix online run test"
+  }
+}
