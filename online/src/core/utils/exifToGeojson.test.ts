@@ -390,4 +390,36 @@ describe('exifToGeojson', () => {
     expect(feature.properties.title).toBe('04-18');
     expect(feature.properties.desc).toBe('2026-04-18 09:05');
   });
+
+  describe('chronological ordering', () => {
+    it('sorts features by capture time even when the picker hands files newest-first', async () => {
+      const fLate = new File(['a'], 'late.jpg', { type: 'image/jpeg' });
+      const fEarly = new File(['b'], 'early.jpg', { type: 'image/jpeg' });
+      const fMid = new File(['c'], 'mid.jpg', { type: 'image/jpeg' });
+
+      mockParseExif
+        .mockResolvedValueOnce({ file: fLate, latlng: [25.3, 121.3], takenAt: new Date(2026, 3, 18, 18, 0) })
+        .mockResolvedValueOnce({ file: fEarly, latlng: [25.1, 121.1], takenAt: new Date(2026, 3, 18, 8, 0) })
+        .mockResolvedValueOnce({ file: fMid, latlng: [25.2, 121.2], takenAt: new Date(2026, 3, 18, 12, 0) });
+
+      const result = await exifToGeojson([fLate, fEarly, fMid], [25.05, 121.56]);
+      const refs = result.featureCollection.features.map((f) => f.properties.photoRef);
+      expect(refs).toEqual(['early.jpg::1', 'mid.jpg::2', 'late.jpg::0']);
+    });
+
+    it('keeps timestamp-less photos after dated ones, preserving their relative order', async () => {
+      const fNo1 = new File(['a'], 'scan1.png', { type: 'image/png' });
+      const fDated = new File(['b'], 'dated.jpg', { type: 'image/jpeg' });
+      const fNo2 = new File(['c'], 'scan2.png', { type: 'image/png' });
+
+      mockParseExif
+        .mockResolvedValueOnce({ file: fNo1, latlng: [25.1, 121.1], takenAt: null })
+        .mockResolvedValueOnce({ file: fDated, latlng: [25.2, 121.2], takenAt: new Date(2026, 3, 18, 9, 0) })
+        .mockResolvedValueOnce({ file: fNo2, latlng: [25.3, 121.3], takenAt: null });
+
+      const result = await exifToGeojson([fNo1, fDated, fNo2], [25.05, 121.56]);
+      const refs = result.featureCollection.features.map((f) => f.properties.photoRef);
+      expect(refs).toEqual(['dated.jpg::1', 'scan1.png::0', 'scan2.png::2']);
+    });
+  });
 });

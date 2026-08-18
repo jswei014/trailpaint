@@ -114,6 +114,17 @@ export async function exifToGeojson(
     else stats.withoutGps++;
   }
 
+  // Chronological story order: spot numbers (and any connect-spots route)
+  // follow entry order, so sort by capture time instead of trusting the file
+  // picker's ordering (iOS often hands photos newest-first). Entries without
+  // a timestamp keep their relative order after the dated ones (stable sort).
+  entries.sort((a, b) => {
+    if (a.takenAt && b.takenAt) return a.takenAt.getTime() - b.takenAt.getTime();
+    if (a.takenAt) return -1;
+    if (b.takenAt) return 1;
+    return 0;
+  });
+
   // Pass 2 — resolve coordinates for no-GPS entries
   const gpsEntries = entries.filter((e) => e.latlng !== null) as (Entry & {
     latlng: [number, number];
