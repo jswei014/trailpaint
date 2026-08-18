@@ -954,3 +954,10 @@
     z-index: 899;
   }
 }
+
+/* 017 D5: <=600px the bottom bar's list button replaces the corner toggle */
+@media (max-width: 600px) {
+  .sidebar-toggle {
+    display: none;
+  }
+}

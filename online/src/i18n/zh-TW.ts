@@ -133,6 +133,8 @@ export default {
   'import.importGpx': '匯入 GPX',
   'import.importGpxDesc': '匯入 GPS 軌跡檔',
   'import.moreFormats': '更多格式（KML / GPX / 底圖 / 專案檔）',
+  'chip.addHere': '在此加景點',
+  'bar.list': '清單',
   'dock.list': '清單',
   'dock.collapseList': '收合清單欄',
   'dock.expandList': '展開清單欄',

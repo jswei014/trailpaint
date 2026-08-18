@@ -7,6 +7,7 @@ import RouteEditor from './RouteEditor';
 import ModeToolbar from './ModeToolbar';
 import SearchBox from './SearchBox';
 import SettingsPanel from './SettingsPanel';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { t } from '../../i18n';
 
 interface SidebarProps {
@@ -37,6 +38,7 @@ export default function Sidebar({
   const mapCenter = useProjectStore((s) => s.project.center);
   const setProjectName = useProjectStore((s) => s.setProjectName);
   const [showSettings, setShowSettings] = useState(false);
+  const isMobile = useIsMobile();
 
   const isImageMode = baseMode === 'image';
   const selectedSpot = spots.find((s) => s.id === selectedSpotId) ?? null;
@@ -114,7 +116,9 @@ export default function Sidebar({
           />
         )}
 
-        <ModeToolbar />
+        {/* 017 D5: ≤600px phones are mode-less (tap-to-chip + bottom bar);
+            601-768 tablets keep the classic mode toolbar in the drawer. */}
+        {!isMobile && <ModeToolbar />}
 
         {/* Content */}
         {selectedSpot ? (

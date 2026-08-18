@@ -10,6 +10,7 @@ import LocateButton from './LocateButton';
 import FitAllButton from './FitAllButton';
 import MapToast from './MapToast';
 import Watermark from './Watermark';
+import AddChip from './AddChip';
 import { setMapInstance } from './useMapRef';
 import 'leaflet/dist/leaflet.css';
 import './MapView.css';
@@ -112,6 +113,7 @@ export default function MapView() {
       <RouteLayer />
       <DrawingPreview />
       <SpotMarkers />
+      <AddChip />
       <Watermark />
       <MapToast />
     </MapContainer>

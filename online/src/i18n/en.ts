@@ -133,6 +133,8 @@ export default {
   'import.importGpx': 'Import GPX',
   'import.importGpxDesc': 'Import GPS track file',
   'import.moreFormats': 'More formats (KML / GPX / basemap / project file)',
+  'chip.addHere': 'Add spot here',
+  'bar.list': 'List',
   'dock.list': 'List',
   'dock.collapseList': 'Collapse list column',
   'dock.expandList': 'Expand list column',

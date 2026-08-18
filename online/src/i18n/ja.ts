@@ -133,6 +133,8 @@ export default {
   'import.importGpx': 'GPX をインポート',
   'import.importGpxDesc': 'GPS トラックファイルをインポート',
   'import.moreFormats': 'その他の形式（KML / GPX / ベースマップ / プロジェクト）',
+  'chip.addHere': 'ここにスポット追加',
+  'bar.list': 'リスト',
   'dock.list': 'リスト',
   'dock.collapseList': 'リスト欄を折りたたむ',
   'dock.expandList': 'リスト欄を展開',

@@ -1,0 +1,56 @@
+/* ── 017 D5: mobile bottom action bar (≤600px) ── */
+
+.mobile-bar {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  background: #fdf8ef;
+  border: 1px solid #e0d3b2;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  padding: 8px;
+}
+
+.mobile-bar__btn {
+  font-family: Georgia, serif;
+  font-size: 13px;
+  padding: 9px 13px;
+  border: 1px solid #e0d3b2;
+  background: #fffdf6;
+  color: #6b5b3e;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mobile-bar__btn--primary {
+  background: #b45309;
+  border-color: #b45309;
+  color: #fffdf6;
+  font-weight: bold;
+}
+
+.mobile-bar__btn--active {
+  background: #fde68a;
+  border-color: #d4a574;
+  color: #4a3d28;
+}
+
+/* Tap-to-add chip (rendered by AddChip via Leaflet divIcon) */
+.add-chip__pill {
+  display: inline-block;
+  transform: translate(-50%, -130%);
+  background: #b45309;
+  color: #fffdf6;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  padding: 8px 13px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+

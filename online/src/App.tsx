@@ -9,7 +9,9 @@ import DrawActions from './core/components/DrawActions';
 import TopBar from './core/components/desktop/TopBar';
 import ToolDock from './core/components/desktop/ToolDock';
 import PropertiesPanel from './core/components/desktop/PropertiesPanel';
+import MobileActionBar from './core/components/MobileActionBar';
 import { useIsDesktop } from './core/hooks/useIsDesktop';
+import { useIsMobile } from './core/hooks/useIsMobile';
 import './core/components/desktop/DesktopLayout.css';
 import ExportWizard from './core/components/ExportWizard';
 import ImportWizard from './core/components/ImportWizard';
@@ -63,6 +65,7 @@ export default function App() {
   const baseMode = useProjectStore((s) => s.baseMode);
   const sidebarOpen = useProjectStore((s) => s.sidebarOpen);
   const isDesktop = useIsDesktop();
+  const isMobile = useIsMobile();
   const listColumnOpen = useProjectStore((s) => s.listColumnOpen);
   const mode = useProjectStore((s) => s.mode);
   const [dragOver, setDragOver] = useState(false);
@@ -259,12 +262,15 @@ export default function App() {
             onManualStart={() => setStartCardsDismissed(true)}
           />
         )}
-        {isDesktop && mode === 'drawRoute' && (
+        {(isDesktop || isMobile) && mode === 'drawRoute' && (
           <div className="draw-banner">
             <DrawActions />
           </div>
         )}
-        {!isDesktop && !sidebarOpen && (
+        {isMobile && !sidebarOpen && (
+          <MobileActionBar onImport={handleOpenImportWizard} />
+        )}
+        {!isDesktop && !isMobile && !sidebarOpen && (
           <div className="floating-mode-toolbar">
             <ModeToolbar />
             <FloatingActions
