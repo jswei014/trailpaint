@@ -10,6 +10,7 @@ import LocateButton from './LocateButton';
 import FitAllButton from './FitAllButton';
 import MapToast from './MapToast';
 import Watermark from './Watermark';
+import AddChip from './AddChip';
 import { setMapInstance } from './useMapRef';
 import 'leaflet/dist/leaflet.css';
 import './MapView.css';
@@ -68,6 +69,16 @@ function MapSync() {
     }
   }, [pendingFlyTo, map, clearPendingFlyTo]);
 
+  // 017 D4: the desktop grid resizes the map container when the list column
+  // or properties panel opens/closes — no window resize fires, so Leaflet
+  // needs an explicit invalidateSize to fill the new width.
+  useEffect(() => {
+    const container = map.getContainer();
+    const ro = new ResizeObserver(() => map.invalidateSize());
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, [map]);
+
   return null;
 }
 
@@ -102,6 +113,7 @@ export default function MapView() {
       <RouteLayer />
       <DrawingPreview />
       <SpotMarkers />
+      <AddChip />
       <Watermark />
       <MapToast />
     </MapContainer>

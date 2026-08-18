@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { useProjectStore } from '../store/useProjectStore';
 import { openStoryMode } from '../utils/storyMode';
-import SpotList from './SpotList';
+import ListColumn from './ListColumn';
 import SpotEditor from './SpotEditor';
 import RouteEditor from './RouteEditor';
 import ModeToolbar from './ModeToolbar';
 import SearchBox from './SearchBox';
 import SettingsPanel from './SettingsPanel';
-import { polylineDistance, formatDistance } from '../utils/geo';
-import { getRouteColor } from '../models/routes';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { t } from '../../i18n';
 
 interface SidebarProps {
@@ -32,7 +31,6 @@ export default function Sidebar({
   const setSelectedRoute = useProjectStore((s) => s.setSelectedRoute);
   const updateSpot = useProjectStore((s) => s.updateSpot);
   const removeSpot = useProjectStore((s) => s.removeSpot);
-  const swapSpots = useProjectStore((s) => s.swapSpots);
   const baseMode = useProjectStore((s) => s.baseMode);
   const clearBackgroundImage = useProjectStore((s) => s.clearBackgroundImage);
 
@@ -40,16 +38,11 @@ export default function Sidebar({
   const mapCenter = useProjectStore((s) => s.project.center);
   const setProjectName = useProjectStore((s) => s.setProjectName);
   const [showSettings, setShowSettings] = useState(false);
+  const isMobile = useIsMobile();
 
   const isImageMode = baseMode === 'image';
   const selectedSpot = spots.find((s) => s.id === selectedSpotId) ?? null;
   const selectedRoute = routes.find((r) => r.id === selectedRouteId) ?? null;
-
-  const handleSelect = (id: string) => {
-    setSelectedSpot(id);
-    const spot = spots.find((s) => s.id === id);
-    if (spot) onFlyTo(spot.latlng);
-  };
 
   const handleSearchSelect = (latlng: [number, number]) => {
     onFlyTo(latlng, 14);
@@ -123,7 +116,9 @@ export default function Sidebar({
           />
         )}
 
-        <ModeToolbar />
+        {/* 017 D5: ≤600px phones are mode-less (tap-to-chip + bottom bar);
+            601-768 tablets keep the classic mode toolbar in the drawer. */}
+        {!isMobile && <ModeToolbar />}
 
         {/* Content */}
         {selectedSpot ? (
@@ -139,44 +134,7 @@ export default function Sidebar({
             onClose={() => setSelectedRoute(null)}
           />
         ) : (
-          <>
-            <SpotList
-              spots={spots}
-              selectedSpotId={selectedSpotId}
-              onSelect={handleSelect}
-              onSwap={swapSpots}
-            />
-            {routes.length > 0 && (
-              <div className="route-summary">
-                <div className="route-summary__title">{t('route.listTitle')}</div>
-                {routes.map((r) => {
-                  const color = getRouteColor(r.color);
-                  // Calculate route bounds center for flyTo
-                  const lats = r.pts.map((p) => p[0]);
-                  const lngs = r.pts.map((p) => p[1]);
-                  const center: [number, number] = [
-                    (Math.min(...lats) + Math.max(...lats)) / 2,
-                    (Math.min(...lngs) + Math.max(...lngs)) / 2,
-                  ];
-                  return (
-                    <div
-                      key={r.id}
-                      className="route-summary__item"
-                      onClick={() => { setSelectedRoute(r.id); onFlyTo(center, 13); }}
-                    >
-                      <span className="route-summary__color" style={{ background: color.stroke }} />
-                      <div className="route-summary__info">
-                        {r.name && <span className="route-summary__name">{r.name}</span>}
-                        {!isImageMode && (
-                          <span className="route-summary__dist">{formatDistance(polylineDistance(r.pts))}</span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </>
+          <ListColumn onFlyTo={onFlyTo} showSearch={false} />
         )}
       </div>
     </>

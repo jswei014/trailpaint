@@ -39,11 +39,3 @@ export async function loadExampleRoute(name: string): Promise<string | null> {
     return null;
   }
 }
-
-/**
- * @deprecated Use EXAMPLE_ROUTES + loadExampleRoute instead.
- * Kept for OnboardingOverlay backward compat — loads the first example.
- */
-export async function getSampleProjectJSON(): Promise<string | null> {
-  return loadExampleRoute(EXAMPLE_ROUTES[0].name);
-}

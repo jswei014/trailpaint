@@ -516,3 +516,46 @@
   color: #78350f;
   text-decoration: underline;
 }
+
+/* ── 017 IA: primary cards + collapsed low-frequency formats ── */
+
+.import-wizard__primary {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.import-wizard__card--hero {
+  padding: 18px 16px;
+  border-width: 1.5px;
+}
+
+.import-wizard__card--hero .import-wizard__card-icon {
+  font-size: 30px;
+}
+
+.import-wizard__card--focus,
+.import-wizard__ai--focus {
+  outline: 2px solid #b45309;
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+.import-wizard__more {
+  margin-top: 14px;
+  border-top: 1px solid #e5d5c0;
+  padding-top: 10px;
+}
+
+.import-wizard__more > summary {
+  cursor: pointer;
+  color: #8a6d3b;
+  font-size: 14px;
+  padding: 6px 2px;
+  user-select: none;
+}
+
+.import-wizard__more[open] > summary {
+  margin-bottom: 10px;
+}

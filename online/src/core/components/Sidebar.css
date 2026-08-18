@@ -607,33 +607,6 @@
   line-height: 2;
 }
 
-.spot-list__sample-btn {
-  display: block;
-  margin-top: 12px;
-  width: 100%;
-  font-family: Georgia, serif;
-  font-size: 13px;
-  padding: 10px 12px;
-  border: 1.5px dashed #d4a574;
-  background: #fef9e7;
-  color: #78350f;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.12s, border-color 0.12s;
-  text-align: center;
-}
-
-.spot-list__sample-btn:hover {
-  background: #fde68a;
-  border-color: #b45309;
-}
-
-.spot-list__sample-btn option {
-  font-family: Georgia, serif;
-  font-size: 13px;
-  padding: 6px 8px;
-}
-
 .spot-list__item {
   display: flex;
   align-items: center;
@@ -979,5 +952,12 @@
     inset: 0;
     background: rgba(0,0,0,0.4);
     z-index: 899;
+  }
+}
+
+/* 017 D5: <=600px the bottom bar's list button replaces the corner toggle */
+@media (max-width: 600px) {
+  .sidebar-toggle {
+    display: none;
   }
 }

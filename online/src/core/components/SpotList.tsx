@@ -1,7 +1,6 @@
 import type { Spot } from '../models/types';
 import { getIcon } from '../icons';
 import { useProjectStore } from '../store/useProjectStore';
-import { EXAMPLE_ROUTES, loadExampleRoute } from '../utils/sampleProject';
 import { t } from '../../i18n';
 
 interface SpotListProps {
@@ -12,7 +11,6 @@ interface SpotListProps {
 }
 
 export default function SpotList({ spots, selectedSpotId, onSelect, onSwap }: SpotListProps) {
-  const importJSON = useProjectStore((s) => s.importJSON);
   const reorderSpots = useProjectStore((s) => s.reorderSpots);
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
@@ -39,22 +37,6 @@ export default function SpotList({ spots, selectedSpotId, onSelect, onSwap }: Sp
         {t('spot.empty').split('\n').map((line, i) => (
           <div key={i}>{line}</div>
         ))}
-        <select
-          className="spot-list__sample-btn"
-          value=""
-          onChange={async (e) => {
-            const name = e.target.value;
-            if (!name) return;
-            const json = await loadExampleRoute(name);
-            if (json) importJSON(json);
-            e.target.value = '';
-          }}
-        >
-          <option value="">🌿 {t('spot.loadSample')}</option>
-          {EXAMPLE_ROUTES.map((ex) => (
-            <option key={ex.name} value={ex.name}>{ex.icon} {ex.name}</option>
-          ))}
-        </select>
       </div>
     );
   }

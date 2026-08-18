@@ -20,6 +20,8 @@ const MAX_PROJECT_SIZE = 20 * 1024 * 1024;
 interface ImportWizardProps {
   onClose: () => void;
   onLoadImage: (file: File) => void;
+  /** Deep-link target: open with the photos card or the AI paste panel focused. */
+  section?: 'photos' | 'paste';
 }
 
 const AI_PROMPT_TEMPLATE = `請幫我製作 TrailPaint 路線地圖的 JSON 檔案。
@@ -94,7 +96,7 @@ interface AutoFetchCancelledState {
   total: number;
 }
 
-export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps) {
+export default function ImportWizard({ onClose, onLoadImage, section }: ImportWizardProps) {
   const importJSON = useProjectStore((s) => s.importJSON);
   const importGpx = useProjectStore((s) => s.importGpx);
   const importPOIs = useProjectStore((s) => s.importPOIs);
@@ -102,7 +104,14 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
   const [schemaOpen, setSchemaOpen] = useState(false);
   const [subView, setSubView] = useState<SubView>('main');
   const [preview, setPreview] = useState<PhotoPreviewState | null>(null);
-  const [pasteOpen, setPasteOpen] = useState(false);
+  const [pasteOpen, setPasteOpen] = useState(section === 'paste');
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+
+  // Deep-link: scroll the targeted section into view on open (photos card is
+  // at the top so this mostly matters for 'paste' on small screens).
+  useEffect(() => {
+    if (section) sectionRef.current?.scrollIntoView({ block: 'start' });
+  }, [section]);
   const [pasteText, setPasteText] = useState('');
   const [pasteError, setPasteError] = useState('');
   const [autoFetchChecked, setAutoFetchChecked] = useState(false);
@@ -547,39 +556,26 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
             />
           ) : (
           <>
-          {/* Import cards */}
-          <div className="import-wizard__cards">
-            <button className="import-wizard__card" onClick={handleImportPhotos}>
+          {/* Primary: the two high-frequency imports (photos, AI JSON) */}
+          <div
+            ref={section === 'photos' ? sectionRef : undefined}
+            className="import-wizard__primary"
+          >
+            <button
+              className={`import-wizard__card import-wizard__card--hero${section === 'photos' ? ' import-wizard__card--focus' : ''}`}
+              onClick={handleImportPhotos}
+            >
               <span className="import-wizard__card-icon">📸</span>
               <span className="import-wizard__card-title">{t('import.importPhotos')}</span>
               <span className="import-wizard__card-desc">{t('import.importPhotosDesc')}</span>
             </button>
-            <button className="import-wizard__card" onClick={handleImportKmlGeojson}>
-              <span className="import-wizard__card-icon">🌐</span>
-              <span className="import-wizard__card-title">{t('import.importKmlGeojson')}</span>
-              <span className="import-wizard__card-desc">{t('import.importKmlGeojsonDesc')}</span>
-            </button>
-            <button className="import-wizard__card" onClick={handleUploadBg}>
-              <span className="import-wizard__card-icon">🗺️</span>
-              <span className="import-wizard__card-title">{t('import.uploadBg')}</span>
-              <span className="import-wizard__card-desc">{t('import.uploadBgDesc')}</span>
-            </button>
-            <button className="import-wizard__card" onClick={handleLoadJson}>
-              <span className="import-wizard__card-icon">📂</span>
-              <span className="import-wizard__card-title">{t('import.loadJson')}</span>
-              <span className="import-wizard__card-desc">{t('import.loadJsonDesc')}</span>
-            </button>
-            <button className="import-wizard__card" onClick={handleImportGpx}>
-              <span className="import-wizard__card-icon">📥</span>
-              <span className="import-wizard__card-title">{t('import.importGpx')}</span>
-              <span className="import-wizard__card-desc">{t('import.importGpxDesc')}</span>
-            </button>
           </div>
 
-          <div className="import-wizard__hint">{t('import.dragHint')}</div>
-
           {/* AI teaching section */}
-          <div className="import-wizard__ai">
+          <div
+            ref={section === 'paste' ? sectionRef : undefined}
+            className={`import-wizard__ai${section === 'paste' ? ' import-wizard__ai--focus' : ''}`}
+          >
             <h3>{t('import.ai.title')}</h3>
             <p>{t('import.ai.desc')}</p>
             <div className="import-wizard__ai-actions">
@@ -681,6 +677,34 @@ export default function ImportWizard({ onClose, onLoadImage }: ImportWizardProps
               </div>
             )}
           </div>
+
+          {/* Low-frequency formats, collapsed by default */}
+          <details className="import-wizard__more">
+            <summary>{t('import.moreFormats')}</summary>
+            <div className="import-wizard__cards">
+              <button className="import-wizard__card" onClick={handleImportKmlGeojson}>
+                <span className="import-wizard__card-icon">🌐</span>
+                <span className="import-wizard__card-title">{t('import.importKmlGeojson')}</span>
+                <span className="import-wizard__card-desc">{t('import.importKmlGeojsonDesc')}</span>
+              </button>
+              <button className="import-wizard__card" onClick={handleImportGpx}>
+                <span className="import-wizard__card-icon">📥</span>
+                <span className="import-wizard__card-title">{t('import.importGpx')}</span>
+                <span className="import-wizard__card-desc">{t('import.importGpxDesc')}</span>
+              </button>
+              <button className="import-wizard__card" onClick={handleUploadBg}>
+                <span className="import-wizard__card-icon">🗺️</span>
+                <span className="import-wizard__card-title">{t('import.uploadBg')}</span>
+                <span className="import-wizard__card-desc">{t('import.uploadBgDesc')}</span>
+              </button>
+              <button className="import-wizard__card" onClick={handleLoadJson}>
+                <span className="import-wizard__card-icon">📂</span>
+                <span className="import-wizard__card-title">{t('import.loadJson')}</span>
+                <span className="import-wizard__card-desc">{t('import.loadJsonDesc')}</span>
+              </button>
+            </div>
+            <div className="import-wizard__hint">{t('import.dragHint')}</div>
+          </details>
           </>
           )}
         </div>

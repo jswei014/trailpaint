@@ -1,0 +1,192 @@
+/* ── 017 D4: desktop grid layout (≥769px; drawer breakpoint, not 600) ──
+   Warm-paper palette matches Sidebar.css — layout is new, colors are not. */
+
+.app.app--desktop {
+  display: grid;
+  grid-template-rows: 52px 1fr;
+  grid-template-columns: auto auto 1fr auto;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.app.app--desktop .map-container {
+  grid-row: 2;
+  grid-column: 3;
+  position: relative;
+  min-width: 0;
+}
+
+/* Top bar */
+.topbar {
+  grid-row: 1;
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  background: #fdf8ef;
+  border-bottom: 1px solid #e5d5c0;
+  position: relative;
+  z-index: 1000;
+}
+
+.topbar__logo {
+  font-size: 20px;
+}
+
+.topbar__project-name {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #4a3d28;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 4px 8px;
+  width: 220px;
+}
+
+.topbar__project-name:hover,
+.topbar__project-name:focus {
+  border-color: #e0d3b2;
+  background: #fffdf6;
+  outline: none;
+}
+
+.topbar__spacer {
+  flex: 1;
+}
+
+.topbar__btn {
+  font-family: Georgia, serif;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid #e0d3b2;
+  background: #fffdf6;
+  color: #6b5b3e;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.topbar__btn:hover {
+  border-color: #b45309;
+}
+
+.topbar__btn--primary {
+  background: #b45309;
+  border-color: #b45309;
+  color: #fffdf6;
+  font-weight: bold;
+}
+
+.topbar__btn--primary:hover {
+  background: #92400e;
+}
+
+.topbar__btn--active {
+  background: #f3ead4;
+}
+
+.topbar__settings-dropdown {
+  position: absolute;
+  top: 52px;
+  right: 12px;
+  width: 300px;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: #fdf8ef;
+  border: 1px solid #e5d5c0;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  z-index: 1001;
+}
+
+/* Tool dock */
+.tool-dock {
+  grid-row: 2;
+  grid-column: 1;
+  width: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 0;
+  background: #fdf8ef;
+  border-right: 1px solid #e5d5c0;
+}
+
+.tool-dock__tool {
+  width: 54px;
+  padding: 8px 0 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 9px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: #8a7a5c;
+}
+
+.tool-dock__tool:hover {
+  background: #f3ead4;
+}
+
+.tool-dock__tool--active {
+  background: #fde68a;
+  border-color: #d4a574;
+  color: #4a3d28;
+}
+
+.tool-dock__icon {
+  font-size: 18px;
+}
+
+.tool-dock__label {
+  font-size: 10px;
+  font-family: Georgia, serif;
+}
+
+.tool-dock__spacer {
+  flex: 1;
+}
+
+/* List column */
+.list-column {
+  grid-row: 2;
+  grid-column: 2;
+  width: 262px;
+  overflow-y: auto;
+  background: #fdf8ef;
+  border-right: 1px solid #e5d5c0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Properties panel */
+.props-panel {
+  grid-row: 2;
+  grid-column: 4;
+  width: 300px;
+  overflow-y: auto;
+  background: #fdf8ef;
+  border-left: 1px solid #e5d5c0;
+  padding: 10px;
+}
+
+/* Draw-route banner floating over the canvas */
+.draw-banner {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  background: #fdf8ef;
+  border: 1px solid #e0d3b2;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  padding: 8px 12px;
+}
