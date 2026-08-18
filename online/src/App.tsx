@@ -3,7 +3,7 @@ import MapView from './map/MapView';
 import ImageMapView from './map/ImageMapView';
 import Sidebar from './core/components/Sidebar';
 import ModeToolbar from './core/components/ModeToolbar';
-import OnboardingOverlay from './core/components/OnboardingOverlay';
+import StartCards from './core/components/StartCards';
 import ExportWizard from './core/components/ExportWizard';
 import ImportWizard from './core/components/ImportWizard';
 import FloatingActions from './core/components/FloatingActions';
@@ -13,6 +13,8 @@ import { captureMap, saveProject, exportGeojson, exportKml } from './map/ExportB
 import type { CapturedMap } from './core/utils/exportRenderer';
 import { decodeShareLink } from './core/utils/shareLink';
 import { openStoryMode } from './core/utils/storyMode';
+import { hasPendingEditorRestore, shouldShowStartCards, EDITOR_RESTORE_KEY } from './core/utils/startCards';
+import { resolveImportAction, stripActionFromSearch } from './core/utils/importAction';
 import { flyTo, panBy, zoomBy } from './map/useMapRef';
 import { useUndoRedoKeys } from './core/hooks/useUndoRedo';
 import { useProjectStore } from './core/store/useProjectStore';
@@ -56,7 +58,20 @@ export default function App() {
   const [dragOver, setDragOver] = useState(false);
   const [exportWizardOpen, setExportWizardOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState<CapturedMap | null>(null);
-  const [importWizardOpen, setImportWizardOpen] = useState(false);
+  const [importWizard, setImportWizard] = useState<{ open: boolean; section?: 'photos' | 'paste' }>({ open: false });
+  const spotCount = useProjectStore((s) => s.project.spots.length);
+  const routeCount = useProjectStore((s) => s.project.routes.length);
+  const [startCardsDismissed, setStartCardsDismissed] = useState(false);
+  // R5 no-flash guard: peek the story-mode restore snapshot synchronously so
+  // the first paint doesn't show StartCards for one frame before the restore
+  // effect (below) puts the project back.
+  const [restorePending, setRestorePending] = useState(() => {
+    try {
+      return hasPendingEditorRestore(localStorage.getItem(EDITOR_RESTORE_KEY), Date.now());
+    } catch {
+      return false;
+    }
+  });
 
   // Handle share link on load.
   // Two paths:
@@ -99,20 +114,38 @@ export default function App() {
   // Share link (sessionStorage 'tp_share_hash' or #share=...) takes precedence
   // — it's an explicit intent overriding any editor auto-restore.
   useEffect(() => {
-    if (window.location.hash.startsWith('#share=')) return;
-    if (new URLSearchParams(window.location.search).get('share') === 'ss') return;
     try {
-      const raw = localStorage.getItem('trailpaint-editor-restore');
+      if (window.location.hash.startsWith('#share=')) return;
+      if (new URLSearchParams(window.location.search).get('share') === 'ss') return;
+      const raw = localStorage.getItem(EDITOR_RESTORE_KEY);
       if (!raw) return;
       const { project, savedAt } = JSON.parse(raw);
       // Expire after 1 hour to avoid stale restores across days
       if (project && typeof savedAt === 'number' && Date.now() - savedAt < 60 * 60 * 1000) {
         useProjectStore.getState().importJSON(JSON.stringify(project));
       }
-      localStorage.removeItem('trailpaint-editor-restore');
+      localStorage.removeItem(EDITOR_RESTORE_KEY);
     } catch {
-      localStorage.removeItem('trailpaint-editor-restore');
+      localStorage.removeItem(EDITOR_RESTORE_KEY);
+    } finally {
+      // Whatever happened (restored, expired, share short-circuit, parse
+      // error), the pending flag must clear or StartCards could stay
+      // suppressed on an empty project forever.
+      setRestorePending(false);
     }
+  }, []);
+
+  // 017 D3: ?action=import-photos|import-json deep link. Share payloads win;
+  // the action key is stripped from the URL, everything else (lang, …) stays.
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has('action')) return;
+    const section = resolveImportAction(window.location.search, window.location.hash);
+    if (section) setImportWizard({ open: true, section });
+    history.replaceState(
+      null,
+      '',
+      window.location.pathname + stripActionFromSearch(window.location.search) + window.location.hash,
+    );
   }, []);
 
   const handleOpenExportWizard = useCallback(() => {
@@ -152,8 +185,14 @@ export default function App() {
     return img;
   }, []);
 
+  // Kept zero-arg on purpose: Sidebar/FloatingActions pass this straight to
+  // onClick, where a (section?) signature would receive the MouseEvent.
   const handleOpenImportWizard = useCallback(() => {
-    setImportWizardOpen(true);
+    setImportWizard({ open: true });
+  }, []);
+
+  const handleOpenImportSection = useCallback((section: 'photos' | 'paste') => {
+    setImportWizard({ open: true, section });
   }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -188,6 +227,13 @@ export default function App() {
       />
       <div className="map-container">
         {baseMode === 'map' ? <MapView /> : <ImageMapView />}
+        {shouldShowStartCards({ spotCount, routeCount, baseMode, restorePending, dismissed: startCardsDismissed }) && (
+          <StartCards
+            onImportPhotos={() => handleOpenImportSection('photos')}
+            onPasteJson={() => handleOpenImportSection('paste')}
+            onManualStart={() => setStartCardsDismissed(true)}
+          />
+        )}
         {!sidebarOpen && (
           <div className="floating-mode-toolbar">
             <ModeToolbar />
@@ -202,7 +248,6 @@ export default function App() {
           </div>
         )}
       </div>
-      <OnboardingOverlay />
       {exportWizardOpen && (
         <ExportWizard
           baseImage={capturedImage}
@@ -215,9 +260,10 @@ export default function App() {
           onExportKml={exportKml}
         />
       )}
-      {importWizardOpen && (
+      {importWizard.open && (
         <ImportWizard
-          onClose={() => setImportWizardOpen(false)}
+          section={importWizard.section}
+          onClose={() => setImportWizard({ open: false })}
           onLoadImage={loadImageFile}
         />
       )}
