@@ -23,6 +23,8 @@ interface ProjectState {
   selectedSpotId: string | null;
   selectedRouteId: string | null;
   sidebarOpen: boolean;
+  /** 017 D4: desktop list column (search + lists) collapse state. */
+  listColumnOpen: boolean;
   mode: Mode;
   currentDrawing: [number, number][];
   pendingFlyTo: { center: [number, number]; zoom: number } | null;
@@ -61,6 +63,7 @@ interface ProjectState {
   // UI
   setMode: (mode: Mode) => void;
   setSidebarOpen: (open: boolean) => void;
+  setListColumnOpen: (open: boolean) => void;
   setMapView: (center: [number, number], zoom: number) => void;
   setProjectName: (name: string) => void;
   clearPendingFlyTo: () => void;
@@ -109,6 +112,7 @@ export const useProjectStore = create<ProjectState>()(
   selectedSpotId: null,
   selectedRouteId: null,
   sidebarOpen: window.innerWidth > 768,
+  listColumnOpen: true,
   mode: 'select' as Mode,
   currentDrawing: [] as [number, number][],
   pendingFlyTo: null as { center: [number, number]; zoom: number } | null,
@@ -535,6 +539,7 @@ export const useProjectStore = create<ProjectState>()(
   },
 
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
+  setListColumnOpen: (open) => set({ listColumnOpen: open }),
 
   setMapView: (center, zoom) =>
     set((s) => ({ project: { ...s.project, center, zoom } })),

@@ -68,6 +68,16 @@ function MapSync() {
     }
   }, [pendingFlyTo, map, clearPendingFlyTo]);
 
+  // 017 D4: the desktop grid resizes the map container when the list column
+  // or properties panel opens/closes — no window resize fires, so Leaflet
+  // needs an explicit invalidateSize to fill the new width.
+  useEffect(() => {
+    const container = map.getContainer();
+    const ro = new ResizeObserver(() => map.invalidateSize());
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, [map]);
+
   return null;
 }
 

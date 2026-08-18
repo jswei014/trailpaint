@@ -4,6 +4,13 @@ import ImageMapView from './map/ImageMapView';
 import Sidebar from './core/components/Sidebar';
 import ModeToolbar from './core/components/ModeToolbar';
 import StartCards from './core/components/StartCards';
+import ListColumn from './core/components/ListColumn';
+import DrawActions from './core/components/DrawActions';
+import TopBar from './core/components/desktop/TopBar';
+import ToolDock from './core/components/desktop/ToolDock';
+import PropertiesPanel from './core/components/desktop/PropertiesPanel';
+import { useIsDesktop } from './core/hooks/useIsDesktop';
+import './core/components/desktop/DesktopLayout.css';
 import ExportWizard from './core/components/ExportWizard';
 import ImportWizard from './core/components/ImportWizard';
 import FloatingActions from './core/components/FloatingActions';
@@ -55,6 +62,9 @@ export default function App() {
   useEffect(() => { registerWebMCP(); }, []);
   const baseMode = useProjectStore((s) => s.baseMode);
   const sidebarOpen = useProjectStore((s) => s.sidebarOpen);
+  const isDesktop = useIsDesktop();
+  const listColumnOpen = useProjectStore((s) => s.listColumnOpen);
+  const mode = useProjectStore((s) => s.mode);
   const [dragOver, setDragOver] = useState(false);
   const [exportWizardOpen, setExportWizardOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState<CapturedMap | null>(null);
@@ -215,16 +225,31 @@ export default function App() {
 
   return (
     <div
-      className={`app${dragOver ? ' app--drag-over' : ''}`}
+      className={`app${dragOver ? ' app--drag-over' : ''}${isDesktop ? ' app--desktop' : ''}`}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
-      <Sidebar
-        onFlyTo={flyTo}
-        onOpenExportWizard={handleOpenExportWizard}
-        onOpenImportWizard={handleOpenImportWizard}
-      />
+      {isDesktop ? (
+        <>
+          <TopBar
+            onOpenImportWizard={handleOpenImportWizard}
+            onOpenExportWizard={handleOpenExportWizard}
+          />
+          <ToolDock />
+          {listColumnOpen && (
+            <div className="list-column">
+              <ListColumn onFlyTo={flyTo} />
+            </div>
+          )}
+        </>
+      ) : (
+        <Sidebar
+          onFlyTo={flyTo}
+          onOpenExportWizard={handleOpenExportWizard}
+          onOpenImportWizard={handleOpenImportWizard}
+        />
+      )}
       <div className="map-container">
         {baseMode === 'map' ? <MapView /> : <ImageMapView />}
         {shouldShowStartCards({ spotCount, routeCount, baseMode, restorePending, dismissed: startCardsDismissed }) && (
@@ -234,7 +259,12 @@ export default function App() {
             onManualStart={() => setStartCardsDismissed(true)}
           />
         )}
-        {!sidebarOpen && (
+        {isDesktop && mode === 'drawRoute' && (
+          <div className="draw-banner">
+            <DrawActions />
+          </div>
+        )}
+        {!isDesktop && !sidebarOpen && (
           <div className="floating-mode-toolbar">
             <ModeToolbar />
             <FloatingActions
@@ -248,6 +278,7 @@ export default function App() {
           </div>
         )}
       </div>
+      {isDesktop && <PropertiesPanel />}
       {exportWizardOpen && (
         <ExportWizard
           baseImage={capturedImage}
