@@ -220,4 +220,32 @@ describe('forwardGeocode utility tests', () => {
       expect(res[0].lat).toBe(23.47);
     });
   });
+
+  describe('abort propagation', () => {
+    it('rethrows AbortError and stops the fallback chain', async () => {
+      const abortErr = new DOMException('The operation was aborted.', 'AbortError');
+      const mockFetch = vi.fn().mockRejectedValue(abortErr);
+      global.fetch = mockFetch;
+
+      await expect(forwardGeocode('玉山')).rejects.toMatchObject({ name: 'AbortError' });
+      // An aborted request must not cascade to alternate query / Nominatim
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('rethrows AbortError from searchNominatim as well', async () => {
+      const abortErr = new DOMException('The operation was aborted.', 'AbortError');
+      const mockFetch = vi.fn().mockRejectedValue(abortErr);
+      global.fetch = mockFetch;
+
+      await expect(searchNominatim('玉山')).rejects.toMatchObject({ name: 'AbortError' });
+    });
+
+    it('still swallows non-abort errors at engine level', async () => {
+      const mockFetch = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
+      global.fetch = mockFetch;
+
+      expect(await searchPhoton('玉山')).toEqual([]);
+      expect(await searchNominatim('玉山')).toEqual([]);
+    });
+  });
 });

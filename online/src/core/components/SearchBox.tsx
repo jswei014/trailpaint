@@ -76,10 +76,12 @@ export default function SearchBox({ mapCenter, onSelect, onAddSpot }: SearchBoxP
           signal: controller.signal,
         });
         setResults(items);
+        setLoading(false);
       } catch (err) {
+        // An aborted (stale) request must not touch state — a newer
+        // request is in flight and owns the loading/results state.
         if (err instanceof DOMException && err.name === 'AbortError') return;
         setResults([]);
-      } finally {
         setLoading(false);
       }
     },

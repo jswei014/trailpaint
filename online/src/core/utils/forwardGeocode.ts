@@ -149,7 +149,10 @@ export async function searchPhoton(
     return features
       .map(formatPhotonFeature)
       .filter((item): item is SearchResultItem => item !== null);
-  } catch {
+  } catch (err) {
+    // AbortError must propagate so an aborted search stops the whole
+    // fallback chain instead of cascading to the next engine.
+    if (err instanceof DOMException && err.name === 'AbortError') throw err;
     return [];
   }
 }
@@ -218,7 +221,8 @@ export async function searchNominatim(
     return data
       .map((item) => formatNominatimItem(item as NominatimRawItem))
       .filter((item): item is SearchResultItem => item !== null);
-  } catch {
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') throw err;
     return [];
   }
 }
