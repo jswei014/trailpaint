@@ -37,6 +37,7 @@ export default function Sidebar({
   const clearBackgroundImage = useProjectStore((s) => s.clearBackgroundImage);
 
   const projectName = useProjectStore((s) => s.project.name);
+  const mapCenter = useProjectStore((s) => s.project.center);
   const setProjectName = useProjectStore((s) => s.setProjectName);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -114,7 +115,13 @@ export default function Sidebar({
         {showSettings && <SettingsPanel />}
 
         {/* Search — map mode only */}
-        {!isImageMode && <SearchBox onSelect={handleSearchSelect} onAddSpot={(latlng, title) => useProjectStore.getState().addSpot(latlng, title)} />}
+        {!isImageMode && (
+          <SearchBox
+            mapCenter={mapCenter}
+            onSelect={handleSearchSelect}
+            onAddSpot={(latlng, title) => useProjectStore.getState().addSpot(latlng, title)}
+          />
+        )}
 
         <ModeToolbar />
 
