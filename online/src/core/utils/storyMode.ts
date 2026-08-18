@@ -1,4 +1,5 @@
 import type { Project } from '../models/types';
+import { EDITOR_RESTORE_KEY } from './startCards';
 import { t } from '../../i18n';
 
 const CHANNEL_NAME = 'trailpaint-player';
@@ -47,7 +48,7 @@ export function openStoryMode(project: Project): void {
   // wiping the Editor's in-memory Zustand state. Save the project so that when the
   // user hits "← Back" and the Editor reloads, it can restore the work-in-progress.
   try {
-    localStorage.setItem('trailpaint-editor-restore', JSON.stringify({
+    localStorage.setItem(EDITOR_RESTORE_KEY, JSON.stringify({
       project,
       savedAt: Date.now(),
     }));
