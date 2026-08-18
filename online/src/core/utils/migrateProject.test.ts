@@ -522,3 +522,23 @@ describe('migrateProject — spot.num clamp (賈詡 audit E2)', () => {
     expect(p.spots[0].num).toBe(42);
   });
 });
+
+describe('migrateProject — v5.1 takenAt (018)', () => {
+  it('preserves a parseable ISO capture time', () => {
+    const p = migrateProject({
+      ...validBase,
+      spots: [{ id: 's1', latlng: [23.5, 121], title: 'x', takenAt: '2026-04-18T06:30:00.000Z' }],
+    });
+    expect(p.spots[0].takenAt).toBe('2026-04-18T06:30:00.000Z');
+  });
+
+  it('drops unparseable, non-string, or oversized takenAt', () => {
+    for (const bad of ['not a date', 12345, { d: 1 }, '2026-04-18T06:30:00.000Z'.padEnd(60, 'x')]) {
+      const p = migrateProject({
+        ...validBase,
+        spots: [{ id: 's1', latlng: [23.5, 121], title: 'x', takenAt: bad }],
+      });
+      expect(p.spots[0].takenAt, String(bad)).toBeUndefined();
+    }
+  });
+});

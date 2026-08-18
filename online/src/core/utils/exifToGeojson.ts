@@ -28,6 +28,7 @@ type PointFeature = {
     desc: string;
     photoRef: string;
     pendingLocation?: boolean;
+    takenAt?: string; // ISO 8601 (018): flows into spot.takenAt for connect-by-day
   };
 };
 
@@ -157,6 +158,7 @@ export async function exifToGeojson(
         title: e.title,
         desc: e.desc,
         photoRef: e.photoRef,
+        ...(e.takenAt && { takenAt: e.takenAt.toISOString() }),
         ...(pending && { pendingLocation: true }),
       },
     };

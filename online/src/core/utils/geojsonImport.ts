@@ -34,6 +34,7 @@ export interface GeoJsonFeature {
     desc?: string;
     description?: string;
     photoRef?: string;
+    takenAt?: string;
     pendingLocation?: boolean;
     [key: string]: unknown;
   } | null;
@@ -170,6 +171,12 @@ function makeSpot(args: {
   };
   if (props?.pendingLocation === true) {
     spot.pendingLocation = true;
+  }
+  // 018: capture time from photo import; migrateProject re-validates on any
+  // later round-trip. Reject unparseable strings here so the store never
+  // holds garbage dates.
+  if (typeof props?.takenAt === 'string' && !isNaN(Date.parse(props.takenAt))) {
+    spot.takenAt = props.takenAt;
   }
   return spot;
 }

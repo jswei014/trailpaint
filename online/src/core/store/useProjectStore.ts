@@ -6,6 +6,7 @@ import { migrateProject } from '../utils/migrateProject';
 import { exportProjectWithJsonLd } from '../utils/jsonLdExport';
 import type { Route } from '../models/routes';
 import { ROUTE_COLORS } from '../models/routes';
+import { groupSpotsForRoutes } from '../utils/connectSpots';
 import { reverseGeocode } from '../utils/reverseGeocode';
 import { fetchElevations } from '../utils/elevationApi';
 import { t } from '../../i18n';
@@ -200,45 +201,48 @@ export const useProjectStore = create<ProjectState>()(
     const s = get();
     if (s.project.spots.length < 2) return;
 
-    const pts = [...s.project.spots]
-      .sort((a, b) => a.num - b.num)
-      .map((sp) => sp.latlng);
+    // 018: one route per capture day (spots with takenAt), undated spots as a
+    // trailing group; single-group projects behave exactly like before.
+    const pointGroups = groupSpotsForRoutes(s.project.spots);
+    if (pointGroups.length === 0) return;
 
-    const colorId = ROUTE_COLORS[s.project.routes.length % ROUTE_COLORS.length].id;
-    const routeId = crypto.randomUUID();
-    const route: Route = {
-      id: routeId,
+    const baseColorIdx = s.project.routes.length;
+    const newRoutes: Route[] = pointGroups.map((pts, i) => ({
+      id: crypto.randomUUID(),
       name: '',
       pts,
-      color: colorId,
+      color: ROUTE_COLORS[(baseColorIdx + i) % ROUTE_COLORS.length].id,
       elevations: null,
-    };
+    }));
 
     set({
-      project: { ...s.project, routes: [...s.project.routes, route] },
+      project: { ...s.project, routes: [...s.project.routes, ...newRoutes] },
       currentDrawing: [],
       mode: 'select' as Mode,
-      selectedRouteId: routeId,
+      selectedRouteId: newRoutes[0].id,
       selectedSpotId: null,
     });
 
-    // Async side effect outside of set()
-    reverseGeocode(pts[Math.floor(pts.length / 2)]).then((name) => {
-      if (name) {
-        const curr = get();
-        const r = curr.project.routes.find((r) => r.id === routeId);
-        if (r && !r.name) {
-          set((s2) => ({
-            project: {
-              ...s2.project,
-              routes: s2.project.routes.map((r2) =>
-                r2.id === routeId ? { ...r2, name } : r2
-              ),
-            },
-          }));
+    // Async side effect outside of set(): best-effort naming per route.
+    for (const nr of newRoutes) {
+      const mid = nr.pts[Math.floor(nr.pts.length / 2)];
+      reverseGeocode(mid).then((name) => {
+        if (name) {
+          const curr = get();
+          const r = curr.project.routes.find((r2) => r2.id === nr.id);
+          if (r && !r.name) {
+            set((s2) => ({
+              project: {
+                ...s2.project,
+                routes: s2.project.routes.map((r2) =>
+                  r2.id === nr.id ? { ...r2, name } : r2
+                ),
+              },
+            }));
+          }
         }
-      }
-    }).catch(() => { /* naming is best-effort */ });
+      }).catch(() => { /* naming is best-effort */ });
+    }
   },
 
   finishRoute: () => {

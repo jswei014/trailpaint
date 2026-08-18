@@ -45,6 +45,10 @@ export function compactProject(project: Project, includePhoto = false): Record<s
       if (s.era) {
         o.er = [s.era.start, s.era.end];
       }
+      // v5.1+ takenAt (018): keep so connect-by-day works on shared projects.
+      if (s.takenAt) {
+        o.ta = s.takenAt;
+      }
       return o;
     }),
     r: project.routes.map((r) => {
@@ -103,6 +107,10 @@ export function expandProject(c: Record<string, unknown>): Project {
     if (Array.isArray(s.er) && s.er.length === 2
         && typeof s.er[0] === 'number' && typeof s.er[1] === 'number') {
       out.era = { start: s.er[0], end: s.er[1] };
+    }
+    // v5.1+ takenAt (018): expand as-is; migrateProject re-validates parseability.
+    if (typeof s.ta === 'string') {
+      out.takenAt = s.ta;
     }
     return out;
   }) ?? [];

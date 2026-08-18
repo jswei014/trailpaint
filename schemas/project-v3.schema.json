@@ -146,6 +146,11 @@
         "photoMeta": {
           "$ref": "#/$defs/PhotoMeta",
           "description": "v3.1+. CC attribution metadata for the embedded photo, populated by the Commons auto-fetch pipeline."
+        },
+        "takenAt": {
+          "description": "v5.1+. ISO 8601 capture time (from photo EXIF, or supplied for multi-day itineraries). Spots are sorted chronologically on photo import, and 'connect spots as route' groups spots by local calendar day — one route per day. Optional; spots without it keep their relative order and group together.",
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
