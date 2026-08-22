@@ -51,6 +51,8 @@ export default {
   'route.color': '路線顏色',
   'route.editHint': '拖曳節點調整路線 · 雙擊節點刪除',
   'route.listTitle': '路線',
+  'route.show': '顯示路線',
+  'route.hide': '隱藏路線',
   'route.namePlaceholder': '路線名稱（自動偵測）',
   'route.fetchEle': '⛰️ 查詢海拔',
   'route.fetchingEle': '查詢中...',

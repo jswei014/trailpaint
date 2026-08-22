@@ -51,6 +51,8 @@ export default {
   'route.color': 'Route Color',
   'route.editHint': 'Drag nodes to adjust · Double-click to delete',
   'route.listTitle': 'Routes',
+  'route.show': 'Show Route',
+  'route.hide': 'Hide Route',
   'route.namePlaceholder': 'Route name (auto-detected)',
   'route.fetchEle': '⛰️ Fetch Elevation',
   'route.fetchingEle': 'Fetching...',
