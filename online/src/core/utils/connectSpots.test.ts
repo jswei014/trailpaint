@@ -57,13 +57,16 @@ describe('groupSpotsForRoutes', () => {
     ]);
   });
 
-  it('single-spot day cannot form a line and is dropped', () => {
+  it('single-spot day forms a 1-point route', () => {
     const groups = groupSpotsForRoutes([
       spot(1, [25.1, 121.1], D1),
       spot(2, [25.2, 121.2], D1),
       spot(3, [25.3, 121.3], D2),
     ]);
-    expect(groups).toEqual([{ pts: [[25.1, 121.1], [25.2, 121.2]], spotIds: ["s1", "s2"] }]);
+    expect(groups).toEqual([
+      { pts: [[25.1, 121.1], [25.2, 121.2]], spotIds: ["s1", "s2"] },
+      { pts: [[25.3, 121.3]], spotIds: ["s3"] },
+    ]);
   });
 
   it('unparseable takenAt falls into the undated group instead of crashing', () => {

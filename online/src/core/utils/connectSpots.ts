@@ -44,5 +44,5 @@ export function groupSpotsForRoutes(spots: Spot[]): RouteGroup[] {
     return a.localeCompare(b);
   });
 
-  return keys.map((k) => groups.get(k)!).filter((g) => g.pts.length >= 2);
+  return keys.map((k) => groups.get(k)!).filter((g) => g.pts.length >= 1);
 }
