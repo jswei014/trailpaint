@@ -84,7 +84,18 @@ function MapSync() {
 
 function SpotMarkers() {
   const spots = useProjectStore((s) => s.project.spots);
-  return <>{spots.map((spot) => <SpotMarker key={spot.id} spot={spot} />)}</>;
+  const routes = useProjectStore((s) => s.project.routes);
+
+  const hiddenSpotIds = new Set<string>();
+  routes.forEach((r) => {
+    if (r.hidden && r.spotIds) {
+      r.spotIds.forEach((id) => hiddenSpotIds.add(id));
+    }
+  });
+
+  const visibleSpots = spots.filter((s) => !hiddenSpotIds.has(s.id));
+
+  return <>{visibleSpots.map((spot) => <SpotMarker key={spot.id} spot={spot} />)}</>;
 }
 
 export default function MapView() {
