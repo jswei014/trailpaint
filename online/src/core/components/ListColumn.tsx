@@ -81,7 +81,7 @@ export default function ListColumn({ onFlyTo, showSearch = true }: ListColumnPro
                 <span className="route-summary__color" style={{ background: color.stroke }} />
                 <div className="route-summary__info">
                   {r.name && <span className="route-summary__name">{r.name}</span>}
-                  {!isImageMode && (
+                  {!isImageMode && r.pts.length > 1 && (
                     <span className="route-summary__dist">{formatDistance(polylineDistance(r.pts))}</span>
                   )}
                 </div>
