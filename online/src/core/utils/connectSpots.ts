@@ -6,9 +6,9 @@ import type { Spot } from '../models/types';
  * Spots with a capture date (takenAt) group by LOCAL calendar day — a
  * multi-day trip becomes one route per day, matching how people narrate a
  * journey. Undated spots form a single trailing group. Groups keep spot-num
- * order internally; day groups sort ascending. Single-spot groups can't form
- * a line and are dropped. A project that all lands in one group (same day,
- * or no dates at all) degrades to the original single-route behavior.
+ * order internally; day groups sort ascending. Single-spot groups are preserved.
+ * A project that all lands in one group (same day, or no dates at all)
+ * degrades to the original single-route behavior.
  */
 export interface RouteGroup {
   pts: [number, number][];
