@@ -57,6 +57,8 @@ export function compactProject(project: Project, includePhoto = false): Record<s
       };
       if (r.name) o.n = r.name;
       if (r.elevations) o.e = r.elevations;
+      if (r.hidden) o.h = 1;
+      if (r.spotIds && r.spotIds.length > 0) o.s = r.spotIds;
       return o;
     }),
   };
@@ -114,13 +116,18 @@ export function expandProject(c: Record<string, unknown>): Project {
     }
     return out;
   }) ?? [];
-  const routes = (c.r as Record<string, unknown>[])?.map((r) => ({
-    id: r.i as string,
-    name: (r.n as string) ?? '',
-    pts: r.p as [number, number][],
-    color: r.c as string,
-    elevations: (r.e as number[] | null) ?? null,
-  })) ?? [];
+  const routes = (c.r as Record<string, unknown>[])?.map((r) => {
+    const route: Record<string, unknown> = {
+      id: r.i as string,
+      name: (r.n as string) ?? '',
+      pts: r.p as [number, number][],
+      color: r.c as string,
+      elevations: (r.e as number[] | null) ?? null,
+    };
+    if (r.h === 1) route.hidden = true;
+    if (Array.isArray(r.s)) route.spotIds = r.s;
+    return route;
+  }) ?? [];
   const project: Project = {
     // Version cast is cosmetic — migrateProject re-runs against the expanded
     // payload and force-bumps to the latest schema version (currently v5).
@@ -129,7 +136,7 @@ export function expandProject(c: Record<string, unknown>): Project {
     center: c.c as [number, number],
     zoom: c.z as number,
     spots: spots as unknown as Project['spots'],
-    routes,
+    routes: routes as unknown as Project['routes'],
   };
   if (c.ov && typeof c.ov === 'object') {
     const ov = c.ov as Record<string, unknown>;

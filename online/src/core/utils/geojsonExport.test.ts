@@ -312,4 +312,28 @@ describe('projectToGeojson', () => {
     expect(parsed.type).toBe('FeatureCollection');
     expect(parsed.features).toHaveLength(2);
   });
+
+  it('exports 1-point route as Point instead of LineString (pr-6-fixes)', () => {
+    const project = {
+      version: 5,
+      name: '1-point test',
+      center: [23.5, 121],
+      zoom: 8,
+      spots: [],
+      routes: [
+        {
+          id: 'r1',
+          name: 'Route 1',
+          pts: [[25, 121]],
+          color: 'red',
+          elevations: null,
+        },
+      ],
+    };
+    const geojson = projectToGeojson(project as any);
+    const parsed = JSON.parse(geojson);
+    const routeFeature = parsed.features.find((f: any) => f.properties.id === 'r1');
+    expect(routeFeature.geometry.type).toBe('Point');
+    expect(routeFeature.geometry.coordinates).toEqual([121, 25]);
+  });
 });
