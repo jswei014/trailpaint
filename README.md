@@ -4,7 +4,7 @@
 
 > **手繪風路線地圖工具** — 把一趟旅程變成一張會說故事的插畫地圖。零後端、PWA 可裝機、三語自動偵測。
 
-[![Version](https://img.shields.io/badge/version-1.5-orange.svg)](https://github.com/notoriouslab/trailpaint/releases)
+[![Version](https://img.shields.io/badge/version-1.6.5-orange.svg)](https://github.com/notoriouslab/trailpaint/releases)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6.svg)](https://www.typescriptlang.org/)
 [![PWA Ready](https://img.shields.io/badge/PWA-ready-5a0fc8.svg)](https://trailpaint.org/features/install/)
@@ -21,7 +21,7 @@
 TrailPaint 的使用節奏是三步：**先收集，再編輯，最後分享**。
 
 1. **收集** — 手機拍完照直接匯入（EXIF GPS 自動建景點），或把行程描述丟給 ChatGPT / Claude 生成 JSON 貼回來
-2. **編輯** — 桌機上排順序、補文字、畫路線、疊歷史地圖
+2. **編輯** — 桌機上排順序、補文字、畫路線、隱藏雜線、疊歷史地圖
 3. **分享** — 匯出 IG-ready 插畫圖、短網址、或嵌入網頁的自動導覽播放器
 
 | 特色 | 說明 |
@@ -54,7 +54,7 @@ TrailPaint 的使用節奏是三步：**先收集，再編輯，最後分享**�
 
 ### 📷 從照片自動建
 
-拍照（含 EXIF GPS）→ 拖進 TrailPaint → 自動抓座標、按拍攝時間排序、反向地理編碼補地名。支援 iPhone HEIC / Android JPEG；無 GPS 的照片會依時間鄰近插值落點，再拖到準確位置即可。**多日行程按「連結景點」會自動每天生成一條路線。**
+拍照（含 EXIF GPS）→ 拖進 TrailPaint → 自動抓座標、按拍攝時間排序、反向地理編碼補地名。支援 iPhone HEIC / Android JPEG；無 GPS 的照片會依時間鄰近插值落點，再拖到準確位置即可。**多日行程按「連結景點」會自動每天生成一條路線**，不想露出的路線可個別隱藏（Player、圖片與 GeoJSON 匯出同步排除）。
 
 ### 🤖 用 AI 生成
 
@@ -115,7 +115,7 @@ TrailPaint 的使用節奏是三步：**先收集，再編輯，最後分享**�
 | 層級 | 技術 |
 |------|------|
 | **前端** | Vite + React 19 + TypeScript 5（strict）；`core/`（邏輯）· `map/`（Leaflet 層）· `player/`（獨立入口）分層 |
-| **地圖** | Leaflet + react-leaflet + protomaps-leaflet；OSM / CARTO / Protomaps 圖磚 |
+| **地圖** | Leaflet + react-leaflet + protomaps-leaflet；Protomaps 向量（多語標籤）/ OSM / OpenTopoMap / Esri 衛星圖磚 |
 | **狀態** | Zustand + zundo（undo/redo） |
 | **匯入匯出** | exifr + ExifReader（EXIF）、@tmcw/togeojson（KML）、html-to-image + Canvas（輸出） |
 | **地理服務** | Photon（搜尋/反向編碼，主）+ Nominatim（備援）+ Open-Meteo（海拔） |
@@ -149,7 +149,7 @@ Cloudflare Worker 程式碼在 [`cloudflare/`](./cloudflare/)，部署方式見�
 
 ## 免責聲明
 
-TrailPaint 是**路線記錄與分享工具，不是導航軟體**。距離、海拔等數據為自動推算，戶外活動請以現場實際狀況為準；底圖資料來自 OpenStreetMap / CARTO 等第三方服務。
+TrailPaint 是**路線記錄與分享工具，不是導航軟體**。距離、海拔等數據為自動推算，戶外活動請以現場實際狀況為準；底圖資料來自 OpenStreetMap / Protomaps 等第三方服務。
 
 ## 授權
 

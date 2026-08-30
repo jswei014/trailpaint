@@ -4,7 +4,7 @@
 
 > **手描き風ルートマップ作成ツール** — 旅をひとつの物語る地図に。バックエンド不要、PWA インストール対応、三言語自動判定。
 
-[![Version](https://img.shields.io/badge/version-1.5-orange.svg)](https://github.com/notoriouslab/trailpaint/releases)
+[![Version](https://img.shields.io/badge/version-1.6.5-orange.svg)](https://github.com/notoriouslab/trailpaint/releases)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6.svg)](https://www.typescriptlang.org/)
 [![PWA Ready](https://img.shields.io/badge/PWA-ready-5a0fc8.svg)](https://trailpaint.org/features/install/)
@@ -21,7 +21,7 @@
 使い方のリズムは三拍子：**集めて、編集して、シェアする**。
 
 1. **集める** — スマホの写真をそのままインポート（EXIF GPS からスポット自動作成）、または ChatGPT / Claude に行程 JSON を生成してもらい貼り付け
-2. **編集する** — デスクトップで並び替え、説明文、ルート描画、歴史地図の重ね合わせ
+2. **編集する** — デスクトップで並び替え、説明文、ルート描画、不要ルートの非表示、歴史地図の重ね合わせ
 3. **シェアする** — イラスト風 PNG、短縮リンク、埋め込み可能な自動ツアープレイヤーで公開
 
 | 特色 | 内容 |
@@ -54,7 +54,7 @@
 
 ### 📷 写真から自動作成
 
-GPS 付きで撮影 → ドラッグ＆ドロップ → 座標・時系列・逆ジオコーディングの地名まで自動。iPhone HEIC / Android JPEG 対応。GPS のない写真は撮影時刻から近傍補間で配置し、あとからドラッグで微調整。**複数日の旅程は「スポットを連結」で日ごとに 1 本のルートに。**
+GPS 付きで撮影 → ドラッグ＆ドロップ → 座標・時系列・逆ジオコーディングの地名まで自動。iPhone HEIC / Android JPEG 対応。GPS のない写真は撮影時刻から近傍補間で配置し、あとからドラッグで微調整。**複数日の旅程は「スポットを連結」で日ごとに 1 本のルートに**。見せたくないルートは個別に非表示にでき、Player・画像・GeoJSON 書き出しにも反映されます。
 
 ### 🤖 AI で生成
 
@@ -115,7 +115,7 @@ GPS 付きで撮影 → ドラッグ＆ドロップ → 座標・時系列・逆
 | レイヤー | スタック |
 |------|------|
 | **フロントエンド** | Vite + React 19 + TypeScript 5（strict）；`core/`（ロジック）· `map/`（Leaflet 層）· `player/`（独立エントリ）の分層 |
-| **地図** | Leaflet + react-leaflet + protomaps-leaflet；OSM / CARTO / Protomaps タイル |
+| **地図** | Leaflet + react-leaflet + protomaps-leaflet；Protomaps ベクター（多言語ラベル）/ OSM / OpenTopoMap / Esri 衛星タイル |
 | **状態管理** | Zustand + zundo（undo/redo） |
 | **入出力** | exifr + ExifReader（EXIF）、@tmcw/togeojson（KML）、html-to-image + Canvas |
 | **地理サービス** | Photon（検索/逆ジオコーディング、主）+ Nominatim（予備）+ Open-Meteo（標高） |
@@ -149,7 +149,7 @@ Cloudflare Worker のコードは [`cloudflare/`](./cloudflare/)、デプロイ�
 
 ## 免責事項
 
-TrailPaint は**ルート記録・共有ツールであり、ナビゲーションソフトではありません**。距離・標高などは自動推算値です。アウトドア活動は現地の実際の状況を優先してください。ベースマップは OpenStreetMap / CARTO などのサードパーティ提供です。
+TrailPaint は**ルート記録・共有ツールであり、ナビゲーションソフトではありません**。距離・標高などは自動推算値です。アウトドア活動は現地の実際の状況を優先してください。ベースマップは OpenStreetMap / Protomaps などのサードパーティ提供です。
 
 ## ライセンス
 

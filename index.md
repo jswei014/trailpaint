@@ -133,6 +133,20 @@ Embed code is one-click copy from Player ⚙ menu — paste into WordPress / Wix
 
 `Spot.era?: { start: number; end: number }` — calendar years, BC negative, AD positive, range [-3000, 3000]. Drives postcard era stamp + TimeSlider opacity fade. 17 historical segments / 150 spots already tagged: Paul × 3, Galilean ministry × 2, Passion Week × 3, Zhang Qian × 2, Xuanzang × 2, Marco Polo × 2, Wen Tianxiang × 2, Xu Xiake × 1. Modern stories (Taiwan hikes, 19th-century missionaries) stay era-agnostic intentionally — their spots remain visible at any TimeSlider position.
 
+## v1.5–v1.6.5 Editor IA Redesign, Basemap Refresh, Route Hiding (2026-08)
+
+### Editor IA redesign (v1.5)
+
+Cold-start screen with three action cards (Import Photos / Paste AI JSON / Start on the Map). Desktop gets a Photoshop-style tool dock (top action bar, left tools, collapsible list column, right properties panel); mobile is mode-less — tap the map to add a spot. Photos sort chronologically by EXIF capture time; "connect spots" builds one route per capture day.
+
+### Basemap refresh (v1.6)
+
+Default basemap is now Protomaps vector (labels follow UI language: zh-Hant / en / ja, retina-sharp). Lineup: Protomaps Standard / OSM Trails (best mountain-trail detail) / OpenTopoMap / Esri Satellite / Protomaps Dark. Historical-overlay opacity slider now renders inline right under the selected overlay.
+
+### Route hiding (v1.6.5, community contribution)
+
+Routes can be hidden individually from the route list; spots bound to a hidden route hide with it. WYSIWYG: hidden state carries through Player playback, PNG export stats, and GeoJSON export. Single-photo days form a route too (exported as GeoJSON Point per RFC 7946). Hidden state round-trips through share links.
+
 ## Who It's For
 
 - Hikers / trekking: route planning, GPX import, elevation profile
@@ -146,7 +160,7 @@ Embed code is one-click copy from Player ⚙ menu — paste into WordPress / Wix
 
 - **Zero backend**: all project data stored in browser localStorage, never uploaded
 - **Zero account**: no signup required
-- External calls only: map tiles (OSM / CARTO / Protomaps), Photon (primary) / Nominatim (fallback) reverse geocoding, Open-Meteo elevation, Cloudflare Workers share-link backend (user-triggered)
+- External calls only: map tiles (Protomaps / OSM / OpenTopoMap / Esri), Photon (primary) / Nominatim (fallback) reverse geocoding, Open-Meteo elevation, Cloudflare Workers share-link backend (user-triggered)
 
 ## Tech Stack
 

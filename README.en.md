@@ -4,7 +4,7 @@
 
 > **Hand-drawn trail map maker** — turn a journey into an illustrated map that tells its story. No backend, installable PWA, auto-detected trilingual UI.
 
-[![Version](https://img.shields.io/badge/version-1.5-orange.svg)](https://github.com/notoriouslab/trailpaint/releases)
+[![Version](https://img.shields.io/badge/version-1.6.5-orange.svg)](https://github.com/notoriouslab/trailpaint/releases)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6.svg)](https://www.typescriptlang.org/)
 [![PWA Ready](https://img.shields.io/badge/PWA-ready-5a0fc8.svg)](https://trailpaint.org/features/install/)
@@ -21,7 +21,7 @@
 TrailPaint works in three beats: **collect, edit, share**.
 
 1. **Collect** — import photos straight from your phone (EXIF GPS auto-creates spots), or have ChatGPT / Claude generate an itinerary JSON and paste it back
-2. **Edit** — reorder, write captions, draw routes, and overlay historical maps on desktop
+2. **Edit** — reorder, write captions, draw routes, hide clutter routes, and overlay historical maps on desktop
 3. **Share** — export an IG-ready illustration, a short link, or an embeddable auto-touring player
 
 | Feature | Details |
@@ -54,7 +54,7 @@ Then hit **Export**, choose a ratio and style, and download a PNG or create a sh
 
 ### 📷 From photos
 
-Shoot with GPS on → drop the photos in → coordinates, chronological order, and reverse-geocoded names come for free. iPhone HEIC and Android JPEG both work; photos without GPS are placed by time-neighbor interpolation and can be dragged into place. **Multi-day trips: "connect spots" draws one route per day.**
+Shoot with GPS on → drop the photos in → coordinates, chronological order, and reverse-geocoded names come for free. iPhone HEIC and Android JPEG both work; photos without GPS are placed by time-neighbor interpolation and can be dragged into place. **Multi-day trips: "connect spots" draws one route per day** — routes can be hidden individually (excluded from Player, image, and GeoJSON export alike).
 
 ### 🤖 With AI
 
@@ -115,7 +115,7 @@ For churches there's a dedicated [`/church/`](https://trailpaint.org/church/) la
 | Layer | Stack |
 |------|------|
 | **Frontend** | Vite + React 19 + TypeScript 5 (strict); layered `core/` (logic) · `map/` (Leaflet) · `player/` (own entry) |
-| **Maps** | Leaflet + react-leaflet + protomaps-leaflet; OSM / CARTO / Protomaps tiles |
+| **Maps** | Leaflet + react-leaflet + protomaps-leaflet; Protomaps vector (multilingual labels) / OSM / OpenTopoMap / Esri satellite tiles |
 | **State** | Zustand + zundo (undo/redo) |
 | **Import/Export** | exifr + ExifReader (EXIF), @tmcw/togeojson (KML), html-to-image + Canvas |
 | **Geo services** | Photon (search/reverse-geocoding, primary) + Nominatim (fallback) + Open-Meteo (elevation) |
@@ -149,7 +149,7 @@ Made a map you're proud of? Open an [issue](https://github.com/notoriouslab/trai
 
 ## Disclaimer
 
-TrailPaint is a **route journaling and sharing tool, not navigation software**. Distances and elevations are estimates; always plan outdoor activities against real conditions. Basemap data comes from OpenStreetMap / CARTO and other third parties.
+TrailPaint is a **route journaling and sharing tool, not navigation software**. Distances and elevations are estimates; always plan outdoor activities against real conditions. Basemap data comes from OpenStreetMap / Protomaps and other third parties.
 
 ## License
 
