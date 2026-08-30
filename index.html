@@ -179,33 +179,22 @@
 <div class="hero">
   <div class="logo">🌿</div>
   <h1>TrailPaint 路小繪</h1>
-  <p class="tagline">在真實地圖上畫出手繪風路線插畫<br/>從照片、地圖、AI 三種方式建立，匯出即作品</p>
+  <p class="tagline">在真實地圖上畫出手繪風路線插畫<br/>照片拖進來，一分鐘變成可分享的作品</p>
+
+  <div class="cta-card">
+    <a class="cta" href="/app/" target="_blank">開始繪製 →</a>
+    <p class="cta-card-note">完全免費 · 不需註冊 · 資料存在你的瀏覽器</p>
+    <p class="cta-card-alt">還不確定？<a href="/app/player/?src=/stories/taiwan-missionaries/mackay.trailpaint.json" target="_blank">先看一個範例故事</a>（30 秒自動導覽）</p>
+    <p class="cta-card-version"><a href="https://github.com/notoriouslab/trailpaint/releases" id="latest-release">最新版本 v1.6.5</a></p>
+  </div>
+
+  <div class="gh-buttons">
+    <a href="https://github.com/notoriouslab/trailpaint" target="_blank" rel="noopener">⭐ Star <span id="gh-stars"></span></a>
+    <a href="https://github.com/notoriouslab/trailpaint/fork" target="_blank" rel="noopener">🍴 Fork <span id="gh-forks"></span></a>
+  </div>
 
   <img class="example-img" src="/examples/trailpaint-01.jpg"
        alt="TrailPaint 成品範例 — 台北士林 8 景點手繪地圖"/>
-
-  <div class="features">
-    <span class="feat">📸 照片 EXIF 匯入</span>
-    <span class="feat">🌐 KML / GeoJSON</span>
-    <span class="feat">🗺️ GPX 匯入</span>
-    <span class="feat">📍 31 種景點圖示</span>
-    <span class="feat">🎨 手繪風 + AI 風格化</span>
-    <span class="feat">📖 Story Player</span>
-    <a class="feat" href="/features/install/" style="border-bottom:none;">📱 可安裝到手機主畫面（PWA）</a>
-  </div>
-
-  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:1.5rem;">
-    <a class="cta" href="/app/" target="_blank">開始繪製</a>
-    <a class="cta cta--ghost" href="/stories/" target="_blank">探索故事地圖</a>
-  </div>
-
-  <p style="font-size:0.85rem;color:#a08060;margin-bottom:1.5rem;">
-    或直接開啟 <a href="/app/player/" target="_blank">故事播放器</a> 播放你的 .trailpaint.json
-  </p>
-
-  <p class="links">
-    <a href="https://github.com/notoriouslab/trailpaint">GitHub</a>
-  </p>
 </div>
 
 <!-- Gallery wall — 多張成品讓訪客「看見可能性」 -->
@@ -254,6 +243,24 @@
   </div>
   <p><a href="/features/">→ 看完整功能 reference</a></p>
 
+  <h2>故事地圖 — 讓路線說故事</h2>
+  <p style="margin-bottom: 1rem;">年代滑桿切換歷史地圖、多故事合輯、自動導覽播放：把路線變成會說故事的時空地圖。</p>
+  <div class="card-grid">
+    <a class="card" href="/stories/taiwan-missionaries/">
+      <h3>⛪ 台灣宣教士腳蹤</h3>
+      <p>馬偕、巴克禮、蘭大衛等五位 19-20 世紀宣教士在台灣的路線與故事，疊 1897 日治歷史地圖。</p>
+    </a>
+    <a class="card" href="/app/player/?compilation=silk-road-2000" target="_blank">
+      <h3>📚 絲路 2000 年合輯</h3>
+      <p>張騫 BC 138、玄奘 AD 629、馬可波羅 AD 1271 — 同一條走廊三段足跡，拖年代滑桿逐段聚焦。</p>
+    </a>
+    <a class="card" href="/stories/passion-week/">
+      <h3>✝️ 耶穌受難週</h3>
+      <p>12+ 個聖經地點，搭配達文西、林布蘭等古典畫作，經文連結 YouVersion。</p>
+    </a>
+  </div>
+  <p><a href="/stories/">→ 看全部故事地圖</a>　·　教會應用請看 <a href="/church/">教會 × TrailPaint 嵌入指南</a></p>
+
   <h2>FAQ — 常見問題</h2>
   <div class="faq-list">
     <details class="faq-item">
@@ -271,58 +278,12 @@
   </div>
   <p><a href="/faq/">→ 看全部 13 題</a></p>
 
-  <h2>主題故事集合</h2>
-  <p style="margin-bottom: 1rem;">把多條路線串成一個故事的主題展示 — 適合人物傳記、宗教路線、歷史事件。</p>
-  <div class="card-grid">
-    <a class="card" href="/stories/taiwan-missionaries/">
-      <h3>⛪ 台灣宣教士腳蹤</h3>
-      <p>馬偕、巴克禮、蘭大衛、布勞姆、馬雅各 — 五位 19-20 世紀宣教士在台灣留下的路線與故事，搭配歷史地圖疊加。</p>
-    </a>
-    <a class="card" href="/stories/passion-week/">
-      <h3>✝️ 耶穌受難週</h3>
-      <p>從進城、受難、復活三段共 12+ 個聖經地點，搭配達文西、卡拉瓦喬、林布蘭等古典畫作，聖經經文連結到 YouVersion。</p>
-    </a>
-  </div>
-
-  <h2>時空敘事 — 年代滑桿、合輯、電子明信片、教會頁</h2>
-  <p style="margin-bottom: 1rem;">把 TrailPaint 從「靜態手繪地圖」推到「會說故事的時空地圖」。拖滑桿切換中研院/CCTS/DARE 等 9 張歷史地圖、把多個故事疊在同條走廊上、把任何一個瞬間下載成 IG 方圖明信片。</p>
-
-  <div class="card-grid">
-    <a class="card" href="/app/player/?compilation=silk-road-2000" target="_blank">
-      <h3>📚 絲路 2000 年 — 跨故事疊圖合輯</h3>
-      <p>張騫 BC 138、玄奘 AD 629、馬可波羅 AD 1271 — 同一條中亞走廊三段足跡，按 spot.era 全域時序排序，拖滑桿即可看到不同年代逐一聚焦。</p>
-    </a>
-    <a class="card" href="/app/player/?compilation=paul-three-journeys" target="_blank">
-      <h3>📚 保羅宣教三次旅行 — 合輯</h3>
-      <p>從敘利亞安提阿出發三度橫渡地中海，最後押解羅馬。沿使徒行傳 13-28 章 34 個景點 AD 46-62。</p>
-    </a>
-    <a class="card" href="/app/player/?compilation=four-gospels-map" target="_blank">
-      <h3>📚 四福音書地圖 — 合輯</h3>
-      <p>耶穌加利利傳道 + 變像山 + 耶路撒冷受難週，5 段故事 33 個景點橫跨 AD 27-30。</p>
-    </a>
-    <a class="card" href="/church/">
-      <h3>⛪ 教會 × TrailPaint 嵌入指南</h3>
-      <p>主日學 / 週報 / 個人靈修三個用例 + iframe 嵌入示範 + 一鍵複製 embed code，貼進 WordPress / Wix / 投影片即可嵌入。</p>
-    </a>
-  </div>
-
-  <p style="margin-top: 1rem;">截圖（左：絲路 2000 年合輯播放中，刻度落在「唐 (741)」第 18/59 景點長安大慈恩寺；右：馬偕 1897 年五股坑明信片，配中研院臺灣輿圖底圖 + 經文時序卡）：</p>
-  <div class="card-grid" style="grid-template-columns: 2fr 1fr; gap: 1rem;">
-    <img src="/examples/silk-road-2000-compilation.jpg" alt="絲路 2000 年合輯 - 跨故事 chronological 排序" style="width:100%;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-    <img src="/examples/postcard-mackay-1897.jpg" alt="馬偕 1897 年五股坑電子明信片" style="width:100%;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-  </div>
-
   <h2>最近更新</h2>
   <ul class="changelog-list">
     <li><span class="date">2026-08-30</span><strong>v1.6.5</strong>：路線隱藏（社群貢獻 <a href="https://github.com/notoriouslab/trailpaint/pull/6">#6</a>）：多天路線可個別隱藏、所屬景點同步隱藏，貫徹 Player / 圖片 / GeoJSON 匯出；單張照片也能成路線</li>
     <li><span class="date">2026-08-30</span><strong>v1.6</strong>：底圖全面換新：預設改 Protomaps 向量（地名跟隨介面語言、Retina 銳利）、新增 OSM 步道底圖（山區步道細節最完整）、暗色改 Protomaps dark；歷史圖層透明度滑桿移到選中圖層正下方</li>
-    <li><span class="date">2026-08-18</span><strong>v1.5</strong>：編輯器介面改版：開始畫面三張行動卡、桌機工具盤佈局、手機免切模式點地圖即加景點；照片按拍攝時間排序、連結景點每天一條路線</li>
-    <li><span class="date">2026-05-03</span><strong>v1.4</strong>：年代滑桿（拖動切歷史地圖 + 景點漸隱）、合輯（多故事疊圖 chronological/sequential 排序）、1080×1080 IG 方圖電子明信片、聖經敘事刻度組（出埃及 → 啟示錄）、`/church/` 教會 demo 頁</li>
-    <li><span class="date">2026-04-20</span>首頁改版：功能 reference 頁、FAQ 獨立頁、範例集合；OG 預覽圖首張照片；Photon 取代 Nominatim 當主 geocoder（地名更準）</li>
-    <li><span class="date">2026-04-19</span>分享連結後端（Cloudflare Workers + KV）：短網址、照片也能跟著分享、90 天 TTL、Safari 大 payload 支援</li>
-    <li><span class="date">2026-04-18</span>ExportWizard：統一三 tab 匯出面板（圖片 / 備份 / 互通）</li>
   </ul>
-  <p><a href="https://github.com/notoriouslab/trailpaint/commits/main">→ GitHub 完整歷史</a></p>
+  <p><a href="https://github.com/notoriouslab/trailpaint/releases">→ 完整版本歷史（GitHub Releases）</a></p>
 
 </main>
 
@@ -382,6 +343,32 @@
 
   <p lang="ja">今すぐ試す：<a href="https://trailpaint.org/app/">trailpaint.org/app/</a>。FAQ：<a href="https://trailpaint.org/faq/">trailpaint.org/faq/</a>。ソースコード：<a href="https://github.com/notoriouslab/trailpaint">GitHub</a>。</p>
 </section>
+
+<script>
+(function () {
+  fetch('https://api.github.com/repos/notoriouslab/trailpaint')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      if (!d) return;
+      var set = function (id, v) {
+        var el = document.getElementById(id);
+        if (el && typeof v === 'number') el.textContent = v.toLocaleString();
+      };
+      set('gh-stars', d.stargazers_count);
+      set('gh-forks', d.forks_count);
+    })
+    .catch(function () {});
+  fetch('https://api.github.com/repos/notoriouslab/trailpaint/releases/latest')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      if (d && d.tag_name) {
+        var el = document.getElementById('latest-release');
+        if (el) el.textContent = '最新版本 ' + d.tag_name;
+      }
+    })
+    .catch(function () {});
+})();
+</script>
 
 </body>
 </html>
