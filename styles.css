@@ -129,30 +129,6 @@ a:hover { border-bottom-color: #d4a574; }
 .cta-card .cta { font-size: 1.15rem; padding: 0.9rem 2.2rem; }
 .cta-card-note { font-size: 0.9rem; color: #a08060; margin: 0.9rem 0 0; }
 
-/* GitHub 即時計數鈕 */
-.gh-buttons {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 1.6rem;
-}
-.gh-buttons a {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #3b1a06;
-  border: 1px solid #52260b;
-  color: #d4a574;
-  font-size: 0.85rem;
-  padding: 6px 14px;
-  border-radius: 999px;
-  border-bottom: 1px solid #52260b;
-  text-decoration: none;
-  transition: background 0.2s;
-}
-.gh-buttons a:hover { background: #52260b; color: #fde68a; }
-.gh-buttons span { font-weight: 700; color: #fde68a; }
 
 .links {
   font-size: 0.9rem;

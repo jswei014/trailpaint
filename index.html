@@ -188,11 +188,6 @@
     <p class="cta-card-note">完全免費 · 不需註冊 · 資料存在你的瀏覽器</p>
   </div>
 
-  <div class="gh-buttons">
-    <a href="https://github.com/notoriouslab/trailpaint/releases" target="_blank" rel="noopener" id="latest-release">🏷 v1.6.5</a>
-    <a href="https://github.com/notoriouslab/trailpaint" target="_blank" rel="noopener">⭐ Star <span id="gh-stars"></span></a>
-    <a href="https://github.com/notoriouslab/trailpaint/fork" target="_blank" rel="noopener">🍴 Fork <span id="gh-forks"></span></a>
-  </div>
 
   <img class="example-img" src="/examples/trailpaint-01.jpg"
        alt="TrailPaint 成品範例 — 台北士林 8 景點手繪地圖"/>
@@ -330,32 +325,6 @@
 
   <p lang="ja">今すぐ試す：<a href="https://trailpaint.org/app/">trailpaint.org/app/</a>。FAQ：<a href="https://trailpaint.org/faq/">trailpaint.org/faq/</a>。ソースコード：<a href="https://github.com/notoriouslab/trailpaint">GitHub</a>。</p>
 </section>
-
-<script>
-(function () {
-  fetch('https://api.github.com/repos/notoriouslab/trailpaint')
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (d) {
-      if (!d) return;
-      var set = function (id, v) {
-        var el = document.getElementById(id);
-        if (el && typeof v === 'number') el.textContent = v.toLocaleString();
-      };
-      set('gh-stars', d.stargazers_count);
-      set('gh-forks', d.forks_count);
-    })
-    .catch(function () {});
-  fetch('https://api.github.com/repos/notoriouslab/trailpaint/releases/latest')
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (d) {
-      if (d && d.tag_name) {
-        var el = document.getElementById('latest-release');
-        if (el) el.textContent = '🏷 ' + d.tag_name;
-      }
-    })
-    .catch(function () {});
-})();
-</script>
 
 </body>
 </html>
