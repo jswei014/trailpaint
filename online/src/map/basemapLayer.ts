@@ -13,7 +13,9 @@ export function createBasemapLayer(bm: BasemapDef): L.Layer {
       attribution: '&copy; <a href="https://openstreetmap.org/copyright">OSM</a> Protomaps',
     }) as unknown as L.Layer;
   }
-  const raster = (bm.type === 'raster' ? bm : BASEMAPS[0]) as RasterBasemap;
+  const raster = (bm.type === 'raster'
+    ? bm
+    : BASEMAPS.find((b) => b.type === 'raster')) as RasterBasemap;
   return L.tileLayer(raster.url, {
     attribution: raster.attribution,
     maxZoom: raster.maxZoom ?? 19,

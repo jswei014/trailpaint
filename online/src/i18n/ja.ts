@@ -210,11 +210,11 @@ export default {
 
   // Basemap
   'basemap.switch': '地図を切替',
-  'basemap.voyager': '標準地図',
+  'basemap.osm': 'OSM トレイル',
   'basemap.satellite': '衛星写真',
   'basemap.topo': '等高線',
   'basemap.dark': 'ダークモード',
-  'basemap.multilingual': '多言語地図',
+  'basemap.multilingual': '標準地図',
 
   // Overlay
   'overlay.title': '歴史地図',
@@ -275,7 +275,7 @@ export default {
   'info.services': '使用サービス',
   'info.svc.leaflet': 'マップエンジン',
   'info.svc.osm': 'マップデータ（現地語ラベル）',
-  'info.svc.carto': 'マップタイル',
+  'info.svc.protomaps': 'ベクターマップタイル',
   'info.svc.geocoder': '場所検索',
   'info.svc.ccts': '中国歴代地図',
   'info.svc.dare': 'ローマ帝国地図',

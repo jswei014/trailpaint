@@ -210,11 +210,11 @@ export default {
 
   // Basemap
   'basemap.switch': '切換底圖',
-  'basemap.voyager': '標準地圖',
+  'basemap.osm': 'OSM 步道',
   'basemap.satellite': '衛星圖',
   'basemap.topo': '等高線',
   'basemap.dark': '暗色地圖',
-  'basemap.multilingual': '多語地圖',
+  'basemap.multilingual': '標準地圖',
 
   // Overlay
   'overlay.title': '歷史圖層',
@@ -275,7 +275,7 @@ export default {
   'info.services': '使用的服務',
   'info.svc.leaflet': '地圖引擎',
   'info.svc.osm': '地圖資料（當地語言標籤）',
-  'info.svc.carto': '地圖圖磚',
+  'info.svc.protomaps': '向量地圖圖磚',
   'info.svc.geocoder': '地點搜尋',
   'info.svc.ccts': '中國歷代地圖',
   'info.svc.dare': '羅馬帝國地圖',

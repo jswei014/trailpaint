@@ -88,21 +88,9 @@ export default defineConfig({
         globIgnores: ['**/examples/**', '**/*.trailpaint-*', '**/heic-to-*'],
         navigateFallbackDenylist: [/^\/app\/player/],
         runtimeCaching: [
-          // Carto 圖磚
-          {
-            urlPattern: /^https:\/\/[a-z]\.basemaps\.cartocdn\.com\/.*/i,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'carto-tiles',
-              expiration: {
-                maxEntries: 500,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 天
-              },
-            },
-          },
           // OSM 圖磚
           {
-            urlPattern: /^https:\/\/[a-z]\.tile\.openstreetmap\.org\/.*/i,
+            urlPattern: /^https:\/\/([a-z]\.)?tile\.openstreetmap\.org\/.*/i,
             handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'osm-tiles',

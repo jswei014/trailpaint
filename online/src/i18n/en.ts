@@ -210,11 +210,11 @@ export default {
 
   // Basemap
   'basemap.switch': 'Switch basemap',
-  'basemap.voyager': 'Standard',
+  'basemap.osm': 'OSM Trails',
   'basemap.satellite': 'Satellite',
   'basemap.topo': 'Topographic',
   'basemap.dark': 'Dark',
-  'basemap.multilingual': 'Multilingual',
+  'basemap.multilingual': 'Standard',
 
   // Overlay
   'overlay.title': 'Historical Overlay',
@@ -275,7 +275,7 @@ export default {
   'info.services': 'Powered by',
   'info.svc.leaflet': 'Map engine',
   'info.svc.osm': 'Map data (local language labels)',
-  'info.svc.carto': 'Map tiles',
+  'info.svc.protomaps': 'Vector map tiles',
   'info.svc.geocoder': 'Place search',
   'info.svc.ccts': 'Chinese historical maps',
   'info.svc.dare': 'Roman Empire maps',
