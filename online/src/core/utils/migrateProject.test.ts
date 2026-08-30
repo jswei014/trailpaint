@@ -542,3 +542,54 @@ describe('migrateProject — v5.1 takenAt (018)', () => {
     }
   });
 });
+
+describe('migrateProject — hidden and spotIds on routes (pr-6-fixes)', () => {
+  const validBase = {
+    version: 5,
+    name: 'Test',
+    center: [23.5, 121],
+    zoom: 8,
+    spots: [],
+    routes: [],
+  };
+
+  it('allows 1-point routes', () => {
+    const p = migrateProject({
+      ...validBase,
+      routes: [{ id: 'r1', name: 'R1', color: 'blue', pts: [[23.5, 121]] }],
+    });
+    expect(p.routes).toHaveLength(1);
+    expect(p.routes[0].pts).toHaveLength(1);
+  });
+
+  it('drops 0-point routes', () => {
+    const p = migrateProject({
+      ...validBase,
+      routes: [{ id: 'r1', name: 'R1', color: 'blue', pts: [] }],
+    });
+    expect(p.routes).toHaveLength(0);
+  });
+
+  it('preserves hidden=true and valid spotIds', () => {
+    const p = migrateProject({
+      ...validBase,
+      routes: [{ id: 'r1', name: 'R1', color: 'blue', pts: [[23.5, 121], [24, 121]], hidden: true, spotIds: ['s1', 's2'] }],
+    });
+    expect(p.routes[0].hidden).toBe(true);
+    expect(p.routes[0].spotIds).toEqual(['s1', 's2']);
+  });
+
+  it('deletes hidden if not strictly true, and drops invalid spotIds', () => {
+    const p = migrateProject({
+      ...validBase,
+      routes: [
+        { id: 'r1', name: 'R1', color: 'blue', pts: [[23.5, 121]], hidden: 'yes', spotIds: [123, 's1'] },
+        { id: 'r2', name: 'R2', color: 'blue', pts: [[23.5, 121]], hidden: false, spotIds: 's1' },
+      ],
+    });
+    expect(p.routes[0].hidden).toBeUndefined();
+    expect(p.routes[0].spotIds).toEqual(['s1']); // Only keeps strings
+    expect(p.routes[1].hidden).toBeUndefined();
+    expect(p.routes[1].spotIds).toBeUndefined(); // Not an array
+  });
+});

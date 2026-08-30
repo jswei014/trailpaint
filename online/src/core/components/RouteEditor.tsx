@@ -48,7 +48,7 @@ export default function RouteEditor({ route, onClose }: RouteEditorProps) {
       />
 
       <div className="route-editor__info">
-        {isMapMode && <>{formatDistance(distKm)} · </>}
+        {isMapMode && route.pts.length > 1 && <>{formatDistance(distKm)} · </>}
         {route.pts.length} {t('route.points')}
         {isMapMode && time && <> · ⏱️ {time}</>}
       </div>

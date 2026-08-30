@@ -13,11 +13,13 @@ export default function RouteLayer() {
   return (
     <>
       {routes.map((route) => (
-        <RoutePolyline
-          key={route.id}
-          route={route}
-          selected={route.id === selectedRouteId}
-        />
+        !route.hidden && (
+          <RoutePolyline
+            key={route.id}
+            route={route}
+            selected={route.id === selectedRouteId}
+          />
+        )
       ))}
     </>
   );

@@ -12,8 +12,16 @@ import type { GeoJsonFeatureCollection, GeoJsonFeature } from './geojsonImport';
 export function projectToGeojson(project: Project): string {
   const features: GeoJsonFeature[] = [];
 
+  const hiddenSpotIds = new Set<string>();
+  project.routes.forEach((route) => {
+    if (route.hidden && route.spotIds) {
+      route.spotIds.forEach((id) => hiddenSpotIds.add(id));
+    }
+  });
+
   // Convert spots to Point features
   project.spots.forEach((spot) => {
+    if (hiddenSpotIds.has(spot.id)) return;
     const feature: GeoJsonFeature = {
       type: 'Feature',
       geometry: {
@@ -32,15 +40,23 @@ export function projectToGeojson(project: Project): string {
     features.push(feature);
   });
 
-  // Convert routes to LineString features
+  // Convert routes to LineString features (or Point if 1 point)
   project.routes.forEach((route) => {
+    if (route.hidden) return;
+    if (route.pts.length === 0) return;
+    const isSinglePoint = route.pts.length === 1;
     const feature: GeoJsonFeature = {
       type: 'Feature',
-      geometry: {
-        type: 'LineString',
-        // Convert each [lat, lng] point to [lng, lat] for GeoJSON
-        coordinates: route.pts.map(([lat, lng]) => [lng, lat]),
-      },
+      geometry: isSinglePoint
+        ? {
+            type: 'Point',
+            coordinates: [route.pts[0][1], route.pts[0][0]],
+          }
+        : {
+            type: 'LineString',
+            // Convert each [lat, lng] point to [lng, lat] for GeoJSON
+            coordinates: route.pts.map(([lat, lng]) => [lng, lat]),
+          },
       properties: {
         id: route.id,
         ...(route.name && { name: route.name }),

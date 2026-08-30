@@ -147,16 +147,17 @@ export function drawStatsOverlay(
   h: number,
   routes: Route[],
 ) {
-  if (routes.length === 0) return;
+  const visibleRoutes = routes.filter((r) => !r.hidden);
+  if (visibleRoutes.length === 0) return;
 
-  const routeName = routes[0].name?.trim() ?? '';
+  const routeName = visibleRoutes[0].name?.trim() ?? '';
 
   let totalDist = 0;
   let totalAscent = 0;
   let totalDescent = 0;
   let hasEle = false;
 
-  for (const r of routes) {
+  for (const r of visibleRoutes) {
     totalDist += polylineDistance(r.pts);
     if (r.elevations) {
       hasEle = true;

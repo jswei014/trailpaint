@@ -4,6 +4,8 @@ export interface Route {
   pts: [number, number][];       // [lat, lng][]
   color: string;                 // ROUTE_COLORS id
   elevations: number[] | null;   // meters, same length as pts; null if no elevation data
+  hidden?: boolean;              // route visibility toggle (019)
+  spotIds?: string[];            // ID of spots belonging to this route
 }
 
 export interface RouteColorDef {

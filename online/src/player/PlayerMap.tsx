@@ -1,6 +1,6 @@
 import { MapContainer, Marker, Popup, Polyline, ZoomControl, useMap } from 'react-leaflet';
 import { usePlayerStore } from './usePlayerStore';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import L from 'leaflet';
 import PlayerBasemapSwitcher from './PlayerBasemapSwitcher';
 import PlayerFitAll from './PlayerFitAll';
@@ -24,9 +24,17 @@ function FitBounds({ overlayId }: { overlayId: string | null }) {
 
   useEffect(() => {
     if (!project) return;
+    const hiddenSpotIds = new Set<string>();
+    project.routes.forEach((r) => {
+      if (r.hidden && r.spotIds) r.spotIds.forEach((id) => hiddenSpotIds.add(id));
+    });
+
+    const visibleSpots = project.spots.filter((s) => !hiddenSpotIds.has(s.id));
+    const visibleRoutes = project.routes.filter((r) => !r.hidden);
+
     const pts: [number, number][] = [
-      ...project.spots.map((s) => s.latlng),
-      ...project.routes.flatMap((r) => r.pts),
+      ...visibleSpots.map((s) => s.latlng),
+      ...visibleRoutes.flatMap((r) => r.pts),
     ];
     if (pts.length === 0) return;
     if (pts.length === 1) {
@@ -56,6 +64,12 @@ function FlyToActive({ overlayId }: { overlayId: string | null }) {
     if (activeIndex === null || activeIndex < 0 || !project) return;
     const spot = project.spots[activeIndex];
     if (!spot) return;
+    const hiddenSpotIds = new Set<string>();
+    project.routes.forEach((r) => {
+      if (r.hidden && r.spotIds) r.spotIds.forEach((id) => hiddenSpotIds.add(id));
+    });
+    if (hiddenSpotIds.has(spot.id)) return; // Do not fly to hidden spot
+
     const cap = getOverlayZoomCap(overlayId);
     let zoom = Math.max(map.getZoom(), 13);
     if (cap !== undefined) zoom = Math.min(zoom, cap);
@@ -190,6 +204,14 @@ export default function PlayerMap() {
     return MODERN_TICK.year;
   });
 
+  const hiddenSpotIds = useMemo(() => {
+    const ids = new Set<string>();
+    project.routes.forEach((r) => {
+      if (r.hidden && r.spotIds) r.spotIds.forEach((id) => ids.add(id));
+    });
+    return ids;
+  }, [project]);
+
   return (
     <MapContainer
       center={project.center}
@@ -213,7 +235,7 @@ export default function PlayerMap() {
       <LocateButton />
       <TimeSlider
         overlayId={overlay?.id ?? null}
-        spotsLatLngs={project.spots.map((s) => s.latlng)}
+        spotsLatLngs={project.spots.filter(s => !hiddenSpotIds.has(s.id)).map((s) => s.latlng)}
         onChange={(tick) => {
           setCurrentYear(tick.year);
           if (!tick.overlayId) setOverlay(null);
@@ -222,40 +244,46 @@ export default function PlayerMap() {
       />
 
       {/* Routes */}
-      {project.routes.map((r) => (
-        <Polyline
-          key={r.id}
-          positions={r.pts}
-          pathOptions={{
-            color: r.color,
-            weight: 3,
-            opacity: 0.8,
-            dashArray: '8 6',
-            lineCap: 'round',
-          }}
-        />
-      ))}
+      {project.routes.map((r) => {
+        if (r.hidden) return null;
+        return (
+          <Polyline
+            key={r.id}
+            positions={r.pts}
+            pathOptions={{
+              color: r.color,
+              weight: 3,
+              opacity: 0.8,
+              dashArray: '8 6',
+              lineCap: 'round',
+            }}
+          />
+        );
+      })}
 
       {/* Spots */}
-      {project.spots.map((spot, i) => (
-        <ActiveMarker
-          key={spot.id}
-          position={spot.latlng}
-          icon={spotIcon(spot.num, activeIndex === i)}
-          active={activeIndex === i}
-          opacity={eraOpacity(spot.era, currentYear)}
-          onClick={() => { setPlaying(false); setActiveSpot(i); }}
-        >
-          <Popup
-            maxWidth={480}
-            className="player-popup"
-            autoPanPaddingTopLeft={[10, 64]}
-            autoPanPaddingBottomRight={[10, 90]}
+      {project.spots.map((spot, i) => {
+        if (hiddenSpotIds.has(spot.id)) return null;
+        return (
+          <ActiveMarker
+            key={spot.id}
+            position={spot.latlng}
+            icon={spotIcon(spot.num, activeIndex === i)}
+            active={activeIndex === i}
+            opacity={eraOpacity(spot.era, currentYear)}
+            onClick={() => { setPlaying(false); setActiveSpot(i); }}
           >
-            <SpotPopupContent spot={spot} />
-          </Popup>
-        </ActiveMarker>
-      ))}
+            <Popup
+              maxWidth={480}
+              className="player-popup"
+              autoPanPaddingTopLeft={[10, 64]}
+              autoPanPaddingBottomRight={[10, 90]}
+            >
+              <SpotPopupContent spot={spot} />
+            </Popup>
+          </ActiveMarker>
+        );
+      })}
       <MapToast />
       <PostcardButton currentYear={currentYear} overlayId={overlay?.id ?? null} />
     </MapContainer>

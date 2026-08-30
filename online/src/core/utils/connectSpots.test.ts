@@ -29,19 +29,19 @@ describe('groupSpotsForRoutes', () => {
       spot(2, [25.2, 121.2], D1),
     ]);
     expect(groups).toEqual([
-      [[25.1, 121.1], [25.2, 121.2]],
-      [[25.3, 121.3], [25.4, 121.4]],
+      { pts: [[25.1, 121.1], [25.2, 121.2]], spotIds: ["s1", "s2"] },
+      { pts: [[25.3, 121.3], [25.4, 121.4]], spotIds: ["s3", "s4"] },
     ]);
   });
 
   it('all same day degrades to a single route (original behavior)', () => {
     const groups = groupSpotsForRoutes([spot(2, [25.2, 121.2], D1), spot(1, [25.1, 121.1], D1)]);
-    expect(groups).toEqual([[[25.1, 121.1], [25.2, 121.2]]]);
+    expect(groups).toEqual([{ pts: [[25.1, 121.1], [25.2, 121.2]], spotIds: ["s1", "s2"] }]);
   });
 
   it('no dates at all degrades to a single route (original behavior)', () => {
     const groups = groupSpotsForRoutes([spot(2, [25.2, 121.2]), spot(1, [25.1, 121.1])]);
-    expect(groups).toEqual([[[25.1, 121.1], [25.2, 121.2]]]);
+    expect(groups).toEqual([{ pts: [[25.1, 121.1], [25.2, 121.2]], spotIds: ["s1", "s2"] }]);
   });
 
   it('undated spots form a trailing group after dated days', () => {
@@ -52,18 +52,21 @@ describe('groupSpotsForRoutes', () => {
       spot(4, [25.4, 121.4]),
     ]);
     expect(groups).toEqual([
-      [[25.2, 121.2], [25.3, 121.3]],
-      [[25.1, 121.1], [25.4, 121.4]],
+      { pts: [[25.2, 121.2], [25.3, 121.3]], spotIds: ["s2", "s3"] },
+      { pts: [[25.1, 121.1], [25.4, 121.4]], spotIds: ["s1", "s4"] },
     ]);
   });
 
-  it('single-spot day cannot form a line and is dropped', () => {
+  it('single-spot day forms a 1-point route', () => {
     const groups = groupSpotsForRoutes([
       spot(1, [25.1, 121.1], D1),
       spot(2, [25.2, 121.2], D1),
       spot(3, [25.3, 121.3], D2),
     ]);
-    expect(groups).toEqual([[[25.1, 121.1], [25.2, 121.2]]]);
+    expect(groups).toEqual([
+      { pts: [[25.1, 121.1], [25.2, 121.2]], spotIds: ["s1", "s2"] },
+      { pts: [[25.3, 121.3]], spotIds: ["s3"] },
+    ]);
   });
 
   it('unparseable takenAt falls into the undated group instead of crashing', () => {
@@ -71,6 +74,6 @@ describe('groupSpotsForRoutes', () => {
       spot(1, [25.1, 121.1], 'not-a-date'),
       spot(2, [25.2, 121.2], 'also-bad'),
     ]);
-    expect(groups).toEqual([[[25.1, 121.1], [25.2, 121.2]]]);
+    expect(groups).toEqual([{ pts: [[25.1, 121.1], [25.2, 121.2]], spotIds: ["s1", "s2"] }]);
   });
 });

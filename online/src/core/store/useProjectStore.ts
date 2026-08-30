@@ -52,6 +52,7 @@ interface ProjectState {
   deleteRoute: (id: string) => void;
   setRouteColor: (id: string, color: string) => void;
   setRouteName: (id: string, name: string) => void;
+  toggleRouteVisibility: (id: string) => void;
   setSelectedRoute: (id: string | null) => void;
   fetchRouteElevation: (id: string) => Promise<void>;
 
@@ -207,12 +208,13 @@ export const useProjectStore = create<ProjectState>()(
     if (pointGroups.length === 0) return;
 
     const baseColorIdx = s.project.routes.length;
-    const newRoutes: Route[] = pointGroups.map((pts, i) => ({
+    const newRoutes: Route[] = pointGroups.map((group, i) => ({
       id: crypto.randomUUID(),
       name: '',
-      pts,
+      pts: group.pts,
       color: ROUTE_COLORS[(baseColorIdx + i) % ROUTE_COLORS.length].id,
       elevations: null,
+      spotIds: group.spotIds,
     }));
 
     set({
@@ -349,6 +351,14 @@ export const useProjectStore = create<ProjectState>()(
       project: {
         ...s.project,
         routes: s.project.routes.map((r) => r.id !== id ? r : { ...r, name }),
+      },
+    })),
+
+  toggleRouteVisibility: (id) =>
+    set((s) => ({
+      project: {
+        ...s.project,
+        routes: s.project.routes.map((r) => r.id !== id ? r : { ...r, hidden: !r.hidden }),
       },
     })),
 

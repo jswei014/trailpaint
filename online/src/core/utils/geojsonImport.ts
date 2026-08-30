@@ -87,14 +87,24 @@ export function geojsonToImport(bundle: ImportBundle, opts: GeojsonImportOpts): 
         unsupportedCount++;
         continue;
       }
-      const num = opts.startingSpotNum + spotIdx + 1;
-      const spot = makeSpot({ lat, lng, num, props, opts });
-      spots.push(spot);
-      const photoRef = typeof props?.photoRef === 'string' ? props.photoRef : null;
-      if (photoRef && bundle.photoFiles?.has(photoRef)) {
-        spotPhotoMap.set(spot.id, bundle.photoFiles.get(photoRef)!);
+
+      // Duck Typing: if it has color but no num, it's a 1-point route exported as Point
+      const isRoute = props && typeof props.color === 'string' && props.num === undefined;
+      
+      if (isRoute) {
+        const pts: [number, number][] = [[lat, lng]];
+        routes.push(makeRoute({ pts, idx: opts.startingRouteColorIdx + routeIdx, name: getRouteName(props) }));
+        routeIdx++;
+      } else {
+        const num = opts.startingSpotNum + spotIdx + 1;
+        const spot = makeSpot({ lat, lng, num, props, opts });
+        spots.push(spot);
+        const photoRef = typeof props?.photoRef === 'string' ? props.photoRef : null;
+        if (photoRef && bundle.photoFiles?.has(photoRef)) {
+          spotPhotoMap.set(spot.id, bundle.photoFiles.get(photoRef)!);
+        }
+        spotIdx++;
       }
-      spotIdx++;
     } else if (geom.type === 'LineString') {
       const pts = swapCoordsValid(geom.coordinates);
       if (pts.length < 2) continue;

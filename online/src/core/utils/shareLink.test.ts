@@ -124,3 +124,40 @@ describe('compactProject / expandProject — scripture_refs round-trip', () => {
     expect(expandProject(compact).spots[0].scripture_refs).toEqual(['Acts 16:9', 'Matt 1:1']);
   });
 });
+
+describe('compactProject / expandProject — hidden and spotIds on routes (pr-6-fixes)', () => {
+  const baseRoute = {
+    id: 'r1',
+    name: 'R1',
+    color: 'blue',
+    pts: [[23.5, 121]] as [number, number][],
+    elevations: null,
+  };
+
+  it('compacts hidden to h:1 and spotIds to s', () => {
+    const p = mkProject([]);
+    p.routes = [{ ...baseRoute, hidden: true, spotIds: ['s1', 's2'] }];
+    const compact = compactProject(p);
+    const r = (compact.r as Record<string, unknown>[])[0];
+    expect(r.h).toBe(1);
+    expect(r.s).toEqual(['s1', 's2']);
+  });
+
+  it('omits h and s when missing or false/empty', () => {
+    const p = mkProject([]);
+    p.routes = [{ ...baseRoute, hidden: false, spotIds: [] }];
+    const compact = compactProject(p);
+    const r = (compact.r as Record<string, unknown>[])[0];
+    expect(r).not.toHaveProperty('h');
+    expect(r).not.toHaveProperty('s');
+  });
+
+  it('round-trips hidden and spotIds through compact -> expand', () => {
+    const p = mkProject([]);
+    p.routes = [{ ...baseRoute, hidden: true, spotIds: ['s1', 's2'] }];
+    const expanded = expandProject(compactProject(p));
+    const r = expanded.routes![0];
+    expect(r.hidden).toBe(true);
+    expect(r.spotIds).toEqual(['s1', 's2']);
+  });
+});

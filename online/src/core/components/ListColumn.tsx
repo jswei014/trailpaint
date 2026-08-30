@@ -26,6 +26,15 @@ export default function ListColumn({ onFlyTo, showSearch = true }: ListColumnPro
   const baseMode = useProjectStore((s) => s.baseMode);
   const mapCenter = useProjectStore((s) => s.project.center);
 
+  const hiddenSpotIds = new Set<string>();
+  routes.forEach((r) => {
+    if (r.hidden && r.spotIds) {
+      r.spotIds.forEach((id) => hiddenSpotIds.add(id));
+    }
+  });
+
+  const visibleSpots = spots.filter((s) => !hiddenSpotIds.has(s.id));
+
   const isImageMode = baseMode === 'image';
 
   const handleSelect = (id: string) => {
@@ -45,7 +54,7 @@ export default function ListColumn({ onFlyTo, showSearch = true }: ListColumnPro
       )}
 
       <SpotList
-        spots={spots}
+        spots={visibleSpots}
         selectedSpotId={selectedSpotId}
         onSelect={handleSelect}
         onSwap={swapSpots}
@@ -72,10 +81,21 @@ export default function ListColumn({ onFlyTo, showSearch = true }: ListColumnPro
                 <span className="route-summary__color" style={{ background: color.stroke }} />
                 <div className="route-summary__info">
                   {r.name && <span className="route-summary__name">{r.name}</span>}
-                  {!isImageMode && (
+                  {!isImageMode && r.pts.length > 1 && (
                     <span className="route-summary__dist">{formatDistance(polylineDistance(r.pts))}</span>
                   )}
                 </div>
+                <button
+                  className="route-summary__visibility-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    useProjectStore.getState().toggleRouteVisibility(r.id);
+                  }}
+                  title={r.hidden ? t('route.show') : t('route.hide')}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px' }}
+                >
+                  {r.hidden ? '🙈' : '👁️'}
+                </button>
               </div>
             );
           })}
