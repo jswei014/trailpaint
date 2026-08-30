@@ -237,12 +237,27 @@
   letter-spacing: 0.3px;
 }
 
+/* Overlay option wrapper: carries the row separator so the option button
+   and its inline slider read as one unit */
+.basemap-switcher__overlay-item {
+  border-bottom: 1px solid #f0e6d6;
+}
+
+.basemap-switcher__overlay-item:last-child {
+  border-bottom: none;
+}
+
+.basemap-switcher__overlay-item .basemap-switcher__option {
+  border-bottom: none;
+}
+
+/* Inline under the active overlay option — tinted to read as part of it */
 .basemap-switcher__slider-row {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 6px 14px 10px;
-  border-top: 1px solid #f0e6d6;
+  background: #fdf1c9;
 }
 
 .basemap-switcher__slider-label {

@@ -8,6 +8,7 @@ import type { OverlayDef } from './overlays';
 import { BASEMAPS } from './basemaps';
 import type { BasemapDef } from './basemaps';
 import { createBasemapLayer, resolveBasemapId } from './basemapLayer';
+import OverlayOpacitySlider from './OverlayOpacitySlider';
 import { useOverlayLayer } from './eraOverlayLayer';
 import { dispatchOverlayLoadFailed } from './MapToast';
 
@@ -138,33 +139,24 @@ export default function BasemapSwitcher() {
                   {t(OVERLAY_GROUP_LABEL_KEY[group] as Parameters<typeof t>[0])}
                 </div>
                 {items.map((ov) => (
-                  <button
-                    key={ov.id}
-                    className={`basemap-switcher__option${overlayId === ov.id ? ' basemap-switcher__option--active' : ''}`}
-                    onClick={() => handleSelectOverlay(ov)}
-                  >
-                    {t(ov.labelKey)}
-                  </button>
+                  <div key={ov.id} className="basemap-switcher__overlay-item">
+                    <button
+                      className={`basemap-switcher__option${overlayId === ov.id ? ' basemap-switcher__option--active' : ''}`}
+                      onClick={() => handleSelectOverlay(ov)}
+                    >
+                      {t(ov.labelKey)}
+                    </button>
+                    {overlayId === ov.id && (
+                      <OverlayOpacitySlider
+                        opacity={overlayOpacity}
+                        onChange={(v) => setOverlay({ id: ov.id, opacity: v })}
+                      />
+                    )}
+                  </div>
                 ))}
               </div>
             );
           })}
-          {overlayId && (
-            <div className="basemap-switcher__slider-row">
-              <span className="basemap-switcher__slider-label">{t('overlay.opacity')}</span>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={Math.round(overlayOpacity * 100)}
-                onChange={(e) => setOverlay({ id: overlayId!, opacity: Number(e.target.value) / 100 })}
-                className="basemap-switcher__slider"
-              />
-              <span className="basemap-switcher__slider-value">
-                {Math.round(overlayOpacity * 100)}%
-              </span>
-            </div>
-          )}
         </div>
       )}
     </div>
